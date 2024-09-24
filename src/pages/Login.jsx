@@ -1,43 +1,13 @@
 import React, { useState } from 'react';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
-import { signupValidationSchema } from '../formikYup/ValidationSchema';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { loginValidationSchema } from '../formikYup/ValidationSchema';
 
-function SignUp() {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState('jobSeeker');  // Default role set to 'jobSeeker'
-  const [errorMessage, setErrorMessage] = useState('');  // State to store error message
-  const navigate = useNavigate();
-
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleSubmit = async (values) => {
-    setErrorMessage('');  // Reset error message on submit
-    try {
-      const response = await axios.post('http://localhost:5000/user/register', {
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        role,  // Include the role in the request body
-      });
-
-      if (response.status === 200) {
-        alert('Signup successful');
-        navigate('/login');  // Redirect to login after successful signup
-      }
-    } catch (error) {
-      console.error('Error during signup:', error);
-      if (error.response && error.response.data) {
-        // Displaying backend error message
-        setErrorMessage(error.response.data.message || 'Signup failed. Please try again.');
-      } else {
-        setErrorMessage('Signup failed. Please try again.');
-      }
-    }
   };
 
   return (
@@ -50,55 +20,18 @@ function SignUp() {
               <span className="text-4xl font-bold">Find_Jobs</span>
             </div>
 
-            <h5 className="font-normal text-center mt-4 mb-4 pb-4 tracking-wide">Great way to start your journey</h5>
-
-            {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}  {/* Display error message */}
+            <h5 className="font-normal text-center mt-4 mb-4 pb-4 tracking-wide">Login to your account</h5>
 
             <Formik
-              initialValues={{ name: '', email: '', password: '' }}
-              validationSchema={signupValidationSchema}
-              onSubmit={handleSubmit}
+              initialValues={{ email: '', password: '' }}
+              validationSchema={loginValidationSchema}
+              
+              onSubmit={(values) => {
+                alert("Namskara Gaandu.....Hengidya!!");
+              }}
             >
               {({ handleChange, handleBlur, values, touched, errors }) => (
                 <Form>
-                  <div className="mb-4 w-full">
-                    <label className="block mb-2">Register as:</label>
-                    <div className="flex items-center justify-center mb-2">
-                      <input
-                        id="jobSeeker"
-                        type="radio"
-                        value="jobSeeker"
-                        checked={role === 'jobSeeker'}
-                        onChange={() => setRole('jobSeeker')}
-                        className="mr-2 cursor-pointer"
-                      />
-                      <label htmlFor="jobSeeker" className="text-base mr-4">Job Seeker</label>
-                      
-                      <input
-                        id="jobProvider"
-                        type="radio"
-                        value="jobProvider"
-                        checked={role === 'jobProvider'}
-                        onChange={() => setRole('jobProvider')}
-                        className="mr-2 cursor-pointer"
-                      />
-                      <label htmlFor="jobProvider" className="text-base">Job Provider</label>
-                    </div>
-                  </div>
-
-                  <div className="mb-4 w-full">
-                    <label htmlFor="name" className="block mb-2">User name</label>
-                    <input
-                      id="name"
-                      type="text"
-                      className={`w-full p-3 text-base border rounded-lg focus:outline-none focus:ring focus:ring-indigo-300 ${touched.name && errors.name ? 'border-red-500' : ''}`}
-                      value={values.name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <ErrorMessage name="name" component="p" className='text-red-500 text-sm' />
-                  </div>
-
                   <div className="mb-4 w-full">
                     <label htmlFor="email" className="block mb-2">Email address</label>
                     <input
@@ -127,22 +60,22 @@ function SignUp() {
                       className="absolute right-3 top-11 text-gray-600"
                       onClick={togglePasswordVisibility}
                     >
-                      {showPassword ? (
-                        <EyeSlashIcon className="h-6 w-6" />
-                      ) : (
-                        <EyeIcon className="h-6 w-6" />
-                      )}
+                      { showPassword ? <EyeSlashIcon className="h-6 w-6" /> : <EyeIcon className="h-6 w-6" /> }
                     </button>
                     <ErrorMessage name="password" component="p" className='text-red-500 text-sm' />
                   </div>
 
-                  <button type="submit" className="mb-4 w-full p-3 bg-black text-white rounded-lg text-base">Sign Up</button>
+                  <div className='flex justify-end'>
+                  <a href="./forgotpassword" className="text-sm mb-3 text-gray-500">Forgot password?</a>
+                  </div>
+
+                  <button type="submit" className="mt-4 w-full p-3 bg-black text-white rounded-lg text-base">Login</button>
                 </Form>
               )}
             </Formik>
 
             <p className="mt-8 text-gray-400">
-              Already have an account? <a href="/login" className="text-black">Login</a>
+              Don't have an account? <a href="signup" className="text-black">Register here</a>
             </p>
           </div>
         </div>
@@ -151,4 +84,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Login;
