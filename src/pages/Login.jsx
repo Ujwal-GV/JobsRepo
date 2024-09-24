@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { FaKey, FaUser } from "react-icons/fa";
@@ -7,8 +8,9 @@ import axios from "axios";
 import InputBox from "../components/InputBox";
 import { MdEmail } from "react-icons/md";
 
-function SignUp() {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
+
   const [role, setRole] = useState("jobSeeker"); // Default role set to 'jobSeeker'
   const [errorMessage, setErrorMessage] = useState(""); // State to store error message
   const navigate = useNavigate();
@@ -135,6 +137,7 @@ function SignUp() {
               <a href="/login" className="text-black text-[1rem] hover:underline">
                 Login
               </a>
+
             </p>
           </Form>
         )}
@@ -143,4 +146,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Login;
