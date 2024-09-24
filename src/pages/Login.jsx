@@ -2,34 +2,29 @@
 import React, { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { FaKey, FaUser } from "react-icons/fa";
-import { signupValidationSchema } from "../formikYup/ValidationSchema";
+import { loginValidationSchema, signupValidationSchema } from "../formikYup/ValidationSchema";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import InputBox from "../components/InputBox";
 import { MdEmail } from "react-icons/md";
 
 function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [role, setRole] = useState("jobSeeker"); // Default role set to 'jobSeeker'
-  const [errorMessage, setErrorMessage] = useState(""); // State to store error message
+  const [role, setRole] = useState("jobSeeker"); 
   const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
-    setErrorMessage(""); // Reset error message on submit
     alert(JSON.stringify(values));
   };
 
   return (
     <div className="w-full h-screen max-w-[1600px] flex items-center justify-center">
-      {/* Display error message */}
       <Formik
-        initialValues={{ name: "", email: "", password: "" }}
-        validationSchema={signupValidationSchema}
+        initialValues={{  email: "", password: "" }}
+        validationSchema={loginValidationSchema}
         onSubmit={handleSubmit}
       >
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
-          <Form className="bg-white w-[300px] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 px-6">
+          <Form className="bg-white w-[300px] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 md:px-6 ">
             <div className="flex justify-center items-center">
               <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" />
               <span className="text-xl md:text-2xl font-bold">JOB SHINE</span>
@@ -38,7 +33,7 @@ function Login() {
               Great way to start your journey
             </h5>
             <div className="mb-4 w-full">
-              <label className="block mb-2">Register As:</label>
+              <label className="block mb-2">Login As:</label>
               <div className="flex items-center justify-center mb-2">
                 <input
                   id="jobSeeker"
@@ -66,24 +61,6 @@ function Login() {
               </div>
             </div>
 
-            <div className="mb-4 w-full">
-              <InputBox
-                name={"name"}
-                type="text"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                customClass={touched.name && errors.name ? "input-error" : ""}
-                icon={<FaUser />}
-                placeholder="Enter username"
-                key={"name"}
-                value={values.name}
-              />
-              <ErrorMessage
-                name="name"
-                component="p"
-                className="text-red-500 text-sm"
-              />
-            </div>
 
             <div className="mb-4 w-full">
               <InputBox
@@ -91,7 +68,7 @@ function Login() {
                 name={"email"}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                placeholder="Enter email"
+                placeholder="Enter Email"
                 type="email"
                 customClass={touched.email && errors.email ? "input-error" : ""}
                 value={values.email}
@@ -129,15 +106,14 @@ function Login() {
               type="submit"
               className={"mb-4 flex mx-auto center w-[80%] p-3 bg-black text-white rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
             >
-              Sign Up
+              Sign In
             </button>
              <hr />
             <p className="mt-2 text-center text-gray-400 text-sm">
-              Already have an account?{" "}
-              <a href="/login" className="text-black text-[1rem] hover:underline">
-                Login
+              Don't have an account? {" "}
+              <a href="/signup" className="text-black text-[1rem] hover:underline">
+                Register
               </a>
-
             </p>
           </Form>
         )}

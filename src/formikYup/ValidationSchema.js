@@ -10,7 +10,7 @@ export const loginValidationSchema = Yup.object().shape({
 
 export const signupValidationSchema = Yup.object().shape({
   name: Yup.string()
-  .required('Username is required'),
+  .required('Name is required'),
   email: Yup.string()
   .email('Invalid email')
   .required('Email is required'),
