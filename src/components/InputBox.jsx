@@ -28,7 +28,7 @@ const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",cust
         onChange={onChange}
         type={type.toLowerCase() === "password" ? (passwordVisible ? "password" : "text") : type}
         className={
-          "flex-1 ml-2  flex text-gray-600  placeholder:text-black bg-transition " +
+          "flex-1 ml-2 flex text-gray-600  placeholder:text-black bg-transition " +
           (focused ? "bg-white" : "bg-gray-200") +(type.toLowerCase() === "password" ? " pr-2":"")
         }
         onFocus={() => setFocus(true)}

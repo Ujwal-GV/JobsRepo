@@ -10,11 +10,34 @@ import { MdEmail } from "react-icons/md";
 
 function Login() {
   const [role, setRole] = useState("jobSeeker"); 
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
-    alert(JSON.stringify(values));
+    setErrorMessage('');
+    try {
+      const response = await axios.post('http://localhost:5000/user/login', {
+        email: values.email,
+        password: values.password,
+      });
+
+      if (response.status === 200) {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      if (error.response && error.response.data) {
+        // console.log(error.response.data.message);
+        // alert(error.response.data.message);
+        setErrorMessage(error.response.data.message || 'Signup failed. Please try again.');
+      } else {
+        // console.log(error.response.data.message);
+        // alert(error.response.data.message);
+        setErrorMessage('Signup failed. Please try again.');
+      }
+    }
   };
+
 
   return (
     <div className="w-full h-screen max-w-[1600px] flex items-center justify-center">
@@ -25,15 +48,15 @@ function Login() {
       >
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
           <Form className="bg-white w-[300px] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 md:px-6 ">
-            <div className="flex justify-center items-center">
+            <div className="mt-4 flex justify-center items-center">
               <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" />
               <span className="text-xl md:text-2xl font-bold">JOB SHINE</span>
             </div>
             <h5 className="text-center mb-4">
-              Great way to start your journey
+              Login to your account
             </h5>
             <div className="mb-4 w-full">
-              <label className="block mb-2">Login As:</label>
+              <label className="text-center block mb-2">Login As:</label>
               <div className="flex items-center justify-center mb-2">
                 <input
                   id="jobSeeker"
@@ -102,14 +125,16 @@ function Login() {
               />
             </div>
 
+            {errorMessage && <div className="text-red-500 text-center mb-2">{errorMessage}</div>}
+
             <button
               type="submit"
               className={"mb-4 flex mx-auto center w-[80%] p-3 bg-black text-white rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
             >
-              Sign In
+              Login
             </button>
              <hr />
-            <p className="mt-2 text-center text-gray-400 text-sm">
+            <p className="m-2 text-center text-gray-400 text-sm">
               Don't have an account? {" "}
               <a href="/signup" className="text-black text-[1rem] hover:underline">
                 Register
