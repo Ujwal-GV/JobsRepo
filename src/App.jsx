@@ -1,10 +1,10 @@
 import './App.css'
 import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login'
-import SignUp from './components/SignUp';
-import forgotPassword from './components/forgotPassword';
-import setNewPassword from './components/setNewPassword';
-import mainPage from './components/mainPage';
+import Login from './pages/Login'
+import SignUp from './pages/SignUp';
+import forgotPassword from './pages/forgotPassword';
+import setNewPassword from './pages/setNewPassword';
+import mainPage from './pages/mainPage';
 
 function App() {
   return (

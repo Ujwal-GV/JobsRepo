@@ -2,13 +2,42 @@ import React, { useState } from 'react';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import { signupValidationSchema } from '../formikYup/ValidationSchema';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState('jobSeeker');
+  const [role, setRole] = useState('jobSeeker');  // Default role set to 'jobSeeker'
+  const [errorMessage, setErrorMessage] = useState('');  // State to store error message
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (values) => {
+    setErrorMessage('');  // Reset error message on submit
+    try {
+      const response = await axios.post('http://localhost:5000/user/register', {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        role,  // Include the role in the request body
+      });
+
+      if (response.status === 200) {
+        alert('Signup successful');
+        navigate('/login');  // Redirect to login after successful signup
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+      if (error.response && error.response.data) {
+        // Displaying backend error message
+        setErrorMessage(error.response.data.message || 'Signup failed. Please try again.');
+      } else {
+        setErrorMessage('Signup failed. Please try again.');
+      }
+    }
   };
 
   return (
@@ -23,12 +52,12 @@ function SignUp() {
 
             <h5 className="font-normal text-center mt-4 mb-4 pb-4 tracking-wide">Great way to start your journey</h5>
 
+            {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}  {/* Display error message */}
+
             <Formik
-              initialValues={{ username: '', email: '', password: '' }}
+              initialValues={{ name: '', email: '', password: '' }}
               validationSchema={signupValidationSchema}
-              onSubmit={(values) => {
-                alert("Namskara Gaandu.....Hengidya!!");
-              }}
+              onSubmit={handleSubmit}
             >
               {({ handleChange, handleBlur, values, touched, errors }) => (
                 <Form>
@@ -58,16 +87,16 @@ function SignUp() {
                   </div>
 
                   <div className="mb-4 w-full">
-                    <label htmlFor="username" className="block mb-2">User name</label>
+                    <label htmlFor="name" className="block mb-2">User name</label>
                     <input
-                      id="username"
+                      id="name"
                       type="text"
-                      className={`w-full p-3 text-base border rounded-lg focus:outline-none focus:ring focus:ring-indigo-300 ${touched.username && errors.username ? 'border-red-500' : ''}`}
-                      value={values.username}
+                      className={`w-full p-3 text-base border rounded-lg focus:outline-none focus:ring focus:ring-indigo-300 ${touched.name && errors.name ? 'border-red-500' : ''}`}
+                      value={values.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
-                    <ErrorMessage name="username" component="p" className='text-red-500 text-sm' />
+                    <ErrorMessage name="name" component="p" className='text-red-500 text-sm' />
                   </div>
 
                   <div className="mb-4 w-full">
