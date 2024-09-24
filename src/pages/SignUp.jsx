@@ -19,6 +19,7 @@ function SignUp() {
     // setErrorMessage('');
     try {
       const response = await axios.post('http://localhost:5000/user/register', {
+        name: values.name,
         email: values.email,
         password: values.password,
         role,
@@ -52,13 +53,11 @@ function SignUp() {
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
           <Form className="bg-white w-[300px] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 md:px-6 ">
             <div className="mt-4 flex justify-center items-center">
-              <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" />
-              <span className="text-xl md:text-2xl font-bold">JOB SHINE</span>
+              {/* <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" /> */}
+              <span className="text-2xl md:text-2xl uppercase font-bold">Register</span>
             </div>
-            <h5 className="text-center mb-4">
-              Great way to start your journey
-            </h5>
             <div className="mb-4 w-full">
+              <hr className='m-4' />
               <label className="text-center block mb-2">Register As:</label>
               <div className="flex items-center justify-center mb-2">
                 <input

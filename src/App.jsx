@@ -12,7 +12,7 @@ function App() {
         <Route path = "/login" Component={ Login } />
         <Route path = "/signup" Component={ SignUp } />
         <Route path = "/forgotpassword" Component={ forgotPassword } />
-        <Route path = "/resetpassword" Component={ setNewPassword } />
+        <Route path = "/reset-password" Component={ setNewPassword } />
         <Route path = "/" Component={ mainPage } />
       </Routes>
     </Router>

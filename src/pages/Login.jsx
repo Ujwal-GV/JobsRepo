@@ -49,14 +49,11 @@ function Login() {
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
           <Form className="bg-white w-[300px] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 md:px-6 ">
             <div className="mt-4 flex justify-center items-center">
-              <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" />
-              <span className="text-xl md:text-2xl font-bold">JOB SHINE</span>
+              {/* <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" /> */}
+              <span className="text-2xl md:text-2xl font-bold">LOGIN</span>
             </div>
-            <h5 className="text-center mb-4">
-              Login to your account
-            </h5>
             <div className="mb-4 w-full">
-              <label className="text-center block mb-2">Login As:</label>
+              <hr className="m-4"/>
               <div className="flex items-center justify-center mb-2">
                 <input
                   id="jobSeeker"
