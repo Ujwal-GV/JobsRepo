@@ -1,71 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-input{
-    box-shadow: none !important;
+input {
+  box-shadow: none !important;
 }
 
-.center{
-    @apply flex justify-center items-center;
-  }
+.center {
+  @apply flex justify-center items-center;
+}
+
+.head-1 {
+  @apply text-xl md:text-2xl font-semibold;
+}
+
+.dark-mode {
+  background: #001529 !important;
+}
+
+.hover-text-white:hover {
+  color: white !important;
+}
+
+input,
+input:focus {
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.mar {
+  margin: 0 auto !important;
+  color: teal;
+}
+
+.bg-transition {
+  transition: background 0.4s;
+}
+
+.border-gray {
+  border: 1px solid transparent;
+  transition: border 0.5s, background 0.5s;
+  @apply border-gray-200 !important;
+}
+
+.border-green {
+  border: 1px solid green !important;
+}
+
+.input-error {
+  border: 1px solid red !important;
+  @apply bg-red-50;
+}
+.input-error input {
+  @apply bg-red-50;
+}
+
+.btn-dark {
+  @apply bg-black  text-white text-[0.9rem] md:text-[1rem];
+}
+.btn-dark:hover {
+  @apply bg-gray-900;
+}
+
+.font-outfit {
+  font-family: "Outfit", system-ui;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.blue {
+  background-color: #1d4ed8;
+}
+.light-blue {
+  background-color: #1d4fd86d;
+}
+
+.orange-bubble {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #d18420;
+  filter: blur(70px);
+}
+
+.orangle-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: hsla(27, 100%, 94%, 1);
+
+  background: linear-gradient(45deg, hsla(27, 100%, 94%, 1) 28%, hsla(23, 78%, 68%, 1) 100%);
   
-  .head-1{
-    @apply text-xl md:text-2xl font-semibold 
-  }
+  background: -moz-linear-gradient(45deg, hsla(27, 100%, 94%, 1) 28%, hsla(23, 78%, 68%, 1) 100%);
   
-  .dark-mode{
-    background: #001529 !important;
-  }
+  background: -webkit-linear-gradient(45deg, hsla(27, 100%, 94%, 1) 28%, hsla(23, 78%, 68%, 1) 100%);
   
-  
-  .hover-text-white:hover{
-    color: white !important;
-  }
-  
-  
-  input ,input:focus{
-    background: transparent;
-    border: 0;
-    outline: none;
-  }
-  .mar{
-    margin: 0 auto !important;
-    color: teal;
-  }
-  
-  .bg-transition{
-    transition: background 0.4s;
-  }
-  
-  .border-gray{
-    border: 1px solid transparent;
-    transition: border 0.5s ,background 0.5s;
-    @apply border-gray-200 !important;
-  }
-  
-  .border-green{
-    border:  1px solid green !important;
-  }
-  
-  .input-error{
-    border:  1px solid red !important;
-    @apply bg-red-50
-  }
-  .input-error input{
-    @apply bg-red-50
-  }
-  
-  .btn-dark{
-    @apply  bg-black  text-white text-[0.9rem] md:text-[1rem];
-  }
-  .btn-dark:hover{
-   @apply bg-gray-700;
-  }
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFEDDE", endColorstr="#EDA06F", GradientType=1 );}
+
+/* modal color */
+.blue-circle{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: hsla(0, 0%, 100%, 1);
+
+background: linear-gradient(45deg, hsla(0, 0%, 100%, 1) 12%, hsla(233, 100%, 47%, 1) 100%);
+
+background: -moz-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 12%, hsla(233, 100%, 47%, 1) 100%);
+
+background: -webkit-linear-gradient(45deg, hsla(0, 0%, 100%, 1) 12%, hsla(233, 100%, 47%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", endColorstr="#001CEE", GradientType=1 );
+}
+
+
+
+.modal-bg {
+  background: rgba(255, 255, 255, 0.536);
+}

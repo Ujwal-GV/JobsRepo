@@ -149,7 +149,7 @@ function SignUp() {
 
             <button
               type="submit"
-              className={"mb-4 flex mx-auto center w-[80%] p-3 bg-black text-white rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
+              className={"mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
             >
               Register
             </button>

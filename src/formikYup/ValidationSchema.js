@@ -30,6 +30,6 @@ export const setNewPasswordValidationSchema = Yup.object().shape({
 
 export const forgotPasswordValidationSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Invalid email format')
+    .email('Invalid email ')
     .required('Email is required'),
 });

@@ -101,7 +101,7 @@ function Login() {
               />
             </div>
 
-            <div className="mb-4 w-full">
+            <div className="mb-1 w-full">
               <InputBox
                 key={"password"}
                 name={"password"}
@@ -121,12 +121,13 @@ function Login() {
                 className="text-red-500 text-sm"
               />
             </div>
+            <p className="mb-4 text-end"><span className="text-sm cursor-pointer hover:underline me-3" onClick={()=>navigate("/forgotpassword")}>Forgot Password?</span></p>
 
             {errorMessage && <div className="text-red-500 text-center mb-2">{errorMessage}</div>}
 
             <button
               type="submit"
-              className={"mb-4 flex mx-auto center w-[80%] p-3 bg-black text-white rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
+              className={"mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
             >
               Login
             </button>

@@ -7,6 +7,7 @@ import mainPage from './pages/mainPage';
 
 function App() {
   return (
+    <>
     <Router>
       <Routes>
         <Route path = "/login" Component={ Login } />
@@ -14,8 +15,9 @@ function App() {
         <Route path = "/forgotpassword" Component={ forgotPassword } />
         <Route path = "/reset-password" Component={ setNewPassword } />
         <Route path = "/" Component={ mainPage } />
-      </Routes>
+      </Routes> 
     </Router>
+    </>
   );
 }
 
