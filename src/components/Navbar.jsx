@@ -8,8 +8,8 @@ const Navbar = () => {
             <span className='font-bold text-2xl md:text-3xl'>JOB SHINE</span>
         </div>
         <div className='flex gap-2 items-center justify-center font-outfit'>
-            <button className='btn-dark px-3 py-1 rounded-lg hidden md:flex'>SignUp</button> 
-            <button className='bg-white shadow-sm shadow-black px-3 py-1 rounded-lg'>SignIn</button> 
+            <a href="/signup"><button className='btn-dark px-3 py-1 rounded-lg hidden md:flex'>SignUp</button> </a>
+            <a href="/login"><button className='bg-white shadow-sm shadow-black px-3 py-1 rounded-lg'>SignIn</button> </a>
         </div>                          
     </div>
   )

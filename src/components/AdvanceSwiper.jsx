@@ -15,7 +15,8 @@ const AdvancedSwiper = () => {
       pagination={{ clickable: true }}  // Enable clickable pagination dots
       autoplay={{ delay: 3000, disableOnInteraction: false }}  // Enable autoplay with a 3-second delay
       loop={true}  // Enable looping
-      effect="coverflow"  // Use the coverflow effect for a 3D slide effect
+      effect="coverflow"// Use the coverflow effect for a 3D slide effect
+      //effect="webflow"  
       coverflowEffect={{
         rotate: 50,
         stretch: 0,
@@ -27,18 +28,21 @@ const AdvancedSwiper = () => {
       <SwiperSlide>
         <div className="slide-content">
           <h2>Slide 1</h2>
+          <img src="Logo.png" alt="" />
           <p>This is the first slide.</p>
         </div>
       </SwiperSlide>
       <SwiperSlide>
         <div className="slide-content">
           <h2>Slide 2</h2>
+          <img src="Logo.png" alt="" />
           <p>This is the second slide.</p>
         </div>
       </SwiperSlide>
       <SwiperSlide>
         <div className="slide-content">
           <h2>Slide 3</h2>
+          <img src="Logo.png" alt="" />
           <p>This is the third slide.</p>
         </div>
       </SwiperSlide>
