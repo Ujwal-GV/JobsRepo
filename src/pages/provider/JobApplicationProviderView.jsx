@@ -24,9 +24,14 @@ const JobApplicationProviderView = () => {
         <div className="w-full lg:w-full flex flex-col lg:flex-row gap-10">
           
           {/* Left Section */}
-          <div className="w-full lg:w-[55%] job-apply-section">
+          <div className="w-full lg:w-[55%] job-apply-section relative">
             {/* Company and Person Details */}
             <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 font-outfit">
+              <img 
+                src="Logo.png" 
+                alt="Company Logo" 
+                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-4 right-4" 
+              />
               <h1 className="text-[1.3rem] md:text-2xl font-semibold">
                 Company Name
               </h1>
