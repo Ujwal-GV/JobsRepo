@@ -65,14 +65,8 @@ function MainPage() {
               {jobData.map((item) => (
                 <SwiperSlide key={item.id}>
                   <JobCard
-                    id={item.id}
-                    company={item.company}
-                    img={item.img}
-                    isNew={item.isNew}
-                    location={item.location}
-                    postedBy={item.postedBy}
-                    title={item.title}
                     key={item.id}
+                    data={item}
                   />
                 </SwiperSlide>
               ))}
