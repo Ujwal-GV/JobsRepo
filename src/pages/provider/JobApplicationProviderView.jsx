@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MainContext from "../../components/MainContext";
-import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa"; // Importing icons for buttons
+import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import { jobData } from "../../../assets/dummyDatas/Data";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 
