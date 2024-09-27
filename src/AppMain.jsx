@@ -9,6 +9,7 @@ import JobApplicationProviderView from './pages/provider/JobApplicationProviderV
 import MainWrapper from './components/MainWrapper'
 import MainPage from './pages/mainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
+import ProjectApplication from './pages/seeker/ProjectApplication'
 
 const AppMain = () => {
   return (
@@ -21,6 +22,7 @@ const AppMain = () => {
         <Route path="/" element={<MainWrapper/>}>
              <Route index Component={ MainPage } />
              <Route path = "/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
+             <Route path = "/project-apply" element={ <ProjectApplication/> } />
              <Route path = "/post-job" element={ <JobApplicationProviderView/> } />
              <Route path = "/company" element={ <CompanyPage/> } />
         </Route>
