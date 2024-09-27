@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MainContext from "../../components/MainContext";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import { jobData } from "../../../assets/dummyDatas/Data";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 
@@ -11,6 +11,7 @@ const VerticalBar = () => {
 const JobApplicationProviderView = () => {
   const [saved, setSaved] = useState(false);
   const [jobs, setJobs] = useState(jobData);
+  
   const handleSaveClick = () => {
     setSaved((prev) => !prev);
   };
@@ -134,14 +135,21 @@ const JobApplicationProviderView = () => {
                     <p className="text-sm mt-2">Applicants: {job.applicants}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button className="px-3 py-2 bg-black text-white rounded-lg text-sm">
-                      View Applicants
+                    {/* View Applicants Button */}
+                    <button className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center">
+                      <FaEye className="mr-1 hidden sm:inline" />
+                      <span className="hidden sm:inline">View Applicants</span>
+                      <span className="inline sm:hidden"><FaEye /></span>
                     </button>
+                    
+                    {/* Delete Application Button */}
                     <button 
-                      className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm"
+                      className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center"
                       onClick={() => handleDeleteClick(job.id)}
                     >
-                      Delete Application
+                      <FaTrash className="mr-1 hidden sm:inline" />
+                      <span className="hidden sm:inline">Delete Application</span>
+                      <span className="inline sm:hidden"><FaTrash /></span>
                     </button>
                   </div>
                 </div>
