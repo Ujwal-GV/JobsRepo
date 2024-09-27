@@ -5,6 +5,7 @@ import SignUp from './pages/SignUp'
 import ForgotPassword from './pages/forgotPassword'
 import SetNewPassword from './pages/setNewPassword'
 import JobApplicatioWithSimilarApplication from './pages/seeker/JobApplicatioWithSimilarApplication'
+import JobApplicationProviderView from './pages/provider/JobApplicationProviderView'
 import MainWrapper from './components/MainWrapper'
 import MainPage from './pages/mainPage'
 
@@ -19,6 +20,7 @@ const AppMain = () => {
         <Route path="/" element={<MainWrapper/>}>
              <Route index Component={ MainPage } />
              <Route path = "/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
+             <Route path = "/post-job" element={ <JobApplicationProviderView/> } />
         </Route>
       </Routes> 
     </BrowserRouter>
