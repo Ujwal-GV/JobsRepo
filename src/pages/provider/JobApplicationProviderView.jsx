@@ -10,9 +10,14 @@ const VerticalBar = () => {
 
 const JobApplicationProviderView = () => {
   const [saved, setSaved] = useState(false);
-
+  const [jobs, setJobs] = useState(jobData);
   const handleSaveClick = () => {
     setSaved((prev) => !prev);
+  };
+
+  const handleDeleteClick = (id) => {
+    const updatedJobs = jobs.filter((job) => job.id !== id);
+    setJobs(updatedJobs);
   };
 
   return (
@@ -114,23 +119,35 @@ const JobApplicationProviderView = () => {
           <h1 className="text-xl md:text-2xl font-semibold mb-4">
             Jobs Posted by You
           </h1>
-          {/* Grid Layout for Jobs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {jobData.map((job) => (
-              <div
-                key={job.id}
-                className="bg-white shadow-md rounded-lg p-4 flex justify-between items-center"
-              >
-                <div>
-                  <h3 className="font-semibold text-lg">{job.title}</h3>
-                  <p className="text-sm mt-2">Applicants: {job.applicants}</p>
+          {/* Check if jobs exist else render the No jobs content */}
+          {jobs.length === 0 ? (
+            <p className="text-center text-gray-500">No jobs have been posted by you.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {jobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="bg-white shadow-md rounded-lg p-4 flex justify-between items-center"
+                >
+                  <div>
+                    <h3 className="font-semibold text-lg">{job.title}</h3>
+                    <p className="text-sm mt-2">Applicants: {job.applicants}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="px-3 py-2 bg-black text-white rounded-lg text-sm">
+                      View Applicants
+                    </button>
+                    <button 
+                      className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm"
+                      onClick={() => handleDeleteClick(job.id)}
+                    >
+                      Delete Application
+                    </button>
+                  </div>
                 </div>
-                <button className="px-3 py-2 bg-black text-white rounded-lg text-sm">
-                  View Applicants
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </MainContext>
