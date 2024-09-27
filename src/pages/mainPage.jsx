@@ -5,10 +5,32 @@ import MainContext from "../components/MainContext";
 import SeachInput from "../components/SeachInput";
 import { FaArrowRight } from "react-icons/fa";
 import AdvancedSwiper from "../components/AdvanceSwiper";
-import { companyData, jobData } from "../../assets/dummyDatas/Data";
+import { companyData, jobData, projectData } from "../../assets/dummyDatas/Data";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../components/JobCard";
 import CompanyCard from "../components/CompanyCard";
+import ProjectCard from "../components/ProjectCard";
+
+const SwiperWrapper = ({title="" ,onViewClick=()=>{},children})=>{
+  return <div className="my-5 w-full p-3">
+  <div className="job-slider md:border w-full rounded-2xl h-full  shadow-black p-1 md:p-5">
+    <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
+      <span className="flex center">
+        {title} <FaArrowRight />
+      </span>
+      <span className="text-orange-600 text-sm cursor-pointer hover:underline" onClick={onViewClick}>
+        View All
+      </span>
+    </h1>
+    <div className="mt-5  md:py-3">
+      {
+        children
+      }
+    </div>
+  </div>
+</div>
+
+}
 
 function MainPage() {
 
@@ -37,17 +59,9 @@ function MainPage() {
 
         {/* Jobs Slider */}
 
-        <div className="bg-white h-fit w-full px-2 md:px-10 py-5">
-          <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
-            <span className="flex center">
-              Recomended jobs for you <FaArrowRight />
-            </span>
-            <span className="text-orange-600 text-sm cursor-pointer hover:underline">
-              View All
-            </span>
-          </h1>
-          <div className="mt-5  md:py-3">
-            <AdvancedSwiper key={"jobs"}>
+
+        <SwiperWrapper key={"jobs"} title="Recomended jobs for you" onViewClick={()=>alert("jobs List")}>
+        <AdvancedSwiper key={"jobs"}>
               {jobData.map((item) => (
                 <SwiperSlide key={item.id}>
                   <JobCard
@@ -63,33 +77,38 @@ function MainPage() {
                 </SwiperSlide>
               ))}
             </AdvancedSwiper>
-          </div>
-        </div>
+        </SwiperWrapper>
 
         {/* Company Slider */}
 
-        <div className="my-5 w-full p-3">
-          <div className="job-slider md:border w-full rounded-2xl h-full  shadow-black p-1 md:p-5">
-            <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
-              <span className="flex center">
-                Explore jobs in Companies <FaArrowRight />
-              </span>
-              <span className="text-orange-600 text-sm cursor-pointer hover:underline">
-                View All
-              </span>
-            </h1>
-            <div className="mt-5  md:py-3">
-              <AdvancedSwiper>
+        <SwiperWrapper key={"company"} title="Explore jobs in top companies" onViewClick={()=>alert("comapny  List")}>
+        <AdvancedSwiper>
                 {companyData.map((data) => (
                   <SwiperSlide key={data.id}>
                     <CompanyCard data={data} />
                   </SwiperSlide>
                 ))}
               </AdvancedSwiper>
-            </div>
-          </div>
-        </div>
+        </SwiperWrapper>
+
+
+        <SwiperWrapper key={"projects"} title="Suggested projects" onViewClick={()=>alert("Project  List")}>
+        <AdvancedSwiper>
+                {projectData.map((data) => (
+                  <SwiperSlide key={data.id}>
+                     <ProjectCard key={data.id} data={data}/>
+                  </SwiperSlide>
+                ))}
+              </AdvancedSwiper>
+        </SwiperWrapper>
+
       </MainContext>
+
+
+      
+
+
+
     </div>
   );
 }
