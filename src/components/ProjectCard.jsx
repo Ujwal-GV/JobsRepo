@@ -7,9 +7,9 @@ const ProjectCard = ({data}) => {
         <div className='w-10 h-10 rounded-md overflow-hidden border-gray'>
             <img src={companyUrl} alt=""  className='w-full h-full'/>
         </div>
-        <h1 className='text-xl font-medium text-nowrap overflow-hidden text-ellipsis max-w-[90%]'>{name}</h1>
+        <h1 className='text-[1rem] mt-2  font-medium text-nowrap overflow-hidden text-ellipsis max-w-[90%]'>{name}</h1>
         <h6>Price : {cost}</h6>
-        <button className='btn-orange px-3 py-1 mt-9' onClick={()=>alert(name)}>View</button>
+        <button className='btn-orange px-3 py-1 mt-6' onClick={()=>alert(name)}>View</button>
       </div>
     );
   };
