@@ -3,7 +3,9 @@ import img from "../../assets/images/p4.png";
 import NewBadge from "./badges/NewBadge";
 import { IoLocationOutline } from "react-icons/io5";
 
-const JobCard = ({id , title ,company,location,postedBy,img,isNew}) => {
+const JobCard = ({data}) => {
+
+  const {id , title ,company,location,postedBy,img,isNew} = data;
   return (
     <div key={id} className="job-card relative w-[210px] h-[200px] bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
       {
