@@ -149,68 +149,79 @@ export const companyData = [
   ];
 
 
-  export const  projectData = [
+  export  const projectData = [
     {
       id: 1,
       name: "Website Redesign",
       cost: "50K",
       companyUrl: "https://logo.clearbit.com/google.com",
+      companyName: "Google",
     },
     {
       id: 2,
       name: "E-Commerce Platform",
       cost: "75K",
       companyUrl: "https://logo.clearbit.com/amazon.com",
+      companyName: "Amazon",
     },
     {
       id: 3,
       name: "Mobile App Development",
       cost: "120K",
       companyUrl: "https://logo.clearbit.com/microsoft.com",
+      companyName: "Microsoft",
     },
     {
       id: 4,
       name: "Marketing Campaign",
       cost: "30K",
       companyUrl: "https://logo.clearbit.com/spotify.com",
+      companyName: "Spotify",
     },
     {
       id: 5,
       name: "CRM Implementation",
       cost: "85K",
       companyUrl: "https://logo.clearbit.com/salesforce.com",
+      companyName: "Salesforce",
     },
     {
       id: 6,
       name: "AI Chatbot",
       cost: "45K",
       companyUrl: "https://logo.clearbit.com/openai.com",
+      companyName: "OpenAI",
     },
     {
       id: 7,
       name: "SEO Optimization",
       cost: "15K",
       companyUrl: "https://logo.clearbit.com/moz.com",
+      companyName: "Moz",
     },
     {
       id: 8,
       name: "Cloud Migration",
       cost: "150K",
       companyUrl: "https://logo.clearbit.com/aws.amazon.com",
+      companyName: "AWS",
     },
     {
       id: 9,
       name: "Data Analytics Dashboard",
       cost: "95K",
       companyUrl: "https://logo.clearbit.com/datadog.com",
+      companyName: "Datadog",
     },
     {
       id: 10,
       name: "Custom ERP System",
       cost: "200K",
       companyUrl: "https://logo.clearbit.com/oracle.com",
+      companyName: "Oracle",
     },
   ];
+  
   
   
 

@@ -96,16 +96,7 @@ const CompanyPage = () => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit
               praesentium eveniet ratione saepe aliquid illo exercitationem,
               porro commodi ipsum asperiores omnis quisquam accusamus distinctio
-              ipsa, facere, nisi laudantium. Lorem ipsum dolor sit amet
-              consectetur adipisicing elit. Voluptates temporibus, optio quasi
-              eum molestias harum consequuntur accusamus ab. Magni dignissimos
-              delectus aspernatur sit nostrum quidem officia officiis nesciunt
-              eius eveniet. Lorem ipsum dolor sit amet consectetur adipisicing
-              elit. Fugit, nulla fugiat? Vero, iusto iste. Et commodi esse fuga
-              aspernatur optio provident sapiente sunt ducimus iste, cum
-              distinctio ut accusamus error, officiis voluptates veniam cumque
-              hic ex voluptatem animi repellendus laborum vel, ad enim. Eum
-              debitis ullam sit similique dignissimos animi.
+              ipsa, lorem50
             </p>
 
             {/* Company Details */}
