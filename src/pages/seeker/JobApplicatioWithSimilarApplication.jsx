@@ -18,8 +18,8 @@ const JobApplicatioWithSimilarApplication = () => {
 
   return (
     <MainContext>
-      <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex justify-between md:gap-3 lg:gap-10 flex-col md:flex-row">
-        <div className="w-full md:w-[60%] job-apply-section">
+      <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex justify-between md:gap-3 lg:gap-10 flex-col lg:flex-row">
+        <div className="w-full  lg:w-[55%] job-apply-section">
           <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit">
             <h1 className="text-[1.3rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
               React JS Developer{" "}
@@ -94,7 +94,7 @@ const JobApplicatioWithSimilarApplication = () => {
             </p>
           </div>
         </div>
-        <div className="w-full md:w-[30%] mt-5 md:mt-0 flex-1 flex flex-col gap-2  h-fit job-apply-suggestion-section bg-white rounded-lg p-2 md:p-5">
+        <div className="w-full  lg:w-[45%] mt-5 md:mt-0 flex-1 flex flex-col gap-2  h-fit job-apply-suggestion-section bg-white rounded-lg p-2 md:p-5">
           <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
             Similar jobs you might like :
           </h1>
