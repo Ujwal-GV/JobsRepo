@@ -10,25 +10,27 @@ import MainWrapper from './components/MainWrapper'
 import MainPage from './pages/mainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
+import UserProfile from './pages/seeker/UserProfile'
 
 const AppMain = () => {
   return (
     <BrowserRouter>
        <Routes>
         <Route path = "/login" element={<Login/>} />
-        <Route path = "/signup" Component={ SignUp } />
-        <Route path = "/forgotpassword" Component={ ForgotPassword } />
-        <Route path = "/reset-password" Component={ SetNewPassword } />
-        <Route path="/" element={<MainWrapper/>}>
-             <Route index Component={ MainPage } />
-             <Route path = "/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
-             <Route path = "/project-apply" element={ <ProjectApplication/> } />
-             <Route path = "/post-job" element={ <JobApplicationProviderView/> } />
-             <Route path = "/company" element={ <CompanyPage/> } />
+        <Route path = "/signup" element={ <SignUp/> } />
+        <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
+        <Route path = "/reset-password" element={ <SetNewPassword/> } />
+        <Route path="/user" element={<MainWrapper/>}>
+             <Route index element={ <MainPage/> } />
+             <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
+             <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
+             <Route path = "/user/post-job" element={ <JobApplicationProviderView/> } />
+             <Route path = "/user/company" element={ <CompanyPage/> } />
+             <Route path='/user/profile' element={<UserProfile/>}/>
         </Route>
       </Routes> 
     </BrowserRouter>
-  )
+  ) 
 }
 
 export default AppMain
