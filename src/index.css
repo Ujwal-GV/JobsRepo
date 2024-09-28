@@ -164,3 +164,25 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
+
+.ant-upload-select{
+  width: 200px !important;
+  height: 200px !important;
+}
+.active-tag > .close
+{
+  transition: 0.5s background;
+}
+.active-tag:hover > .close{
+  background: gray !important;
+  color: white;
+}
+
+.profile-modal{
+  transform: translateX(102%);
+  transition: 0.7s transform;
+}
+
+.profile-modal-show{
+  transform: translateX(0%);
+}

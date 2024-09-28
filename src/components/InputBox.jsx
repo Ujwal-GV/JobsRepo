@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { CiUser } from "react-icons/ci";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
-const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange,onBlur}) => {
+const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange,onBlur,disable=false}) => {
   const [focused, setFocus] = useState(false);
 
   const [passwordVisible, setPasswordVisible] = useState(true);
@@ -26,6 +25,7 @@ const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",cust
         name={name}
         defaultValue={value}
         onChange={onChange}
+        disabled={disable}
         type={type.toLowerCase() === "password" ? (passwordVisible ? "password" : "text") : type}
         className={
           "flex-1 ml-2 flex text-gray-600  placeholder:text-black bg-transition " +

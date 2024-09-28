@@ -222,6 +222,35 @@ export const companyData = [
     },
   ];
   
+
+  export const skillsData = [
+    { label: "MongoDB", value: "MongoDB" },
+    { label: "Python", value: "Python" },
+    { label: "Java", value: "Java" },
+    { label: "Git", value: "Git" },
+    { label: "JavaScript", value: "JavaScript" },
+    { label: "React", value: "React" },
+    { label: "Node.js", value: "Node.js" },
+    { label: "Express.js", value: "Express.js" },
+    { label: "HTML", value: "HTML" },
+    { label: "CSS", value: "CSS" },
+    { label: "Tailwind CSS", value: "Tailwind CSS" },
+    { label: "TypeScript", value: "TypeScript" },
+    { label: "Docker", value: "Docker" },
+    { label: "Kubernetes", value: "Kubernetes" },
+    { label: "PostgreSQL", value: "PostgreSQL" },
+    { label: "MySQL", value: "MySQL" },
+    { label: "AWS", value: "AWS" },
+    { label: "Azure", value: "Azure" },
+    { label: "GraphQL", value: "GraphQL" },
+    { label: "Redis", value: "Redis" },
+    { label: "Linux", value: "Linux" },
+    { label: "Jenkins", value: "Jenkins" },
+    { label: "Firebase", value: "Firebase" },
+    { label: "SASS", value: "SASS" }
+  ];
+  
+  
   
   
 
