@@ -186,3 +186,28 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
 .profile-modal-show{
   transform: translateX(0%);
 }
+
+
+.ant-picker-outlined{
+  width: 100% !important;
+  box-shadow: none !important;
+  @apply bg-gray-200 !border-gray-200
+}
+
+.ant-picker-outlined :focus{
+  background: white !important;
+}
+.ant-picker-input{
+  padding-left: 10px;
+}
+.ant-picker-input input::placeholder{
+  color:  black !important;
+  font-size: 1rem;
+  @apply font-outfit 
+}
+.ant-picker-suffix{
+  color: orange !important;
+}
+.ant-picker-active-bar{
+  background: orange !important;
+}

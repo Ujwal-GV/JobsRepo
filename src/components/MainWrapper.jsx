@@ -4,7 +4,7 @@ import Navbar from './Navbar'
 
 const MainWrapper = () => {
   return (
-    <div className='w-full max-w-[1800px] mx-auto'>
+    <div className='w-full relative max-w-[1800px] mx-auto'>
       <Navbar/>
       <Outlet/>
     </div>
