@@ -12,6 +12,7 @@ import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 
+
 const AppMain = () => {
   return (
     <BrowserRouter>

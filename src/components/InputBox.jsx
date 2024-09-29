@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
-const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange,onBlur,disable=false}) => {
+const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange=()=>{},onBlur=()=>{},disable=false,}) => {
   const [focused, setFocus] = useState(false);
 
   const [passwordVisible, setPasswordVisible] = useState(true);
@@ -23,7 +23,7 @@ const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",cust
       <input
         placeholder={placeholder}
         name={name}
-        defaultValue={value}
+        value={value ? value:""}
         onChange={onChange}
         disabled={disable}
         type={type.toLowerCase() === "password" ? (passwordVisible ? "password" : "text") : type}
