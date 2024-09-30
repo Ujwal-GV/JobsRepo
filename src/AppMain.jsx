@@ -11,6 +11,8 @@ import MainPage from './pages/mainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
+import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
+import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
 
 
 const AppMain = () => {
@@ -28,6 +30,8 @@ const AppMain = () => {
              <Route path = "/user/post-job" element={ <JobApplicationProviderView/> } />
              <Route path = "/user/company" element={ <CompanyPage/> } />
              <Route path='/user/profile' element={<UserProfile/>}/>
+             <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
+             <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
         </Route>
       </Routes> 
     </BrowserRouter>
