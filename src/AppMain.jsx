@@ -11,6 +11,7 @@ import MainPage from './pages/mainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
+import ProviderProfile from './pages/provider/ProviderProfile'
 
 
 const AppMain = () => {
@@ -25,9 +26,13 @@ const AppMain = () => {
              <Route index element={ <MainPage/> } />
              <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
              <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
-             <Route path = "/user/post-job" element={ <JobApplicationProviderView/> } />
              <Route path = "/user/company" element={ <CompanyPage/> } />
              <Route path='/user/profile' element={<UserProfile/>}/>
+        </Route>
+        <Route path="/provider" element={<MainWrapper/>}>
+             <Route index element={ <MainPage/> } />
+             <Route path = "/provider/post-job" element={ <JobApplicationProviderView/> } />
+             <Route path = "/provider/profile" element={ <ProviderProfile/> } />
         </Route>
       </Routes> 
     </BrowserRouter>
