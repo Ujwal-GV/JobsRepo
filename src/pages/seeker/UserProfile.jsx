@@ -14,13 +14,13 @@ import { FaPhoneAlt, FaSave } from "react-icons/fa";
 import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
-import { CiEdit } from "react-icons/ci";
+import { CiEdit, CiHome, CiUser } from "react-icons/ci";
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import { AiFillProject } from "react-icons/ai";
 import { Input } from "antd";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { AnimatePresence, motion } from "framer-motion";
-
+import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
 
 const { TextArea } = Input;
 
@@ -93,20 +93,49 @@ const UserProfile = () => {
     setProfileSummary(val);
   };
 
+  //  Removes Scroll Behaviour of the body
+  const freezeBody = () => {
+    document.body.classList.add("no-scroll");
+  };
+
+  const freeBody = () => {
+    document.body.classList.remove("no-scroll");
+  };
+
   return (
     <MainContext>
       <div className="w-full h-screen bg-slate-50 ">
         <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
-          {/* Avatar and PersonalDetails */}
+          {/* BreadCrumbs */}
 
-          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 sticky top-0 pt-2   h-fit mx-auto">
+          <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
+            <CustomBreadCrumbs
+              items={[
+                {
+                  path: "/user",
+                  icon:<CiHome />,
+                  title : "Home"
+                },
+                { title: "Profile" ,icon: <CiUser/> },
+              ]}
+            />
+          </div>
+
+          {/* Avatar and PersonalDetails */}
+          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2  h-fit mx-auto">
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
               <ProfileAvatar />
             </div>
+            
+             {/* Profile Application Deatils */}
+            
             <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
               <MdEdit
                 className="absolute top-2 right-2  cursor-pointer"
-                onClick={() => setPersonalDetailsModalOpen(true)}
+                onClick={() => {
+                  setPersonalDetailsModalOpen(true);
+                  freezeBody();
+                }}
               />
               <h1>{personalDetails.fullName}</h1>
               <h1 className="flex justify-start items-center gap-1">
@@ -160,7 +189,10 @@ const UserProfile = () => {
                 <ProfileInfoField
                   title="Profile Summary"
                   icon={profileSummary.trim() === "" ? "Add" : "Edit"}
-                  editOnClick={() => setSummaryModalOpen(true)}
+                  editOnClick={() => {
+                    setSummaryModalOpen(true);
+                    freezeBody();
+                  }}
                 >
                   <div className="flex flex-wrap gap-1 w-full pb-2 ">
                     {!profileSummary ? (
@@ -181,7 +213,10 @@ const UserProfile = () => {
               <ProfileInputWrapper>
                 <ProfileInfoField
                   title="Skills"
-                  editOnClick={() => setSkillModalOpen(true)}
+                  editOnClick={() => {
+                    setSkillModalOpen(true);
+                    freezeBody();
+                  }}
                 >
                   <div className="flex flex-wrap gap-1 w-full md:min-h-[100px]">
                     {profileSkills.length === 0 ? (
@@ -209,7 +244,10 @@ const UserProfile = () => {
                       ? "Edit"
                       : "Add"
                   }
-                  editOnClick={() => setEducationModalOpen(true)}
+                  editOnClick={() => {
+                    setEducationModalOpen(true);
+                    freezeBody();
+                  }}
                 >
                   <div className="w-full md:min-h-[100px] flex center">
                     {Object.values(profileEducationDetails).some(
@@ -233,7 +271,7 @@ const UserProfile = () => {
                 <ProfileInfoField
                   title="Internship"
                   editOnClick={() => {
-                    setInternShipModalOpen(true), setIntershipDetails({});
+                    setInternShipModalOpen(true), setIntershipDetails({});freezeBody()
                   }}
                 >
                   <div className="w-full md:min-h-[100px] flex center flex-col">
@@ -274,49 +312,81 @@ const UserProfile = () => {
             </div>
           </div>
 
-          <ProfileSkillModal
-            open={skillModalOpen}
-            onClose={() => setSkillModalOpen(false)}
-            defaulsSkills={profileSkills}
-            onChange={handleSkillsChange}
-          />
+          {/* All Modals  */}
 
-          <ProfileEducationModal
-            open={educationModalOpen}
-            onClose={() => setEducationModalOpen(false)}
-            onChange={handleEducatioDetails}
-            value={profileEducationDetails}
-          />
-
-          <ProfilePersonalDetailsModal
-            open={personalDetailsModalOpen}
-            onClose={() => setPersonalDetailsModalOpen(false)}
-            value={personalDetails}
-            onChange={handlePersonalDetails}
-          />
-
-          <ProfileIntershipModal
-            open={intershipModalOpen}
-            onClose={() => setInternShipModalOpen(false)}
-            value={intershipDetails}
-            addInterShipData={addIntershipDataToList}
-          />
+         
         </div>
       </div>
       <AnimatePresence>
-              
-          {summaryModalOpen && (
-            <AnimateEnterExit transition={{duration:0.2}}>
-              <ProfileSummaryModal
-              open={summaryModalOpen}
-              onClose={() => setSummaryModalOpen(false)}
-              value={profileSummary}
-              onSummaryChange={handleSummaryChange}
-            />
-            </AnimateEnterExit>
-          )}
-             
+            {skillModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfileSkillModal
+                  open={skillModalOpen}
+                  onClose={() => {
+                    setSkillModalOpen(false);
+                    freeBody();
+                  }}
+                  defaulsSkills={profileSkills}
+                  onChange={handleSkillsChange}
+                />
+              </AnimateEnterExit>
+            )}
 
+            {educationModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfileEducationModal
+                  open={educationModalOpen}
+                  onClose={() => {
+                    setEducationModalOpen(false);
+                    freeBody();
+                  }}
+                  onChange={handleEducatioDetails}
+                  value={profileEducationDetails}
+                />
+              </AnimateEnterExit>
+            )}
+
+            {personalDetailsModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfilePersonalDetailsModal
+                  open={personalDetailsModalOpen}
+                  onClose={() => {
+                    setPersonalDetailsModalOpen(false);
+                    freeBody();
+                  }}
+                  value={personalDetails}
+                  onChange={handlePersonalDetails}
+                />
+              </AnimateEnterExit>
+            )}
+
+            {summaryModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfileSummaryModal
+                  open={summaryModalOpen}
+                  onClose={() => {
+                    setSummaryModalOpen(false);
+                    freeBody();
+                  }}
+                  value={profileSummary}
+                  onSummaryChange={handleSummaryChange}
+                />
+              </AnimateEnterExit>
+            )}
+
+            {intershipModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfileIntershipModal
+                  open={intershipModalOpen}
+                  onClose={() => {
+                    setInternShipModalOpen(false);
+                    freeBody();
+                  }}
+                  value={intershipDetails}
+                  addInterShipData={addIntershipDataToList}
+                />
+              </AnimateEnterExit>
+            )}
           </AnimatePresence>
     </MainContext>
   );
@@ -600,6 +670,8 @@ const ProfileSkillModal = ({
         (open ? "profile-modal-show " : " ")
       }
     >
+      
+      <div className="w-[90%] relative lg:w-[50%] h-fit border border-white p-3 md:p-10 rounded-lg">
       <FaArrowLeft
         className="absolute top-2 left-2 md:top-5 md:left-5 cursor-pointer"
         onClick={() => {
@@ -607,9 +679,8 @@ const ProfileSkillModal = ({
           setSelectSkills(defaulsSkills);
         }}
       />
-      <div className="w-[90%] lg:w-[50%] h-fit border border-white p-3 md:p-10 rounded-lg">
         <Spin className="w-full h-full" size="large" spinning={loading}>
-          <h1 className="mt-1">Select skills</h1>
+          <h1 className="mt-5">Select skills</h1>
 
           <div className="flex flex-wrap gap-1 w-full min-h-40">
             {selectSkills.map((data) => (
@@ -684,7 +755,7 @@ const ProfileEducationModal = ({
   return (
     <div
       className={
-        "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200  profile-modal p-7 md:p-10 " +
+        "absolute top-[0] left-0 w-full flex center h-full bg-slate-200  profile-modal p-7 md:p-10 " +
         (open ? "profile-modal-show " : " ")
       }
     >
@@ -778,7 +849,7 @@ const ProfilePersonalDetailsModal = ({
   return (
     <div
       className={
-        "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+        "absolute top-[0] left-0 w-full flex center h-full bg-slate-200 profile-modal p-7 md:p-10 " +
         (open ? "profile-modal-show " : " ")
       }
     >
@@ -901,7 +972,7 @@ const ProfileIntershipModal = ({
   return (
     <div
       className={
-        "absolute top-0 left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+        "absolute top-0 left-0 w-full flex center h-full bg-slate-200 profile-modal p-7 md:p-10 " +
         (open ? "profile-modal-show " : " ")
       }
     >
@@ -1022,7 +1093,7 @@ const ProfileSummaryModal = ({
   return (
     <div
       className={
-        "absolute top-0 left-0 w-full flex center h-screen bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
+        "absolute top-0 left-0 w-full flex center h-full bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
         (open ? "profile-modal-show " : " ")
       }
     >
@@ -1167,11 +1238,11 @@ export const AnimateEnterExit = ({
   initial = { opacity: 0, scale: 0.8 },
   animate = { opacity: 1, scale: 1 },
   exit = { opacity: 0, scale: 0.8 },
-  transition={duration:0.6}
+  transition = { duration: 0.6 },
 }) => {
   return (
     <motion.div
-      className="w-full h-full absolute top-0 left-0"
+      className="w-full h-full absolute top-0 left-0 font-outfit"
       initial={initial}
       animate={animate}
       exit={exit}

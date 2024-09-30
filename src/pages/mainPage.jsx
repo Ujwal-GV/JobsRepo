@@ -15,10 +15,10 @@ const SwiperWrapper = ({title="" ,onViewClick=()=>{},children})=>{
   return <div className="my-5 w-full p-3">
   <div className="job-slider md:border w-full rounded-2xl h-full  shadow-black p-1 md:p-5">
     <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
-      <span className="flex center">
-        {title} <FaArrowRight />
+      <span className="flex center text-[1rem] md:text-[1.2rem] ms-1 font-outfit">
+        {title} <FaArrowRight className="ms-2"/>
       </span>
-      <span className="text-orange-600 text-sm cursor-pointer hover:underline" onClick={onViewClick}>
+      <span className="text-orange-600 text-sm cursor-pointer hover:underline font-outfit me-1" onClick={onViewClick}>
         View All
       </span>
     </h1>

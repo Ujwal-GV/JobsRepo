@@ -211,3 +211,75 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
 .ant-picker-active-bar{
   background: orange !important;
 }
+
+.no-scroll{
+  overflow: hidden;
+}
+
+
+.card-status{
+  height: 0;
+  overflow: hidden;
+  transition: 0.8s all;
+}
+
+.card-status-active{
+  height: 20px;
+}
+
+
+/* Custom scrolling Css */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+
+@media (max-width: 800px) {
+  .custom-scroll::-webkit-scrollbar {
+    width: 0px !important; /* Hide scrollbar */
+  }
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #848c9032 ;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #c9c8c8;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9c9c9c !important;
+  cursor: pointer;
+}
+
+
+/* Stepper */
+.ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon-dot {
+  background-color: green !important; /* Green dot for finished steps */
+}
+
+/* Change the title color for finished steps */
+.ant-steps-item-finish .ant-steps-item-title {
+  color: green !important; /* Green title text for finished steps */
+}
+
+
+
+/* Change the trail (line) color for finished steps */
+.ant-steps-item-finish + .ant-steps-item .ant-steps-item-tail::after {
+  background-color: green !important; 
+}
+
+/* Optional: If the steps are horizontal and you want to change the connecting line */
+.ant-steps-item-finish .ant-steps-item-tail::after {
+  background-color: green !important; 
+}
+
+

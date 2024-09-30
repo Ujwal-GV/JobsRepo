@@ -7,7 +7,7 @@ const JobCard = ({data}) => {
 
   const {id , title ,company,location,postedBy,img,isNew} = data;
   return (
-    <div key={id} className="job-card relative w-[210px] h-[200px] bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
+    <div key={id} className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
       {
         isNew && <div className="absolute top-2 right-2">
         <NewBadge />
@@ -16,7 +16,7 @@ const JobCard = ({data}) => {
       <img
         src={img}
         alt=""
-        className=" w-[40%] h-[40%] rounded-lg border-gray job-card-img"
+        className=" w-[30%] md:w-[38%] h-[30%] md:h-[38%] rounded-lg border-gray job-card-img"
       />
       <h3 className="w-full text-[0.9rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3 ">
         {title}

@@ -16,11 +16,11 @@ const AdvancedSwiper = ({children}) => {
     
       <Swiper
         slidesPerView={3}
-        spaceBetween={10}
+        spaceBetween={8}
         freeMode={true}
         breakpoints={{
           0: {
-            slidesPerView: 1.5,
+            slidesPerView: 1.6,
           },
           520: {
             slidesPerView: 2,
