@@ -8,7 +8,7 @@ import { CiHome } from "react-icons/ci";
 import AppliedCard from "../../../components/AppliedCard";
 
 const JobAppliedList = () => {
-  const count = 0;
+  const [count,setCount] = useState(10);
 
   return (
     <MainContext>
@@ -52,7 +52,7 @@ const JobAppliedList = () => {
                   No Application Found
                 </span>
               ) : (
-                jobData.map((data, i) => <AppliedCard data={data} key={i} />)
+                jobData.map((data, i) => <AppliedCard data={{...data}} key={i} />)
                 
               )}
               
@@ -61,7 +61,7 @@ const JobAppliedList = () => {
             {/* Suggested Jobs */}
             <div className="flex flex-col w-full lg:w-[40%]  rounded-xl px-1 py-2 bg-white">
               <h5 className="mt-2 text-lg font-semibold">Suggested Jobs:</h5>
-              <div className="w-full flex flex-col gap-2 p-1 overflow-y-auto custom-scroll" style={{ maxHeight: "600px" }}>
+              <div className="w-[95%] flex flex-col gap-2 lg:w-[90%] mx-auto  overflow-y-auto custom-scroll" style={{ maxHeight: "600px" }}>
                 {jobData.map((d) => (
                   <JobSuggestionCard data={d} key={d.id} />
                 ))}

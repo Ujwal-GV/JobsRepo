@@ -201,7 +201,7 @@ const UserProfile = () => {
                       </div>
                     ) : (
                       <>
-                        <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
+                        <div className="w-full h-full text-wrap bg-white p-2 rounded-lg  break-words">
                           {profileSummary}
                         </div>
                       </>
@@ -265,6 +265,7 @@ const UserProfile = () => {
                   </div>
                 </ProfileInfoField>
               </ProfileInputWrapper>
+              
             </div>
             <div className="part-2 flex-1">
               <ProfileInputWrapper>
