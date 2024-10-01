@@ -8,7 +8,7 @@ import SavedCard from "../../../components/SavedCard";
 import { FaRegFaceFrownOpen } from "react-icons/fa6";
 
 const AppSavedListPage = () => {
-  const count = 0;
+  const count = 10;
 
   return (
     <MainContext>

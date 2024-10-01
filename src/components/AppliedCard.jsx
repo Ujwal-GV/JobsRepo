@@ -44,7 +44,7 @@ const AppliedCard = ({ data }) => {
       onClick={() => {setCollapse(true);alert("Job card Navigate")}}
     >
       <div className="w-full flex items-center justify-between px-2">
-        <img src={img} alt="" className="w-10 h-10 md:h-12 md:w-12 " />
+        <img src={img}  loading="lazy" alt="" className="w-10 h-10 md:h-12 md:w-12 border-gray rounded-lg p-1" />
         {
             applicationStatus.length > 0 && 
             <FaAngleDown
