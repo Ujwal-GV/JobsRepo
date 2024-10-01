@@ -13,6 +13,7 @@ import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
 import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
+import SearchFilterPage from './pages/seeker/SearchFilterPage'
 
 
 const AppMain = () => {
@@ -32,6 +33,7 @@ const AppMain = () => {
              <Route path='/user/profile' element={<UserProfile/>}/>
              <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
              <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
+             <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
         </Route>
       </Routes> 
     </BrowserRouter>
