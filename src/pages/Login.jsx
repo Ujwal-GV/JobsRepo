@@ -7,8 +7,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import InputBox from "../components/InputBox";
 import { MdEmail } from "react-icons/md";
+import RoleChecker from "../components/RoleChecker";
 
 function Login() {
+
+  const roleData = ["Job Seeker" ,"Job Provider"]
+
   const [role, setRole] = useState("jobSeeker"); 
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
@@ -55,29 +59,8 @@ function Login() {
             <div className="mb-4 w-full">
               <hr className="m-4"/>
               <div className="flex items-center justify-center mb-2">
-                <input
-                  id="jobSeeker"
-                  type="radio"
-                  value="jobSeeker"
-                  checked={role === "jobSeeker"}
-                  onChange={() => setRole("jobSeeker")}
-                  className="mr-2 cursor-pointer"
-                />
-                <label htmlFor="jobSeeker" className="text-sm mr-4">
-                  Job Seeker
-                </label>
-
-                <input
-                  id="jobProvider"
-                  type="radio"
-                  value="jobProvider"
-                  checked={role === "jobProvider"}
-                  onChange={() => setRole("jobProvider")}
-                  className="mr-2 cursor-pointer"
-                />
-                <label htmlFor="jobProvider" className="text-sm">
-                  Job Provider
-                </label>
+                 {/* Set Selected Role */}
+                 <RoleChecker data={roleData} onChange={(d)=>alert(JSON.stringify(d))} indicatorClassName='!bg-black rounded-full'/>
               </div>
             </div>
 

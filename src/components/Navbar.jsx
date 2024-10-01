@@ -2,7 +2,7 @@ import React from 'react'
 import { PiSealCheckFill } from "react-icons/pi";
 const Navbar = () => {
   return (
-    <div className='w-full p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white'>
+    <div className='w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white'>
          <div className='center gap-1 '>
             <PiSealCheckFill className='text-2xl text-orange-500'/>
             <span className='font-bold text-2xl md:text-3xl'>JOB SHINE</span>

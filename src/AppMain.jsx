@@ -13,6 +13,10 @@ import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 import ProviderProfile from './pages/provider/ProviderProfile'
 
+import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
+import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
+
+
 
 const AppMain = () => {
   return (
@@ -28,6 +32,8 @@ const AppMain = () => {
              <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
              <Route path = "/user/company" element={ <CompanyPage/> } />
              <Route path='/user/profile' element={<UserProfile/>}/>
+             <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
+             <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
         </Route>
         <Route path="/provider" element={<MainWrapper/>}>
              <Route index element={ <MainPage/> } />
