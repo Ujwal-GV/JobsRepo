@@ -14,6 +14,9 @@ import { Field, Form, Formik } from "formik";
 import { BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
 import { Input } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Link } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -21,6 +24,7 @@ const ProviderProfile = () => {
   const [personalDetailsModelOpen, setpersonalDetailsModelOpen] = useState(false);
   const [jobDetailsModelOpen, setJobDetailsModelOpen] = useState(false);
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
+  const [companyLinkModel, setCompanyLinkModel] = useState(false);
 
   const [personalDetails, setPersonalDetails] = useState({
     fullName: "Ujwal Gowda V",
@@ -30,11 +34,14 @@ const ProviderProfile = () => {
   });
 
   const [companySummary, setCompanySummary] = useState("");
+  const [companyLink, setCompanyLink] = useState("");
 
   const [jobDetails, setJobDetails] = useState({
     position: "",
     location: "",
     employmentType: "",
+    description: "",
+    qualification: "",
   });
 
 
@@ -48,6 +55,10 @@ const ProviderProfile = () => {
     setCompanySummary(val);
   };
 
+  const handleCompanyLinkChange = (val) => {
+    setCompanyLink(val);
+  }
+
   const handleJobDetailsChange = (val) => {
     setJobDetails((prev) => {
       return { ...prev, ...val };
@@ -60,7 +71,7 @@ const ProviderProfile = () => {
         <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
           {/* Avatar and PersonalDetails */}
 
-          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 sticky top-0 pt-2   h-fit mx-auto">
+          <div className="flex center flex-col w-[95%] z-999 md:flex-row md:w-full gap-2 sticky top-0 pt-2   h-fit mx-auto">
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
               <ProfileAvatar />
             </div>
@@ -96,7 +107,7 @@ const ProviderProfile = () => {
 
           {/* Other Profile Details */}
 
-          <div className="w-[60%]   mx-auto flex flex-col gap-2 md:gap-0 sm:flex-row justify-evenly items-center p-1 border-t mt-2">
+          <div className="w-[60%] z-0  mx-auto flex flex-col gap-2 md:gap-0 sm:flex-row justify-evenly items-center p-1 border-t mt-2">
             <DeatilsBadge
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Posted"
@@ -105,12 +116,47 @@ const ProviderProfile = () => {
             <DeatilsBadge
               icon={<BiGroup className=" text-orange-600" />}
               title="No. of Employees"
-              val={500}
+              val={2001}
             />
           </div>
 
           <div className="w-full  h-80 max-w-[90%] md:w-full mx-auto mt-4 flex flex-col lg:flex-row gap-2">
             <div className="part-1 flex-1">
+                {/* Company Links Section */}
+                <CompanyInputWrapper>
+                  <CompanyLinksField
+                    title="Company Link"
+                    icon={companyLink.trim() === "" ? "Add" : "Edit"}
+                    editOnClick={() => setCompanyLinkModel(true)}
+                  >
+                    <div className="flex flex-wrap gap-1 w-full pb-2 ">
+                      {!companyLink ? (
+                        <div className="w-full gap-1 center flex">
+                          <TbMoodEmptyFilled /> Add Company Links
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
+                            {companyLink.split(',').map((link, index) => (
+                              <span key={index}>
+                                <a
+                                  href={link.trim()}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500"
+                                >
+                                  {link.trim()}
+                                </a>
+                                {index < companyLink.split(',').length - 1 && <span><br /> </span>}
+                              </span>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CompanyLinksField>
+                </CompanyInputWrapper>
+
                 {/* Company Summary Section */}
                 <CompanyInputWrapper>
                     <CompanyInfoField
@@ -134,25 +180,51 @@ const ProviderProfile = () => {
 
                 {/* Job Details Section */}
                 <CompanyInputWrapper>
-                    <CompanyInfoField
+                  <CompanyInfoField
                     title="Job Details"
-                    icon={companySummary.trim() === "" ? "Add" : "Edit"}
+                    icon={
+                      Object.values(jobDetails).some(
+                        (s) => s !== null && s !== ""
+                      )
+                        ? "Edit"
+                        : "Add"
+                    }
                     editOnClick={() => setJobDetailsModelOpen(true)}
-                    >
+                  >
                     <div className="flex flex-wrap gap-1 w-full pb-2">
-                        {jobDetails.position ? (
+                      {jobDetails.position ? (
                         <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
-                            <strong>Position:</strong> {jobDetails.position} <br />
-                            <strong>Location:</strong> {jobDetails.location} <br />
+                          <div className="mb-2">
+                            <strong>Position:</strong> {jobDetails.position}
+                          </div>
+                          <div className="mb-2">
+                            <strong>Location:</strong> {jobDetails.location}
+                          </div>
+                          <div className="mb-2">
                             <strong>Type of Employment:</strong> {jobDetails.employmentType}
+                          </div>
+                          <div className="mb-2">
+                            <strong>Qualification:</strong> {jobDetails.qualification}
+                          </div>
+
+                          {jobDetails.jobDescription && (
+                            <div className="mb-2">
+                              <strong>Job Description:</strong>
+                              {/* Render the HTML content of the job description safely */}
+                              <div
+                                className="mt-2"
+                                dangerouslySetInnerHTML={{ __html: jobDetails.jobDescription }}
+                              />
+                            </div>
+                          )}
                         </div>
-                        ) : (
+                      ) : (
                         <div className="w-full gap-1 center flex">
-                            <TbMoodEmptyFilled /> Add job details
+                          <TbMoodEmptyFilled /> Add job details
                         </div>
-                        )}
+                      )}
                     </div>
-                    </CompanyInfoField>
+                  </CompanyInfoField>
                 </CompanyInputWrapper>
             </div>
           </div>
@@ -174,6 +246,17 @@ const ProviderProfile = () => {
                 onClose={() => setSummaryModelOpen(false)}
                 value={companySummary}
                 onSummaryChange={handleSummaryChange}
+            />
+            </AnimateEnterExit>
+        )}
+
+        {companyLinkModel && (
+            <AnimateEnterExit>
+            <CompanyLinkModel
+                open={companyLinkModel}
+                onClose={() => setCompanyLinkModel(false)}
+                value={companyLink}
+                onLinkChange={handleCompanyLinkChange}
             />
             </AnimateEnterExit>
         )}
@@ -215,7 +298,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
           {title}
         </span>
         <span className="p-1 bg-slate-200 rounded-full ml-1 text-sm">
-          {val >= 100 ? "99+" : val}
+          {val >= 2001 ? "2000+" : val}
         </span>
       </div>
     );
@@ -287,6 +370,25 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
       </div>
     );
   };
+
+  const CompanyLinksField = ({
+    editOnClick = () => {},
+    title = "",
+    children,
+    icon = "Add",
+  }) => {
+    return (
+      <div className="w-full h-fit flex flex-col justify-start items-start gap-3 bg-white rounded-lg p-2 ps-4 ">
+        <div className="flex justify-between items-center w-full">
+          <span>{title} :</span>{" "}
+          <span className="text-orange-600 cursor-pointer" onClick={editOnClick}>
+            {icon}
+          </span>
+        </div>
+        {children}
+      </div>
+  );
+};
   
   const CompanyInfoField = ({
     editOnClick = () => {},
@@ -310,7 +412,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
   //Model Forms for all
   const JobDetailsModel = ({ open, onClose, value, onJobDetailsChange }) => {
     return (
-        <div
+      <div
         className={
           "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
           (open ? "profile-modal-show " : " ")
@@ -323,66 +425,108 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
               onClose();
             }}
           />
-        <h1 className="mb-5 mx-4 ml-5">Job Details</h1>
-        <Formik
-          initialValues={value}
-          onSubmit={(values) => {
-            onJobDetailsChange(values);
-            onClose();
-          }}
-        >
-          {({ setFieldValue, resetForm, values }) => (
-            <Form>
-              <Field name="position">
-                {({ field }) => (
-                  <InputBox
-                    {...field}
-                    label="Position"
-                    placeholder="Enter Job Position"
-                  />
-                )}
-              </Field>
-              <Field name="location">
-                {({ field }) => (
-                  <InputBox
-                    {...field}
-                    label="Location"
-                    placeholder="Enter Job Location"
-                  />
-                )}
-              </Field>
-              <Field name="employmentType">
-                {({ field }) => (
-                  <InputBox
-                    {...field}
-                    label="Type of Employment"
-                    placeholder="Full-time / Part-time / Contract"
-                  />
-                )}
-              </Field>
+          <h1 className="mb-5 mx-4 ml-5">Job Details</h1>
+          <Formik
+            initialValues={value}
+            onSubmit={(values) => {
+              onJobDetailsChange(values);
+              onClose();
+            }}
+          >
+            {({ setFieldValue, resetForm, values }) => (
+              <Form>
+                {/* Position Field */}
+                <Field name="position">
+                  {({ field }) => (
+                    <InputBox
+                      {...field}
+                      label="Position"
+                      placeholder="Enter Job Position"
+                    />
+                  )}
+                </Field>
+  
+                {/* Location Field */}
+                <Field name="location">
+                  {({ field }) => (
+                    <InputBox
+                      {...field}
+                      label="Location"
+                      customClass="mt-4"
+                      placeholder="Enter Job Location"
+                    />
+                  )}
+                </Field>
+  
+                {/* Employment Type Field */}
+                <Field name="employmentType">
+                  {({ field }) => (
+                    <InputBox
+                      {...field}
+                      label="Type of Employment"
+                      customClass="mt-4"
+                      placeholder="Full-time / Part-time / Contract"
+                    />
+                  )}
+                </Field>
 
-              <div className="w-full mt-4 center gap-3">
-                <button
-                  type="submit"
-                  className="btn-orange px-3 border py-1 border-transparent tracking-widest"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn-orange-outline px-3 py-1"
-                  onClick={() => {
-                    onClose();
-                    resetForm({ values: value }); // Reset form on cancel
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-
-            </Form>
-          )}
-        </Formik>
+                {/* Job Qualification Field */}
+                <Field name="qualification">
+                  {({ field }) => (
+                    <InputBox
+                      {...field}
+                      label="Qualification"
+                      customClass="mt-4"
+                      placeholder="Enter Job Qualification"
+                    />
+                  )}
+                </Field>
+  
+                {/* React Quill */}
+                <div className="mt-4">
+                  <label className="block text-md ml-2 font-medium text-gray-800">
+                    Job Description
+                  </label>
+                  <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm">
+                    <ReactQuill
+                      theme="snow"
+                      value={values.jobDescription || ""}
+                      onChange={(content) => setFieldValue("jobDescription", content)}
+                      modules={{
+                        toolbar: [
+                          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                          ['bold', 'italic', 'underline'],
+                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                          ['link', 'image']
+                        ]
+                      }}
+                      placeholder="Enter job description..."
+                      className="h-full"
+                    />
+                  </div>
+                </div>
+  
+                <div className="w-full mt-4 center gap-3">
+                  <button
+                    type="submit"
+                    className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-orange-outline px-3 py-1"
+                    onClick={() => {
+                      onClose();
+                      resetForm({ values: value }); // Reset form on cancel
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
     );
@@ -514,6 +658,86 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
       </div>
     );
   };
+
+  const CompanyLinkModel = ({
+    open,
+    onClose = () => {},
+    value,
+    onLinkChange = () => {},
+  }) => {
+    return (
+    <div
+      className={
+        "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+        (open ? "profile-modal-show " : " ")
+      }
+    >
+      <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
+        <FaArrowLeft
+          className="absolute text-white w-5 h-5 p-1 top-5 left-4 md: p-1 md:top-8 md:left-5 cursor-pointer bg-gray-600 rounded-full"
+          onClick={() => {
+            onClose();
+          }}
+        />
+
+        <h1 className="mb-5 mx-4 ml-5">Add Company Links</h1>
+
+        <Formik
+          initialValues={{ links: value }}
+          enableReinitialize={true}
+          onSubmit={(data, { resetForm }) => {
+            onLinkChange(data.links);
+            onClose();
+          }}
+        >
+          {({ setFieldValue, resetForm, values }) => (
+            <Form>
+              <Field name="links">
+                {({ field }) => (
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      className="border border-gray-300 p-2 rounded-lg font-outfit"
+                      placeholder="Enter Company Links (comma-separated)"
+                      {...field}
+                      value={values.links}
+                      onChange={(e) => {
+                        setFieldValue("links", e.target.value);
+                      }}
+                    />
+                  </div>
+                )}
+              </Field>
+
+              <h2 className="text-gray-500 font-extralight text-sm text-end">
+                {new String(values.links).length}/200
+              </h2>
+
+              <div className="w-full mt-4 center gap-3">
+                <button
+                  type="submit"
+                  className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn-orange-outline px-3 py-1"
+                  onClick={() => {
+                    onClose();
+                    resetForm({ values: value });
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </div>
+  );
+};
   
   const CompanySummaryModel = ({
     open,
@@ -524,19 +748,19 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
     return (
       <div
         className={
-          "absolute top-0 left-0 w-full flex center h-screen bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
+          "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
           (open ? "profile-modal-show " : " ")
         }
       >
-        <div className="border relative w-[98%]   lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
+        <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
           <FaArrowLeft
-            className="absolute top-2 left-2 md:top-5 md:left-5 cursor-pointer"
+            className="absolute text-white w-5 h-5 p-1 top-5 left-4 md: p-1 md:top-8 md:left-5 cursor-pointer bg-gray-600 rounded-full"
             onClick={() => {
               onClose();
             }}
           />
   
-          <h1 className="mb-5 mt-3">Add Profile Summary</h1>
+          <h1 className="mb-5 mx-4 ml-5">Add Profile Summary</h1>
   
           <Formik
             initialValues={{ summary: value }}
@@ -555,7 +779,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
                       allowClear
                       className="!max-h-[600px] font-outfit"
                       placeholder="Enter Profile Summary"
-                      maxLength={200}
+                      maxLength={2000}
                       {...field}
                       value={values.summary}
                       onChange={(e) => field.onChange(e)}
@@ -563,7 +787,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
                   )}
                 </Field>
                 <h2 className="text-gray-500 font-extralight text-sm text-end">
-                  {new String(values.summary).length}/200
+                  {new String(values.summary).length}/2000
                 </h2>
   
                 <div className="w-full mt-4 center gap-3">
