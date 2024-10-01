@@ -137,9 +137,7 @@ const JobApplicationProviderView = () => {
                   <div className="flex gap-2">
                     {/* View Applicants Button */}
                     <button className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center">
-                      <FaEye className="mr-1 hidden sm:inline" />
-                      <span className="hidden sm:inline">View Applicants</span>
-                      <span className="inline sm:hidden"><FaEye /></span>
+                      <FaEye className="mr-1" />
                     </button>
                     
                     {/* Delete Application Button */}
@@ -147,9 +145,7 @@ const JobApplicationProviderView = () => {
                       className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center"
                       onClick={() => handleDeleteClick(job.id)}
                     >
-                      <FaTrash className="mr-1 hidden sm:inline" />
-                      <span className="hidden sm:inline">Delete Application</span>
-                      <span className="inline sm:hidden"><FaTrash /></span>
+                      <FaTrash className="mr-1" />
                     </button>
                   </div>
                 </div>
