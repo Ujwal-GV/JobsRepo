@@ -136,13 +136,13 @@ const JobApplicationProviderView = () => {
                   </div>
                   <div className="flex gap-2">
                     {/* View Applicants Button */}
-                    <button className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center">
+                    <button className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center">
                       <FaEye className="mr-1" />
                     </button>
                     
                     {/* Delete Application Button */}
                     <button 
-                      className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center"
+                      className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center"
                       onClick={() => handleDeleteClick(job.id)}
                     >
                       <FaTrash className="mr-1" />
