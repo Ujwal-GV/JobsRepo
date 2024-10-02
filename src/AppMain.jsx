@@ -2,6 +2,7 @@ import React from 'react'
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
+import OptionPage from './pages/optionPage'
 import ForgotPassword from './pages/forgotPassword'
 import SetNewPassword from './pages/setNewPassword'
 import JobApplicatioWithSimilarApplication from './pages/seeker/JobApplicatioWithSimilarApplication'
@@ -27,6 +28,7 @@ const AppMain = () => {
         <Route path = "/signup" element={ <SignUp/> } />
         <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
         <Route path = "/reset-password" element={ <SetNewPassword/> } />
+        <Route path = "/select-role" element= { <OptionPage />} />
         <Route path="/user" element={<MainWrapper/>}>
              <Route index element={ <MainPage/> } />
              <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
