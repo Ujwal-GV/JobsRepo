@@ -9,6 +9,8 @@ const JobDetails = () => {
   // console.log(state);
   
   const job = state?.job;
+  console.log(job);
+  
 
   if (!job) {
     return <p>Job not found!</p>;
@@ -41,40 +43,87 @@ const JobDetails = () => {
             <h1 className="text-[1.3rem] md:text-2xl font-semibold">
               {job.companyName}
             </h1>
-            <h3 className="font-light mt-5">
+            <h3 className="font-normal mt-5">
               Posted by: {job.providerName}
             </h3>
             <div className="flex gap-2 mt-3">
               <span>Experience: {job.experience}</span>
-              <VerticalBar />
+              {/* <VerticalBar /> */}
             </div>
             <hr className="mt-10 mb-2" />
             <div className="flex justify-between items-center">
               <div>
-                <span>Applicants: {job.applicants || 0}</span>
+                <span>Vacancies: {job.vacancies ? job.vacancies : "Not mentioned"}</span>
               </div>
             </div>
           </div>
 
           {/* Key Highlights */}
-          <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10">
+          <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10 font-outfit">
             <h1 className="text-xl md:text-2xl font-semibold mb-4">
               Key Highlights
             </h1>
             <ul className="mt-3">
-              <KeyHighlightsListItem
+              <li className="mb-4"><KeyHighlightsListItem
                 key={"1"}
                 title="Location"
-                value={job.location}
-              />
-              <KeyHighlightsListItem
-                key={"1-1"}
-                title="Industry"
-                value={job.industry}
-              />
-              <KeyHighlightsListItem key={"1-2"} title="Posted On" value={job.postedOn || "Just Now"} />
+                value={job.location ? job.location : "Not disclosed"}
+                />
+              </li>
+              <li className="mb-4">
+                <KeyHighlightsListItem
+                  key={"1-1"}
+                  title="Industry"
+                  value={job.industry}
+                />
+              </li>
             </ul>
           </div>
+
+          {/* More Details */}
+          <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10 font-outfit">
+            <h1 className="text-xl md:text-2xl font-semibold mb-4">
+            More Details
+            </h1>
+            <ul className="mt-3">
+              <li className="mb-4">
+                <KeyHighlightsListItem
+                  key={"1"}
+                  title="Department"
+                  value={job.department ? job.department : "Not specified"}
+                />
+              </li>
+              <li className="mb-4">
+                <KeyHighlightsListItem
+                  key={"1-1"}
+                  title="Role"
+                  value={job.jobRole  ? job.jobRole : "Not specified"}
+                />
+              </li>
+              <li className="mb-4">
+                <KeyHighlightsListItem 
+                  key={"1-2"} 
+                  title="Qualification"
+                  value={job.education} 
+                />
+              </li>
+              <li className="mb-4">
+                <KeyHighlightsListItem 
+                  key={"1-3"} 
+                  title="Employment Type"
+                  value={job.employmentType} 
+                />
+              </li>
+              <li className="mb-4">
+                <KeyHighlightsListItem 
+                  key={"1-4"} 
+                  title="Package"
+                  value={`${job.package}` ? `${job.package} ${job.currency|| 'INR'}` : 'Not Disclosed'} 
+                />
+              </li>
+            </ul>
+          </div>
+
         </div>
 
         {/* Right Section: About Company */}

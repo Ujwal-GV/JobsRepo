@@ -42,7 +42,7 @@ function MainPage() {
           <div className="orange-bubble absolute top-[100px] left-[100px]" />
           {/* search input */}
           <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
-            <SeachInput />
+            <SeachInput placeholder = "Search a job / project....."/>
           </div>
           {/* prime header  */}
           <div className="mt-10 mx-auto w-fit font-outfit">
