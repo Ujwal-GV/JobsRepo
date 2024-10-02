@@ -11,18 +11,18 @@ import { FaPhoneAlt, FaSave } from "react-icons/fa";
 import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
-import { BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
+import { BiSolidUser ,BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
 import { Input } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css';
 import { Link } from "react-router-dom";
 
 const { TextArea } = Input;
 
 const ProviderProfile = () => {
   const [personalDetailsModelOpen, setpersonalDetailsModelOpen] = useState(false);
-  const [jobDetailsModelOpen, setJobDetailsModelOpen] = useState(false);
+  // const [jobDetailsModelOpen, setJobDetailsModelOpen] = useState(false);
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
   const [companyLinkModel, setCompanyLinkModel] = useState(false);
 
@@ -30,19 +30,18 @@ const ProviderProfile = () => {
     fullName: "Ujwal Gowda V",
     email: "ujwalgowda8792@gmail.com",
     mobile: "7483268624",
-    gender: "Male",
   });
 
   const [companySummary, setCompanySummary] = useState("");
   const [companyLink, setCompanyLink] = useState("");
 
-  const [jobDetails, setJobDetails] = useState({
-    position: "",
-    location: "",
-    employmentType: "",
-    description: "",
-    qualification: "",
-  });
+  // const [jobDetails, setJobDetails] = useState({
+  //   position: "",
+  //   location: "",
+  //   employmentType: "",
+  //   description: "",
+  //   qualification: "",
+  // });
 
 
   const handlePersonalDetails = (val) => {
@@ -59,11 +58,11 @@ const ProviderProfile = () => {
     setCompanyLink(val);
   }
 
-  const handleJobDetailsChange = (val) => {
-    setJobDetails((prev) => {
-      return { ...prev, ...val };
-    });
-  };
+  // const handleJobDetailsChange = (val) => {
+  //   setJobDetails((prev) => {
+  //     return { ...prev, ...val };
+  //   });
+  // };
 
   return (
     <MainContext>
@@ -80,7 +79,10 @@ const ProviderProfile = () => {
                 className="absolute top-2 right-2  cursor-pointer"
                 onClick={() => setpersonalDetailsModelOpen(true)}
               />
-              <h1>{personalDetails.fullName}</h1>
+              <h1 className="flex justify-start items-center gap-1">
+                <BiSolidUser className="text-orange-600" />
+                {personalDetails.fullName}
+              </h1>
               <h1 className="flex justify-start items-center gap-1">
                 <MdEmail className="text-orange-600" />
                 {personalDetails.email}
@@ -89,18 +91,6 @@ const ProviderProfile = () => {
                 {" "}
                 <FaPhoneAlt className="text-orange-600" />{" "}
                 {personalDetails.mobile}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                {personalDetails.gender.toLowerCase() === "male" && (
-                  <IoIosMale className="text-orange-600" />
-                )}
-                {personalDetails.gender.toLowerCase() === "female" && (
-                  <IoIosFemale className="text-orange-600" />
-                )}
-                {personalDetails.gender.toLowerCase() === "transgender" && (
-                  <IoMdTransgender className="text-orange-600" />
-                )}
-                {personalDetails.gender}
               </h1>
             </div>
           </div>
@@ -179,7 +169,7 @@ const ProviderProfile = () => {
                 </CompanyInputWrapper>
 
                 {/* Job Details Section */}
-                <CompanyInputWrapper>
+                {/* <CompanyInputWrapper>
                   <CompanyInfoField
                     title="Job Details"
                     icon={
@@ -210,7 +200,6 @@ const ProviderProfile = () => {
                           {jobDetails.jobDescription && (
                             <div className="mb-2">
                               <strong>Job Description:</strong>
-                              {/* Render the HTML content of the job description safely */}
                               <div
                                 className="mt-2"
                                 dangerouslySetInnerHTML={{ __html: jobDetails.jobDescription }}
@@ -225,7 +214,7 @@ const ProviderProfile = () => {
                       )}
                     </div>
                   </CompanyInfoField>
-                </CompanyInputWrapper>
+                </CompanyInputWrapper> */}
             </div>
           </div>
 
@@ -261,7 +250,7 @@ const ProviderProfile = () => {
             </AnimateEnterExit>
         )}
 
-        {jobDetailsModelOpen && (
+        {/* {jobDetailsModelOpen && (
               <AnimateEnterExit>
                 <JobDetailsModel
                   open={jobDetailsModelOpen}
@@ -270,7 +259,7 @@ const ProviderProfile = () => {
                   onJobDetailsChange={handleJobDetailsChange}
                 />
               </AnimateEnterExit>
-            )}
+            )} */}
           </AnimatePresence>
         </div>
     </div>
@@ -324,52 +313,6 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
       </div>
     );
   };
-  
-  const ProfileGender = ({
-    value = "",
-    customClass = "",
-    onChange = () => {},
-  }) => {
-    const Genderdata = ["Male", "Female", "Transgender"];
-  
-    const [val, setVal] = useState(value);
-  
-    useEffect(() => {
-      setVal(value);
-    }, [value]);
-  
-    const handleChange = (v) => {
-      setVal(v);
-      onChange(v);
-    };
-  
-    const handleDelete = () => {
-      setVal("");
-      onChange("");
-    };
-  
-    return (
-      <div
-        className={
-          "w-full h-fit flex justify-start items-center gap-3 bg-gray-200 rounded-lg p-2 ps-4 " +
-          customClass
-        }
-      >
-        <span className="text-nowrap">Gender :</span>
-        {val ? (
-          // Show the selected tag with close button
-          <Tag val={val} close={true} key={val} onClick={handleDelete} />
-        ) : (
-          // Show the list of gender options when no gender is selected
-          <div className="flex  flex-row gap-2 overflow-auto">
-            {Genderdata.map((d) => (
-              <Tag val={d} key={d} onClick={() => handleChange(d)} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const CompanyLinksField = ({
     editOnClick = () => {},
@@ -410,127 +353,127 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
   };
   
   //Model Forms for all
-  const JobDetailsModel = ({ open, onClose, value, onJobDetailsChange }) => {
-    return (
-      <div
-        className={
-          "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
-          (open ? "profile-modal-show " : " ")
-        }
-      >
-        <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
-          <FaArrowLeft
-            className="absolute text-white w-5 h-5 p-1 top-5 left-4 md: p-1 md:top-8 md:left-5 cursor-pointer bg-gray-600 rounded-full"
-            onClick={() => {
-              onClose();
-            }}
-          />
-          <h1 className="mb-5 mx-4 ml-5">Job Details</h1>
-          <Formik
-            initialValues={value}
-            onSubmit={(values) => {
-              onJobDetailsChange(values);
-              onClose();
-            }}
-          >
-            {({ setFieldValue, resetForm, values }) => (
-              <Form>
-                {/* Position Field */}
-                <Field name="position">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      label="Position"
-                      placeholder="Enter Job Position"
-                    />
-                  )}
-                </Field>
+  // const JobDetailsModel = ({ open, onClose, value, onJobDetailsChange }) => {
+  //   return (
+  //     <div
+  //       className={
+  //         "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+  //         (open ? "profile-modal-show " : " ")
+  //       }
+  //     >
+  //       <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
+  //         <FaArrowLeft
+  //           className="absolute text-white w-5 h-5 p-1 top-5 left-4 md: p-1 md:top-8 md:left-5 cursor-pointer bg-gray-600 rounded-full"
+  //           onClick={() => {
+  //             onClose();
+  //           }}
+  //         />
+  //         <h1 className="mb-5 mx-4 ml-5">Job Details</h1>
+  //         <Formik
+  //           initialValues={value}
+  //           onSubmit={(values) => {
+  //             onJobDetailsChange(values);
+  //             onClose();
+  //           }}
+  //         >
+  //           {({ setFieldValue, resetForm, values }) => (
+  //             <Form>
+  //               {/* Position Field */}
+  //               <Field name="position">
+  //                 {({ field }) => (
+  //                   <InputBox
+  //                     {...field}
+  //                     label="Position"
+  //                     placeholder="Enter Job Position"
+  //                   />
+  //                 )}
+  //               </Field>
   
-                {/* Location Field */}
-                <Field name="location">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      label="Location"
-                      customClass="mt-4"
-                      placeholder="Enter Job Location"
-                    />
-                  )}
-                </Field>
+  //               {/* Location Field */}
+  //               <Field name="location">
+  //                 {({ field }) => (
+  //                   <InputBox
+  //                     {...field}
+  //                     label="Location"
+  //                     customClass="mt-4"
+  //                     placeholder="Enter Job Location"
+  //                   />
+  //                 )}
+  //               </Field>
   
-                {/* Employment Type Field */}
-                <Field name="employmentType">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      label="Type of Employment"
-                      customClass="mt-4"
-                      placeholder="Full-time / Part-time / Contract"
-                    />
-                  )}
-                </Field>
+  //               {/* Employment Type Field */}
+  //               <Field name="employmentType">
+  //                 {({ field }) => (
+  //                   <InputBox
+  //                     {...field}
+  //                     label="Type of Employment"
+  //                     customClass="mt-4"
+  //                     placeholder="Full-time / Part-time / Contract"
+  //                   />
+  //                 )}
+  //               </Field>
 
-                {/* Job Qualification Field */}
-                <Field name="qualification">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      label="Qualification"
-                      customClass="mt-4"
-                      placeholder="Enter Job Qualification"
-                    />
-                  )}
-                </Field>
+  //               {/* Job Qualification Field */}
+  //               <Field name="qualification">
+  //                 {({ field }) => (
+  //                   <InputBox
+  //                     {...field}
+  //                     label="Qualification"
+  //                     customClass="mt-4"
+  //                     placeholder="Enter Job Qualification"
+  //                   />
+  //                 )}
+  //               </Field>
   
-                {/* React Quill */}
-                <div className="mt-4">
-                  <label className="block text-md ml-2 font-medium text-gray-800">
-                    Job Description
-                  </label>
-                  <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm">
-                    <ReactQuill
-                      theme="snow"
-                      value={values.jobDescription || ""}
-                      onChange={(content) => setFieldValue("jobDescription", content)}
-                      modules={{
-                        toolbar: [
-                          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                          ['bold', 'italic', 'underline'],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                          ['link', 'image']
-                        ]
-                      }}
-                      placeholder="Enter job description..."
-                      className="h-full"
-                    />
-                  </div>
-                </div>
+  //               {/* React Quill */}
+  //               <div className="mt-4">
+  //                 <label className="block text-md ml-2 font-medium text-gray-800">
+  //                   Job Description
+  //                 </label>
+  //                 <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm">
+  //                   <ReactQuill
+  //                     theme="snow"
+  //                     value={values.jobDescription || ""}
+  //                     onChange={(content) => setFieldValue("jobDescription", content)}
+  //                     modules={{
+  //                       toolbar: [
+  //                         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+  //                         ['bold', 'italic', 'underline'],
+  //                         [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+  //                         ['link', 'image']
+  //                       ]
+  //                     }}
+  //                     placeholder="Enter job description..."
+  //                     className="h-full"
+  //                   />
+  //                 </div>
+  //               </div>
   
-                <div className="w-full mt-4 center gap-3">
-                  <button
-                    type="submit"
-                    className="btn-orange px-3 border py-1 border-transparent tracking-widest"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-orange-outline px-3 py-1"
-                    onClick={() => {
-                      onClose();
-                      resetForm({ values: value }); // Reset form on cancel
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </div>
-    );
-  };
+  //               <div className="w-full mt-4 center gap-3">
+  //                 <button
+  //                   type="submit"
+  //                   className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+  //                 >
+  //                   Save
+  //                 </button>
+  //                 <button
+  //                   type="button"
+  //                   className="btn-orange-outline px-3 py-1"
+  //                   onClick={() => {
+  //                     onClose();
+  //                     resetForm({ values: value }); // Reset form on cancel
+  //                   }}
+  //                 >
+  //                   Cancel
+  //                 </button>
+  //               </div>
+  //             </Form>
+  //           )}
+  //         </Formik>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
 
   const ProfilePersonalDetailsModal = ({
@@ -612,21 +555,6 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
                       value={field.value}
                       onChange={(e) => {
                         field.onChange(e); // Formik's handleChange
-                      }}
-                    />
-                  )}
-                </Field>
-  
-                {/* Gender */}
-                <Field name="gender">
-                  {({ field }) => (
-                    <ProfileGender
-                      key={values.gender}
-                      {...field}
-                      customClass="mt-4"
-                      value={values.gender}
-                      onChange={(val) => {
-                        setFieldValue("gender", val); // Custom handler for select
                       }}
                     />
                   )}
