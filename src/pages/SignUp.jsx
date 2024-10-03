@@ -47,7 +47,7 @@ function SignUp() {
 
 
   return (
-    <div className="h-screen w-full center">
+    <div className="h-screen w-full center font-outfit">
        <Formik
         initialValues={{  email: "", password: "" ,name:""}}
         validationSchema={signupValidationSchema}
@@ -64,8 +64,8 @@ function SignUp() {
               <label className="text-center block mb-2">Register As:</label>
               <div className="flex items-center justify-center mb-2 font-outfit">
 
-                  {/* Set Selected Role */}
-                 <RoleChecker data={roleData} onChange={(d)=>alert(JSON.stringify(d))} indicatorClassName='!bg-black rounded-full'/>
+                  {/* Set Selected Role onChange={(d)=>alert(JSON.stringify(d))} */}
+                 <RoleChecker data={roleData} indicatorClassName='!bg-black rounded-full'/>
               </div>
             </div>
               

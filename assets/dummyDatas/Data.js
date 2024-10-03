@@ -249,6 +249,73 @@ export const companyData = [
     { label: "Firebase", value: "Firebase" },
     { label: "SASS", value: "SASS" }
   ];
+
+  export const industryOptions = [
+    { id: 1, label: "Information Technology (IT)" },
+    { id: 2, label: "Finance" },
+    { id: 3, label: "Healthcare" },
+    { id: 4, label: "Marketing" },
+    { id: 5, label: "Human Resources" },
+    { id: 6, label: "Sales" },
+    { id: 7, label: "Operations" },
+    { id: 8, label: "Engineering & Manufacturing" },
+    { id: 9, label: "Education" },
+    { id: 10, label: "Legal" },
+  ];
+
+  export const employmentOptions = [
+    { id: 1, label: "Full Time" },
+    { id: 2, label: "Part Time" },
+    { id: 3, label: "Remote" },
+  ];
+
+  export const jobLocations = [
+    { label: "Bangalore", value: "Bangalore" },
+    { label: "Mumbai", value: "Mumbai" },
+    { label: "Delhi", value: "Delhi" },
+    { label: "Hyderabad", value: "Hyderabad" },
+    { label: "Chennai", value: "Chennai" },
+    { label: "Pune", value: "Pune" },
+    { label: "Kolkata", value: "Kolkata" },
+    { label: "Ahmedabad", value: "Ahmedabad" },
+    { label: "Jaipur", value: "Jaipur" },
+    { label: "Lucknow", value: "Lucknow" },
+    { label: "Indore", value: "Indore" },
+    { label: "Surat", value: "Surat" },
+    { label: "Nagpur", value: "Nagpur" },
+    { label: "Patna", value: "Patna" },
+    { label: "Bhopal", value: "Bhopal" },
+    { label: "Kanpur", value: "Kanpur" },
+    { label: "Vadodara", value: "Vadodara" },
+    { label: "Ludhiana", value: "Ludhiana" },
+    { label: "Agra", value: "Agra" },
+    { label: "Nashik", value: "Nashik" },
+    { label: "Rajkot", value: "Rajkot" },
+    { label: "Coimbatore", value: "Coimbatore" },
+    { label: "Vijayawada", value: "Vijayawada" },
+    { label: "Madurai", value: "Madurai" },
+    { label: "Kochi", value: "Kochi" },
+    { label: "Visakhapatnam", value: "Visakhapatnam" },
+    { label: "Mysore", value: "Mysore" },
+    { label: "Varanasi", value: "Varanasi" },
+    { label: "Guwahati", value: "Guwahati" },
+    { label: "Jodhpur", value: "Jodhpur" },
+    { label: "Tiruchirappalli", value: "Tiruchirappalli" },
+    { label: "Thiruvananthapuram", value: "Thiruvananthapuram" },
+    { label: "Gwalior", value: "Gwalior" },
+    { label: "Jamshedpur", value: "Jamshedpur" },
+    { label: "Dehradun", value: "Dehradun" },
+    { label: "Shimla", value: "Shimla" },
+    { label: "Ranchi", value: "Ranchi" },
+    { label: "Amritsar", value: "Amritsar" },
+    { label: "Meerut", value: "Meerut" },
+    { label: "Faridabad", value: "Faridabad" },
+    { label: "Noida", value: "Noida" },
+    { label: "Gurgaon", value: "Gurgaon" },
+    { label: "Ghaziabad", value: "Ghaziabad" },
+    { label: "Chandigarh", value: "Chandigarh" }
+  ];
+  
   
   
   
