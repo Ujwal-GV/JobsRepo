@@ -39,7 +39,7 @@ const SwipeCard = ({ job }) => {
       <p className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">{job.companyName}</p>
       <div className="flex">
       <IoLocationOutline />
-      <p className="text-sm text-gray-500">{job.location}</p>
+      <p className="text-sm text-gray-500">{job.location ? job.location : "Remote"}</p>
       </div>
         <span className="text-end text-sm mt-2 text-slate-00">Posted on: {job.postedDate}</span>
     </div>
@@ -112,12 +112,12 @@ function ProviderMainPage() {
           <SwiperWrapper
             key={"jobs"}
             title="Your Posted Jobs"
-            onViewClick={() => alert("Posted Jobs List")}
+            onViewClick={() => navigate('/provider/all-jobs')}
           >
             <AdvancedSwiper>
               {jobs.length === 0 ? (
                 <SwiperSlide>
-                  <div>No jobs posted yet.</div>
+                  <div className="font-outfit center">No jobs posted yet.</div>
                 </SwiperSlide>
               ) : (
                 jobs.map((job) => (

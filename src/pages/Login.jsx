@@ -19,7 +19,7 @@ function Login() {
   const handleSubmit = async (values) => {
     setErrorMessage("");
     try {
-      const response = await axios.post("http://localhost:5000/user/login", {
+      const response = await axios.post("http://localhost:8087/user/login", {
         email: values.email,
         password: values.password,
       });
@@ -44,7 +44,7 @@ function Login() {
   };
 
   return (
-    <div className="w-full h-screen max-w-[1600px] flex items-center justify-center">
+    <div className="w-full h-screen max-w-[1600px] flex items-center justify-center font-outfit">
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={loginValidationSchema}

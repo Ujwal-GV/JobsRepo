@@ -58,8 +58,6 @@ function MainPage() {
         </div>
 
         {/* Jobs Slider */}
-
-
         <SwiperWrapper key={"jobs"} title="Recomended jobs for you" onViewClick={()=>alert("jobs List")}>
         <AdvancedSwiper key={"jobs"}>
               {jobData.map((item) => (
