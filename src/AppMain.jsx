@@ -9,6 +9,7 @@ import JobApplicatioWithSimilarApplication from './pages/seeker/JobApplicatioWit
 import JobApplicationProviderView from './pages/provider/JobApplicationProviderView'
 import MainWrapper from './components/MainWrapper'
 import MainPage from './pages/mainPage'
+import ProviderMainPage from './pages/provider/providerMainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
@@ -45,7 +46,7 @@ const AppMain = () => {
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
           </Route>
           <Route path="/provider" element={<MainWrapper/>}>
-              <Route index element={ <MainPage/> } />
+              <Route path = "/provider/main" element={ <ProviderMainPage/> } />
               <Route path = "/provider/post-job" element={ <JobApplicationProviderView/> } />
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />

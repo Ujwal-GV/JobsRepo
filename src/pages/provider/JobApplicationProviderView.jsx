@@ -5,8 +5,10 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { useNavigate } from "react-router-dom";
+import { industryOptions, employmentOptions, jobLocations } from "../../../assets/dummyDatas/Data"
 import ReactQuill from "react-quill"; // Import ReactQuill
 import "react-quill/dist/quill.snow.css"; // Import styles for ReactQuill
+import Select from "react-select";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -18,49 +20,91 @@ const JobApplicationProviderView = () => {
   const { userRole } = React.useContext(AuthContext);
   const [jobDetails, setJobDetails] = useState({
     title: "",
-    companyName: "",
+    companyName: "Google",
     providerName: "",
-    location: "",
+    // location: "",
     industry: "",
     jobDescription: "",
     experience: "",
+    department: "",
+    jobRole: "",
+    employmentType: "",
+    education: "",
+    package: "",
   });
-  const [selectedJob, setSelectedJob] = useState(null); // Track the selected job for "view"
-  const [applicants] = useState(20);
+
+  const [location, setLocation] = useState(null);
+  const [locationsList, setLocationsList] = useState(jobLocations);
+
+  const handleLocationChange = (selectedOption) => {
+    setLocation(selectedOption);
+    // Add new location if it's not already in the list
+    if (selectedOption && !locationsList.find(loc => loc.value === selectedOption.value)) {
+      setLocationsList([...locationsList, selectedOption]);
+    }
+  };
+
+  const currencyOptions = [
+    { value: 'INR', label: 'INR' },
+    { value: 'USD', label: 'USD' },
+  ];
+
+  const [currency, setCurrency] = useState({ value: 'INR', label: 'INR' });
 
   const navigate = useNavigate();
 
   const handleSaveClick = () => {
+    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.jobDescription) {
+      alert("Please fill in all required fields: Job Title, Company Name, and Job Description.");
+      return;
+    }
     setSaved((prev) => !prev);
+    // navigate('/provider/main');
   };
 
-  const handleDeleteClick = (id) => {
-    const updatedJobs = jobs.filter((job) => job.id !== id);
-    setJobs(updatedJobs);
-  };
+  // const handleDeleteClick = (id) => {
+  //   const updatedJobs = jobs.filter((job) => job.id !== id);
+  //   setJobs(updatedJobs);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setJobDetails((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleIndustryChange = (e) => {
+    setJobDetails((prev) => ({ ...prev, industry: e.target.value }));
+  };
+
+  const handleEmploymentChange = (e) => {
+    setJobDetails((prev) => ({ ...prev, employmentType: e.target.value }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (jobDetails.title && jobDetails.companyName) {
+    if (jobDetails.title && jobDetails.companyName  && jobDetails.jobDescription) {
       const newJob = {
         ...jobDetails,
+        currency: currency ? currency.value : 'INR',
         id: Math.random().toString(36).substring(7),
         applicationId: "APP-" + Math.floor(100000 + Math.random() * 900000), // Generate unique Application ID
-        applicants: Math.floor(Math.random() * 100), // Random applicants
       };
       setJobs((prevJobs) => [...prevJobs, newJob]);
+      console.log("New Jobs added:" , newJob);
+      
       setJobDetails({
         title: "",
         companyName: "",
         providerName: "",
-        location: "",
+        // location: "",
         industry: "",
-        jobDescription: "", // Reset jobDescription after submit
+        jobDescription: "",
+        experience: "",
+        department: "",
+        jobRole: "",
+        employmentType: "",
+        education: "",
+        package: "",
       });
     }
   };
@@ -105,7 +149,7 @@ const JobApplicationProviderView = () => {
                   value={jobDetails.companyName}
                   onChange={handleChange}
                   className="w-full border rounded-lg p-2"
-                  required
+                  required readOnly
                 />
               </h1>
               <h3 className="font-light mt-5">
@@ -117,6 +161,7 @@ const JobApplicationProviderView = () => {
                   value={jobDetails.providerName}
                   onChange={handleChange}
                   className="w-full border rounded-lg p-2"
+                  required
                 />
               </h3>
 
@@ -129,17 +174,26 @@ const JobApplicationProviderView = () => {
                   value={jobDetails.experience}
                   onChange={handleChange}
                   className="border rounded-lg p-2"
+                  required
                 />
-                <VerticalBar />
-                <span>Posted Jobs: {jobs.length}</span>
+                {/* <VerticalBar /> */}
+                {/* <span>Posted Jobs: {jobs.length}</span> */}
               </div>
 
               <hr className="mt-10 mb-2" />
               <div className="flex justify-between items-center">
                 <div>
-                  <span>Applicants: {applicants}</span>
+                  <span>Vacancies: {jobs.vacancies}</span>
+                    <input
+                      type="number"
+                      name="vacancies"
+                      placeholder="Enter the vacancies"
+                      value={jobDetails.vacancies}
+                      onChange={handleChange}
+                      className="border rounded-lg p-2"
+                  />
                 </div>
-                <div className="flex center gap-3">
+                <div className="flex flex-center">
                   <button
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
                     onClick={handleSaveClick}
@@ -156,20 +210,74 @@ const JobApplicationProviderView = () => {
             </div>
 
             {/* Key Highlights */}
-            <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                Key Highlights
-              </h1>
+            <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">Key Highlights</h1>
               <ul className="mt-3">
+                <div></div>
                 <KeyHighlightsListItem
                   key={"1"}
                   title="Location"
                   value={
+                    <Select
+                      value={jobDetails.location ? { label: jobDetails.location, value: jobDetails.location } : null}
+                      onChange={(selectedOption) => {
+                        setJobDetails((prev) => ({
+                          ...prev,
+                          location: selectedOption ? selectedOption.value : ""
+                        }));
+                      }}
+                      options={locationsList}
+                      placeholder="Enter Location"
+                      isClearable
+                      onInputChange={(inputValue) => {
+                        if (inputValue && !locationsList.find(loc => loc.value === inputValue)) {
+                          setLocationsList([...locationsList, { label: inputValue, value: inputValue }]);
+                        }
+                      }}
+                      noOptionsMessage={() => "Type to add a new location"}
+                      className="w-60 border rounded-lg cursor-pointer"
+                    />
+                  }
+                />
+
+                <li className="flex flex-col mb-4 mt-4">
+                  <KeyHighlightsListItem
+                    key={'1-1'}
+                    title="Industry"
+                  />
+                  <div className="flex flex-col mt-4">
+                    {industryOptions.map((option) => (
+                      <label key={option.id} className="flex items-center mb-2 mx-7">
+                        <input
+                          type="radio"
+                          name="industry"
+                          value={option.label}
+                          checked={jobDetails.industry === option.label}
+                          onChange={handleIndustryChange}
+                          className="mr-2 cursor-pointer accent-orange-600"
+                          required
+                        />
+                        {option.label}
+                      </label>
+                    ))}
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* More Details */}
+            <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">More Details</h1>
+              <ul className="mt-3">
+                <KeyHighlightsListItem
+                  key={"1"}
+                  title="Department"
+                  value={
                     <input
                       type="text"
-                      name="location"
-                      placeholder="Enter Location"
-                      value={jobDetails.location}
+                      name="department"
+                      placeholder="Enter the Department"
+                      value={jobDetails.department}
                       onChange={handleChange}
                       className="w-full border rounded-lg p-2"
                     />
@@ -177,19 +285,80 @@ const JobApplicationProviderView = () => {
                 />
                 <KeyHighlightsListItem
                   key={"1-1"}
-                  title="Industry"
+                  title="Role"
                   value={
                     <input
                       type="text"
-                      name="industry"
-                      placeholder="Enter Industry"
-                      value={jobDetails.industry}
+                      name="jobRole"
+                      placeholder="Enter the Job Role / Title"
+                      value={jobDetails.jobRole}
                       onChange={handleChange}
                       className="w-full border rounded-lg p-2"
                     />
                   }
                 />
-                <KeyHighlightsListItem key={"1-2"} title="Posted On" value="Just Now" />
+
+                <KeyHighlightsListItem
+                  key={"1-2"}
+                  title="Qualification"
+                  value={
+                    <input
+                      type="text"
+                      name="education"
+                      placeholder="Enter the Qualification"
+                      value={jobDetails.education}
+                      onChange={handleChange}
+                      className="w-full border rounded-lg p-2"
+                      required
+                    />
+                  }
+                />
+
+                <li className="flex flex-col mb-4 mt-4">
+                  <KeyHighlightsListItem
+                    key={'1-3'}
+                    title="Employment Type"
+                  />
+                  <div className="flex flex-col mt-4">
+                    {employmentOptions.map((option) => (
+                      <label key={option.id} className="flex items-center mb-2 mx-7">
+                        <input
+                          type="radio"
+                          name="employmentType"
+                          value={option.label}
+                          checked={jobDetails.employmentType === option.label}
+                          onChange={handleEmploymentChange}
+                          className="mr-2 cursor-pointer accent-orange-600"
+                          required
+                        />
+                        {option.label}
+                      </label>
+                    ))}
+                  </div>
+                </li>
+
+                <KeyHighlightsListItem
+                  key={"1-4"}
+                  title="Package"
+                  value={
+                    <div className="flex flex-center gap-3">
+                      <input
+                        type="text"
+                        name="package"
+                        placeholder="Enter the Package"
+                        value={jobDetails.package}
+                        onChange={handleChange}
+                        className="w-full border rounded-lg p-2"
+                      />
+                      <Select
+                        value={currency}
+                        onChange={setCurrency}
+                        options={currencyOptions}
+                        className="w-1/2 font-outfit"
+                      />
+                    </div>
+                  }
+                />
               </ul>
             </div>
           </div>
@@ -200,10 +369,10 @@ const JobApplicationProviderView = () => {
               About Company
             </h1>
             <div className="mt-4">
-              <label className="block text-md ml-2 font-medium text-gray-800">
+              <label className="block text-md ml-2 font-medium text-gray-800 font-outfit">
                 Job Description
               </label>
-              <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm">
+              <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm font-outfit">
                 <ReactQuill
                   theme="snow"
                   value={jobDetails.jobDescription}
@@ -225,11 +394,10 @@ const JobApplicationProviderView = () => {
         </form>
 
         {/* Jobs Posted by You */}
-        <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10">
+        {/* <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 font-outfit">
           <h1 className="text-xl md:text-2xl font-semibold mb-4">
             Jobs Posted by You
           </h1>
-          {/* Check if jobs exist else render the No jobs content */}
           {jobs.length === 0 ? (
             <p className="text-center text-gray-500">No jobs have been posted by you.</p>
           ) : (
@@ -245,7 +413,6 @@ const JobApplicationProviderView = () => {
                     <p className="text-sm mt-2 text-gray-500">Application ID: {job.applicationId}</p>
                   </div>
                   <div className="flex gap-2">
-                    {/* View Applicants Button */}
                     <button
                       className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center"
                       onClick={() => handleViewClick(job)}
@@ -253,7 +420,6 @@ const JobApplicationProviderView = () => {
                       <FaEye className="mr-1" />
                     </button>
 
-                    {/* Delete Application Button */}
                     <button 
                       className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center"
                       onClick={() => handleDeleteClick(job.id)}
@@ -265,7 +431,7 @@ const JobApplicationProviderView = () => {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </MainContext>
   );
