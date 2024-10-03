@@ -71,13 +71,13 @@ const ProviderProfile = () => {
         <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
           {/* Avatar and PersonalDetails */}
 
-          <div className="flex center flex-col w-[95%] z-999 md:flex-row md:w-full gap-2 sticky top-0 pt-2   h-fit mx-auto">
+          <div className="flex center flex-col w-[95%] z-999 md:flex-row md:w-full gap-2 pt-2   h-fit mx-auto">
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
               <ProfileAvatar />
             </div>
             <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
               <MdEdit
-                className="absolute top-2 right-2  cursor-pointer"
+                className="absolute top-2 right-2  cursor-pointer" 
                 onClick={() => setpersonalDetailsModelOpen(true)}
               />
               <h1>{personalDetails.fullName}</h1>

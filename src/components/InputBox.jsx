@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
-const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange=()=>{},onBlur=()=>{},disable=false,}) => {
+const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",customClass="" ,onChange=()=>{},onBlur=()=>{},disable=false,animate=true}) => {
   const [focused, setFocus] = useState(false);
 
   const [passwordVisible, setPasswordVisible] = useState(true);
@@ -14,7 +14,8 @@ const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",cust
     <div
       className={
         "w-full p-3 border-gray  rounded-md  center bg-transition " +
-        (focused ? "bg-white " : "bg-gray-200 ") + customClass
+        (animate ? (focused ? "bg-white " : "bg-gray-200 ")  : "bg-white ")
+         + customClass
       }
     >
      {
@@ -29,7 +30,7 @@ const InputBox = ({ name,value="",type = "text", placeholder = "" ,icon ="",cust
         type={type.toLowerCase() === "password" ? (passwordVisible ? "password" : "text") : type}
         className={
           "flex-1 ml-2 flex text-gray-600  placeholder:text-black bg-transition " +
-          (focused ? "bg-white" : "bg-gray-200") +(type.toLowerCase() === "password" ? " pr-2":"")
+          (animate ? (focused ? "bg-white" : "bg-gray-200") : "bg-white") +(type.toLowerCase() === "password" ? " pr-2":"")
         }
         onFocus={() => setFocus(true)}
         onBlur={(e) => {setFocus(false);onBlur(e)}}

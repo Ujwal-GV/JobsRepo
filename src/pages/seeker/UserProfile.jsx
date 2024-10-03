@@ -6,7 +6,7 @@ import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
-import { AutoComplete, DatePicker, message, Spin } from "antd";
+import { AutoComplete, DatePicker, message, Select, Spin } from "antd";
 import axios from "axios";
 import "antd/dist/reset.css";
 import dayjs from "dayjs";
@@ -21,6 +21,7 @@ import { Input } from "antd";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
+import CustomAutoComplete from "../../components/CustomAutoComplete";
 
 const { TextArea } = Input;
 
@@ -113,10 +114,10 @@ const UserProfile = () => {
               items={[
                 {
                   path: "/user",
-                  icon:<CiHome />,
-                  title : "Home"
+                  icon: <CiHome />,
+                  title: "Home",
                 },
-                { title: "Profile" ,icon: <CiUser/> },
+                { title: "Profile", icon: <CiUser /> },
               ]}
             />
           </div>
@@ -126,9 +127,9 @@ const UserProfile = () => {
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
               <ProfileAvatar />
             </div>
-            
-             {/* Profile Application Deatils */}
-            
+
+            {/* Profile Application Deatils */}
+
             <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
               <MdEdit
                 className="absolute top-2 right-2  cursor-pointer"
@@ -265,14 +266,14 @@ const UserProfile = () => {
                   </div>
                 </ProfileInfoField>
               </ProfileInputWrapper>
-              
             </div>
             <div className="part-2 flex-1">
               <ProfileInputWrapper>
                 <ProfileInfoField
                   title="Internship"
                   editOnClick={() => {
-                    setInternShipModalOpen(true), setIntershipDetails({});freezeBody()
+                    setInternShipModalOpen(true), setIntershipDetails({});
+                    freezeBody();
                   }}
                 >
                   <div className="w-full md:min-h-[100px] flex center flex-col">
@@ -314,81 +315,79 @@ const UserProfile = () => {
           </div>
 
           {/* All Modals  */}
-
-         
         </div>
       </div>
       <AnimatePresence>
-            {skillModalOpen && (
-              <AnimateEnterExit transition={{ duration: 0.2 }}>
-                <ProfileSkillModal
-                  open={skillModalOpen}
-                  onClose={() => {
-                    setSkillModalOpen(false);
-                    freeBody();
-                  }}
-                  defaulsSkills={profileSkills}
-                  onChange={handleSkillsChange}
-                />
-              </AnimateEnterExit>
-            )}
+        {skillModalOpen && (
+          <AnimateEnterExit transition={{ duration: 0.2 }}>
+            <ProfileSkillModal
+              open={skillModalOpen}
+              onClose={() => {
+                setSkillModalOpen(false);
+                freeBody();
+              }}
+              defaulsSkills={profileSkills}
+              onChange={handleSkillsChange}
+            />
+          </AnimateEnterExit>
+        )}
 
-            {educationModalOpen && (
-              <AnimateEnterExit transition={{ duration: 0.2 }}>
-                <ProfileEducationModal
-                  open={educationModalOpen}
-                  onClose={() => {
-                    setEducationModalOpen(false);
-                    freeBody();
-                  }}
-                  onChange={handleEducatioDetails}
-                  value={profileEducationDetails}
-                />
-              </AnimateEnterExit>
-            )}
+        {educationModalOpen && (
+          <AnimateEnterExit transition={{ duration: 0.2 }}>
+            <ProfileEducationModal
+              open={educationModalOpen}
+              onClose={() => {
+                setEducationModalOpen(false);
+                freeBody();
+              }}
+              onChange={handleEducatioDetails}
+              value={profileEducationDetails}
+            />
+          </AnimateEnterExit>
+        )}
 
-            {personalDetailsModalOpen && (
-              <AnimateEnterExit transition={{ duration: 0.2 }}>
-                <ProfilePersonalDetailsModal
-                  open={personalDetailsModalOpen}
-                  onClose={() => {
-                    setPersonalDetailsModalOpen(false);
-                    freeBody();
-                  }}
-                  value={personalDetails}
-                  onChange={handlePersonalDetails}
-                />
-              </AnimateEnterExit>
-            )}
+        {personalDetailsModalOpen && (
+          <AnimateEnterExit transition={{ duration: 0.2 }}>
+            <ProfilePersonalDetailsModal
+              open={personalDetailsModalOpen}
+              onClose={() => {
+                setPersonalDetailsModalOpen(false);
+                freeBody();
+              }}
+              value={personalDetails}
+              onChange={handlePersonalDetails}
+            />
+          </AnimateEnterExit>
+        )}
 
-            {summaryModalOpen && (
-              <AnimateEnterExit transition={{ duration: 0.2 }}>
-                <ProfileSummaryModal
-                  open={summaryModalOpen}
-                  onClose={() => {
-                    setSummaryModalOpen(false);
-                    freeBody();
-                  }}
-                  value={profileSummary}
-                  onSummaryChange={handleSummaryChange}
-                />
-              </AnimateEnterExit>
-            )}
+        {summaryModalOpen && (
+          <AnimateEnterExit transition={{ duration: 0.2 }}>
+            <ProfileSummaryModal
+              open={summaryModalOpen}
+              onClose={() => {
+                setSummaryModalOpen(false);
+                freeBody();
+              }}
+              value={profileSummary}
+              onSummaryChange={handleSummaryChange}
+            />
+          </AnimateEnterExit>
+        )}
 
-            {intershipModalOpen && (
-              <AnimateEnterExit transition={{ duration: 0.2 }}>
-                <ProfileIntershipModal
-                  open={intershipModalOpen}
-                  onClose={() => {
-                    setInternShipModalOpen(false);
-                    freeBody();
-                  }}
-                  value={intershipDetails}
-                  addInterShipData={addIntershipDataToList}
-                />
-              </AnimateEnterExit>
-            )}
-          </AnimatePresence>
+        {intershipModalOpen && (
+          <AnimateEnterExit transition={{ duration: 0.2 }}>
+            <ProfileIntershipModal
+              open={intershipModalOpen}
+              onClose={() => {
+                setInternShipModalOpen(false);
+                freeBody();
+              }}
+              value={intershipDetails}
+              addInterShipData={addIntershipDataToList}
+            />
+          </AnimateEnterExit>
+        )}
+      </AnimatePresence>
     </MainContext>
   );
 };
@@ -513,6 +512,14 @@ const EducationCard = ({ profileEducationDetails }) => {
           <span>Qualification/Degree :</span>{" "}
           <span className="font-semibold flex-1 flex">
             {profileEducationDetails.qualification}
+          </span>
+        </div>
+      )}
+      {profileEducationDetails.specification && (
+        <div className="flex items-center justify-start gap-1">
+          <span>Specifiction :</span>{" "}
+          <span className="font-semibold flex-1 flex">
+            {profileEducationDetails.specification}
           </span>
         </div>
       )}
@@ -661,7 +668,7 @@ const ProfileSkillModal = ({
 
     // Clear input and options after selection
     setSearchValue(""); // Clear input field
-    setOptions([]); // Clear options dropdown
+    setOptions(fetchedSkills); // Clear options dropdown
   };
 
   return (
@@ -671,19 +678,18 @@ const ProfileSkillModal = ({
         (open ? "profile-modal-show " : " ")
       }
     >
-      
       <div className="w-[90%] relative lg:w-[50%] h-fit border border-white p-3 md:p-10 rounded-lg">
-      <FaArrowLeft
-        className="absolute top-2 left-2 md:top-5 md:left-5 cursor-pointer"
-        onClick={() => {
-          onClose();
-          setSelectSkills(defaulsSkills);
-        }}
-      />
+        <FaArrowLeft
+          className="absolute top-2 left-2 md:top-5 md:left-5 cursor-pointer"
+          onClick={() => {
+            onClose();
+            setSelectSkills(defaulsSkills);
+          }}
+        />
         <Spin className="w-full h-full" size="large" spinning={loading}>
           <h1 className="mt-5">Select skills</h1>
 
-          <div className="flex flex-wrap gap-1 w-full min-h-40">
+          <div className="flex flex-wrap gap-1 w-full  items-start">
             {selectSkills.map((data) => (
               <Tag
                 val={data.value}
@@ -695,6 +701,12 @@ const ProfileSkillModal = ({
           </div>
 
           <AutoComplete
+            allowClear
+            onChange={(value) => {
+              if (value.trim().length === 0) {
+                alert("Cleared");
+              }
+            }}
             className="w-full mt-7 md:mt-10 h-10 focus:shadow-none"
             placeholder="Search for a skill"
             options={options}
@@ -737,9 +749,19 @@ const ProfileEducationModal = ({
     college: null,
     percentage: null,
     passedYear: null,
+    specification:null
   },
 }) => {
   const [data, setData] = useState({ ...value });
+  const [loading, setLoading] = useState(false);
+  const [qualification, setQualification] = useState([]);
+
+  //Fertched Qualification data
+  const [fetchedData, setFetchedData] = useState(null);
+
+  const [selectedQualification, setSelectQualification] = useState(data.qualification);
+  const [selectedSpecification, setSelectedSpecification] =
+    useState(data.specification);
 
   const currentYear = dayjs().year();
 
@@ -748,6 +770,30 @@ const ProfileEducationModal = ({
       return { ...prev, passedYear: dateString };
     }); // Get selected year as a string
   };
+
+  const fetchQualification = async () => {
+    if (open) {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:5000/qualifications/");
+        if (res.data) {
+          setQualification(Object.keys(res.data));
+          setFetchedData(res.data);
+        } else {
+          message.error("Something Went Wrong");
+        }
+      } catch (error) {
+        // remove after API intigration
+        message.error("Something Went Wrong");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchQualification();
+  }, [open]);
 
   const disableFutureYears = (current) => {
     return current && current.year() > currentYear; // Disable years greater than the current year
@@ -769,22 +815,52 @@ const ProfileEducationModal = ({
           }}
         />
         <h1 className="mb-5">Add Highest Qualification Details</h1>
-        <InputBox
-          key={"Qualification/Degree"}
-          name="qualification"
-          placeholder="Qualification/Degree"
-          value={data.qualification}
-          onChange={(e) =>
-            setData((prev) => {
-              return { ...prev, qualification: e.target.value };
+
+        <CustomAutoComplete
+          value={selectedQualification}
+          placeholder={"Search Qualification"}
+          options={
+            !loading &&
+            qualification.map((d) => {
+              return { label: d, value: d };
             })
           }
+          onChange={(val) => {
+            if (val) {
+              setSelectQualification(val);
+              setSelectedSpecification("");
+              
+            }
+            setData((prev) => {
+              return { ...prev, qualification: val };
+            })
+          }}
         />
+
+        <CustomAutoComplete
+          value={selectedSpecification}
+          placeholder={"Search Specification"}
+          customClass="mt-4"
+          options={
+            !loading &&
+            (selectedQualification
+              ? (fetchedData!== null && fetchedData[`${selectedQualification}`]?.map((d) => {
+                return { value: d, label: d };
+              }))
+              : [])
+          }
+          onChange={(va) => {setSelectedSpecification(va); setData((prev) => {
+            return { ...prev, specification: va };
+          })}}
+        />
+
+        
         <InputBox
           key={"college"}
           placeholder="Institude Name /College"
           customClass="mt-4"
           value={data.college}
+          animate={false}
           onChange={(e) =>
             setData((prev) => {
               return { ...prev, college: e.target.value };
@@ -796,6 +872,7 @@ const ProfileEducationModal = ({
           placeholder="Enter Percentage"
           customClass="mt-4"
           value={data.percentage}
+          animate={false}
           onChange={(e) =>
             setData((prev) => {
               return { ...prev, percentage: e.target.value };
@@ -1121,9 +1198,10 @@ const ProfileSummaryModal = ({
               <Field name="summary">
                 {({ field }) => (
                   <TextArea
+                    variant="borderless"
                     rows={4}
                     allowClear
-                    className="!max-h-[600px] font-outfit"
+                    className="!max-h-[600px] bg-white "
                     placeholder="Enter Profile Summary"
                     maxLength={200}
                     {...field}

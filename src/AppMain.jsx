@@ -31,6 +31,7 @@ const AppMain = () => {
              <Route index element={ <MainPage/> } />
              <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
              <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
+             <Route path = "/user/post-job" element={ <JobApplicationProviderView/> } />
              <Route path = "/user/company" element={ <CompanyPage/> } />
              <Route path='/user/profile' element={<UserProfile/>}/>
              <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
