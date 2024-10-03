@@ -74,8 +74,14 @@ input:focus {
   @apply bg-gray-900;
 }
 
-.font-outfit {
+.font-outfit ,* {
   font-family: "Outfit", system-ui;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.ant-input-textarea-affix-wrapper.ant-input-affix-wrapper >textarea.ant-input {
+  font-family: "Outfit", system-ui !important;
   font-optical-sizing: auto;
   font-style: normal;
 }
@@ -190,13 +196,10 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
 
 .ant-picker-outlined{
   width: 100% !important;
-  box-shadow: none !important;
-  @apply bg-gray-200 !border-gray-200
+  background: white;
 }
 
-.ant-picker-outlined :focus{
-  background: white !important;
-}
+
 .ant-picker-input{
   padding-left: 10px;
 }
@@ -283,3 +286,60 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
 }
 
 
+/* Ckeck box Custom Color */
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: black; /* Background when checked */
+  border-color: black; /* Border color when checked */
+}
+
+/* Change hover color when checked */
+.ant-wave-target{
+  background-color: black; /* Keep background color black when hovered */
+  border-color: white; /* Keep the border white when hovered */
+}
+
+/* On hover for unchecked checkbox */
+.ant-checkbox:hover .ant-checkbox-inner {
+  background-color: white; /* Set background to white */
+  border-color: black; /* Set border to black on hover */
+}
+
+:where(.css-dev-only-do-not-override-5wsri9).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  background-color: rgba(0, 0, 0, 0.88);
+  border-color: transparent;
+}
+
+.ant-select{
+  background: transparent;
+  
+  transition: 0.7s background;
+  box-shadow: none;
+}
+.ant-select-focused{
+  background: white;
+  border: rgb(174, 46, 46) !important;
+}
+.ant-select-selector{
+  outline: none !important;
+  border: gray !important;
+}
+
+:where(.css-dev-only-do-not-override-5wsri9).ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector
+{
+  /* background: rgb(206, 206, 206,0.6); */
+  transition: 0.7s background;
+}
+
+
+:where(.css-dev-only-do-not-override-5wsri9).ant-select .ant-select-selection-placeholder{
+  color: black;
+  font-family: "Outfit", system-ui;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+
+input::placeholder{
+  font-size: 0.9rem !important;
+}

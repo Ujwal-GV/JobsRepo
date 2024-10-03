@@ -27,6 +27,7 @@ import { JobProvider } from './contexts/JobContext';
 
 const AppMain = () => {
   return (
+
     <AuthProvider>
       <JobProvider>
       <BrowserRouter>

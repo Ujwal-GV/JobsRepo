@@ -5,7 +5,8 @@ import AppMain from './AppMain.jsx'
 import { AuthProvider } from './contexts/AuthContext'
 
 createRoot(document.getElementById('root')).render(
+
   <AuthProvider>
     <AppMain/>
-  </AuthProvider>,
+  </AuthProvider>
 )
