@@ -14,6 +14,7 @@ import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 import ProviderProfile from './pages/provider/ProviderProfile'
+import AllPostedJobs from './pages/provider/AllPostedJobs'
 
 import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
 import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
@@ -30,7 +31,7 @@ const AppMain = () => {
       <JobProvider>
       <BrowserRouter>
         <Routes>
-          <Route path = "/login" element={<Login/>} />
+          <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />
           <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
           <Route path = "/reset-password" element={ <SetNewPassword/> } />
@@ -50,6 +51,7 @@ const AppMain = () => {
               <Route path = "/provider/post-job" element={ <JobApplicationProviderView/> } />
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />
+              <Route path = '/provider/all-jobs' element = { <AllPostedJobs /> } />
           </Route>
         </Routes> 
       </BrowserRouter>

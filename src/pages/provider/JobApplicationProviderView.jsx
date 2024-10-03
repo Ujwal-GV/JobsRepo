@@ -59,8 +59,12 @@ const JobApplicationProviderView = () => {
       return;
     }
     setSaved((prev) => !prev);
-    // navigate('/provider/main');
+    navigate(-1);
   };
+
+  const handleBackClick = () => {
+    navigate(-1);
+  }
 
   // const handleDeleteClick = (id) => {
   //   const updatedJobs = jobs.filter((job) => job.id !== id);
@@ -193,7 +197,13 @@ const JobApplicationProviderView = () => {
                       className="border rounded-lg p-2"
                   />
                 </div>
-                <div className="flex flex-center">
+                <div className="flex flex-center gap-2">
+                  <button
+                    className="btn-orange-outline px-3 py-1 flex center gap-1"
+                    onClick={handleBackClick}
+                  >
+                    {"Back"}
+                  </button>
                   <button
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
                     onClick={handleSaveClick}

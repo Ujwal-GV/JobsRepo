@@ -7,20 +7,22 @@ import { IoMdClose } from "react-icons/io";
 import { FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
 import axios from "axios";
 import "antd/dist/reset.css";
-import { FaPhoneAlt, FaSave, FaLocationArrow } from "react-icons/fa";
+import { FaPhoneAlt, FaCheckCircle, FaSave, FaLocationArrow } from "react-icons/fa";
 import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
 import { BiSolidUser ,BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
 import { Input } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaInstagram, FaFacebook, FaTwitter, FaGlobe } from "react-icons/fa";
 
 
 const { TextArea } = Input;
 
 const ProviderProfile = () => {
+  const navigate = useNavigate();
+  const [saved, setSaved] = useState(false);
   const [personalDetailsModelOpen, setpersonalDetailsModelOpen] = useState(false);
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
   const [companyLinkModel, setCompanyLinkModel] = useState(false);
@@ -54,6 +56,15 @@ const ProviderProfile = () => {
   const handleCompanyLinkChange = (updatedLinks) => {
     setCompanyLink(updatedLinks);
   };
+
+  const handleSaveClick = () => {
+    setSaved((prev) => !prev);
+    navigate(-1);
+  };
+
+  const handleBackClick = () => {
+    navigate(-1);
+  }
   
 
   return (
@@ -93,6 +104,25 @@ const ProviderProfile = () => {
                 <FaLocationArrow className="text-orange-600" />{" "}
                 {personalDetails.location}
               </h1>
+              <div className="flex flex-center mt-5 m-2 md:mt-5 md:mb-0 gap-3">
+                <button
+                  className="btn-orange-outline px-3 py-1 flex center gap-1"
+                  onClick={handleBackClick}
+                >
+                  {"Back"}
+                </button>
+                <button
+                    className="btn-orange-outline px-3 py-1 flex center gap-1"
+                    onClick={handleSaveClick}
+                  >
+                    {saved ? (
+                      <FaCheckCircle className="text-orange-600" />
+                    ) : (
+                      <></>
+                    )}
+                    {saved ? "Saved" : "Save"}
+                  </button>
+              </div>
             </div>
           </div>
 

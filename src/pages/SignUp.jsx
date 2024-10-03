@@ -47,7 +47,7 @@ function SignUp() {
 
 
   return (
-    <div className="h-screen w-full center">
+    <div className="h-screen w-full center font-outfit">
        <Formik
         initialValues={{  email: "", password: "" ,name:""}}
         validationSchema={signupValidationSchema}

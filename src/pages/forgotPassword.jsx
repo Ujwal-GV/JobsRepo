@@ -11,7 +11,7 @@ function ForgotPassword() {
   const handlePasswordReset = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/user/forgot-password', {
+      const response = await axios.post('http://localhost:8087/user/forgot-password', {
         email: values.email,
       });
 
