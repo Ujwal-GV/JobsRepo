@@ -23,6 +23,7 @@ import JobDetails from './pages/provider/JobDetails'
 
 import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
+import ScrollToTop from './components/ScrollToTop'
 
 
 const AppMain = () => {
@@ -31,6 +32,7 @@ const AppMain = () => {
     <AuthProvider>
       <JobProvider>
       <BrowserRouter>
+      <ScrollToTop />
         <Routes>
           <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />

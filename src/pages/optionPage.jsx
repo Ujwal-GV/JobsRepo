@@ -11,7 +11,7 @@ function OptionPage() {
     if (role === "freelancer") {
       navigate("/freelancer");
     } else if (role === "jobPoster") {
-      navigate("/provider/post-job");
+      navigate("/provider/profile");
     }
     setLoading(false);
   };
