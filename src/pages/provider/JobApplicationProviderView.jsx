@@ -225,7 +225,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
     const alreadySelected = selectQualifications.some((qualification) => qualification.value === value);
 
     if (alreadySelected) {
-      message.error("Skill already selected");
+      message.error("Category already selected");
       return;
     }
 
@@ -258,7 +258,116 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
           onSearch={handleSearch}
           onSelect={handleSelect}
           options={options}
-          placeholder="Search for a qualification"
+          placeholder="Search for a category"
+          value={searchValue}
+          className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
+        />
+      </Spin>
+    </div>
+  );
+};
+
+const SubCategorySelector = ({ defaultSubCategories = [], onChange = () => {}, title="" }) => {
+  const [selectSubCategories, setSelectSubCategories] = useState(defaultSubCategories);
+  const [options, setOptions] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [fetchedSubCategories, setFetchedSubCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const fetchAllSubCategories = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("http://localhost:8087/qualifications/subcategories/");
+      if (res.data) {
+        setOptions(res.data);
+        setFetchedSubCategories(res.data);
+      } else {
+        message.error("Something Went Wrong");
+      }
+    } catch (error) {
+      message.error("Something Went Wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllSubCategories();
+  }, []);
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    const filteredOptions = fetchedSubCategories
+      .filter((subCategory) =>
+        subCategory.label.toLowerCase().includes(value.toLowerCase())
+      )
+      .map((subCategory) => ({
+        label: subCategory.label,
+        value: subCategory.value,
+      }));
+
+    if (
+      value &&
+      !filteredOptions.some(
+        (option) => option.value.toLowerCase() === value.toLowerCase()
+      )
+    ) {
+      filteredOptions.push({
+        label: value,
+        value,
+      });
+    }
+
+    setOptions(filteredOptions);
+  };
+
+  const handleDelete = (label) => {
+    const subCategoriesAfterDelete = selectSubCategories.filter(
+      (subCategory) => subCategory.label.toLowerCase() !== label.toLowerCase()
+    );
+    setSelectSubCategories(subCategoriesAfterDelete);
+    onChange(subCategoriesAfterDelete);
+  };
+
+  const handleSelect = (value) => {
+    const alreadySelected = selectSubCategories.some((subCategory) => subCategory.value === value);
+
+    if (alreadySelected) {
+      message.error("Sub Category already selected");
+      return;
+    }
+
+    const selectedSubCategory = fetchedSubCategories.find((subCategory) => subCategory.value === value);
+    const newSubCategory = selectedSubCategory || { label: value, value };
+
+    setSelectSubCategories([...selectSubCategories, newSubCategory]);
+    setSearchValue("");
+    setOptions(fetchedSubCategories);
+    onChange([...selectSubCategories, newSubCategory]);
+  };
+
+  return (
+    <div className="flex flex-row">
+      <Spin spinning={loading}>
+        <KeyHighlightsListItem key={"1"} title={title} value={null} />
+        <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
+          {selectSubCategories.map((data) => (
+            <Tag
+              val={data.value}
+              key={data.label}
+              close={true}
+              onClick={() => handleDelete(data.label)}
+            />
+          ))}
+        </div>
+
+        < AutoComplete
+          allowClear
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          options={options}
+          placeholder="Search for a sub category"
           value={searchValue}
           className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
         />
@@ -394,13 +503,11 @@ const JobApplicationProviderView = () => {
   return (
     <MainContext>
       {/* Wrapper for the entire content */}
-      <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex flex-col gap-10">
+      <div className="w-full mx-auto min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex flex-col gap-10">
         
         {/* Top Section: Company and Person Details */}
-        <form onSubmit={handleSubmit} className="w-full lg:w-full flex flex-col lg:flex-row gap-10">
+        <form onSubmit={handleSubmit} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
           
-          {/* Left Section */}
-          <div className="w-full lg:w-[55%] job-apply-section relative">
             {/* Company and Person Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
               <img 
@@ -471,31 +578,79 @@ const JobApplicationProviderView = () => {
                       className="border rounded-lg p-2"
                   />
                 </div>
-                <div className="flex flex-row mt-4 gap-2 sxl: flex flex-row">
-                  <button
-                    className="btn-orange-outline px-3 py-1 flex center gap-1"
-                    onClick={handleBackClick}
-                  >
-                    {"Back"}
-                  </button>
-                  <button
-                    className="btn-orange-outline px-3 py-1 flex center gap-1"
-                    onClick={handleSaveClick}
-                  >
-                    {saved ? (
-                      <FaCheckCircle className="text-orange-600" />
-                    ) : (
-                      <></>
-                    )}
-                    {saved ? "Saved" : "Save"}
-                  </button>
-                </div>
               </div>
             </div>
 
             {/* Key Highlights */}
-            <div className="w-full rounded-xl mt-8 h-fit bg-white p-5 md:p-10 font-outfit">
+            {/* <div className="w-full rounded-xl mt-8 h-fit bg-white p-5 md:p-10 font-outfit">
               <h1 className="text-xl md:text-2xl font-semibold mb-4">Key Highlights</h1>
+              <ul className="mt-3">
+                Industry
+                {/* <li className="flex flex-col mb-4 mt-4">
+                  <KeyHighlightsListItem
+                    key={'1-1'}
+                    title="Industry"
+                  />
+                  <div className="flex flex-col mt-4">
+                    {industryOptions.map((option) => (
+                      <label key={option.id} className="flex items-center mb-2 mx-7">
+                        <input
+                          type="radio"
+                          name="industry"
+                          value={option.label}
+                          checked={jobDetails.industry === option.label}
+                          onChange={handleIndustryChange}
+                          className="mr-2 cursor-pointer accent-orange-600"
+                          required
+                        />
+                        {option.label}
+                      </label>
+                    ))}
+                  </div>
+                </li>
+              </ul>
+            </div> */}
+
+            {/* Qualification Section */}
+            <div className="w-full rounded-xl ml-0 mb-8 h-fit bg-white p-5 mt-8 md:p-10 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">Qualifications</h1>
+              <ul className="mt-3">
+                {/* Required Qualification */}
+                <li className="flex flex-col md:flex flex-col items-start mb-4">
+                  <div className="w-full lg:w-full flex flex-col lg:flex-col gap-4 md:gap-2">
+                    <QualificationSelector
+                      defaultQualifications={jobDetails.qualifications || []}
+                      onChange={(selectedQualifications) => {
+                        setJobDetails((prev) => ({
+                          ...prev,
+                          qualifications: selectedQualifications,
+                        }));
+                      }}
+                      title="Category"
+                    />
+                  </div>
+                </li>
+
+                <li className="flex flex-col md:flex flex-col items-start mb-4">
+                  <div className="w-full lg:w-full flex flex-col lg:flex-col gap-4 md:gap-2">
+                    <SubCategorySelector
+                      defaultSubCategories={jobDetails.subCategories || []}
+                      onChange={(selectedSubCategories) => {
+                        setJobDetails((prev) => ({
+                          ...prev,
+                          subCategories: selectedSubCategories,
+                        }));
+                      }}
+                      title="Sub Category"
+                    />
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* More Details */}
+            <div className="w-full rounded-xl h-fit bg-white p-5 md:p-10 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">More Details</h1>
               <ul className="mt-3">
 
                 {/* Location */}
@@ -527,37 +682,6 @@ const JobApplicationProviderView = () => {
                     />
                   </div>
                 </li>
-
-                {/* Industry */}
-                <li className="flex flex-col mb-4 mt-4">
-                  <KeyHighlightsListItem
-                    key={'1-1'}
-                    title="Industry"
-                  />
-                  <div className="flex flex-col mt-4">
-                    {industryOptions.map((option) => (
-                      <label key={option.id} className="flex items-center mb-2 mx-7">
-                        <input
-                          type="radio"
-                          name="industry"
-                          value={option.label}
-                          checked={jobDetails.industry === option.label}
-                          onChange={handleIndustryChange}
-                          className="mr-2 cursor-pointer accent-orange-600"
-                          required
-                        />
-                        {option.label}
-                      </label>
-                    ))}
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            {/* More Details */}
-            <div className="w-full rounded-xl mt-8 h-fit bg-white p-5 md:p-10 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">More Details</h1>
-              <ul className="mt-3">
 
                 {/* Department */}
                 <li className="flex flex-col md:flex-col items-start mb-4">
@@ -605,46 +729,6 @@ const JobApplicationProviderView = () => {
                   </div>
                 </li>
 
-
-                {/* Qualification */}
-                {/* <li className="flex flex-col md:flex-row items-start mb-4">
-                  <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
-                    <div className="flex flex-col mt-4 w-full lg:w-[55%]">
-                    <KeyHighlightsListItem
-                      key={"1-2"}
-                      title="Qualification"
-                      value={null}
-                    />
-                    </div>
-                    <div className="flex flex-col w-full p-2 lg:w-[45%]">
-                      <input
-                        type="text"
-                        name="education"
-                        placeholder="Enter the Qualification"
-                        value={jobDetails.education}
-                        onChange={handleChange}
-                        className="w-full border rounded-lg p-2"
-                        required
-                      />
-                    </div>
-                  </div>
-                </li> */}
-
-                <li className="flex flex-col md:flex-row items-start mb-4">
-                  <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
-                    <QualificationSelector
-                      defaultQualifications={jobDetails.qualifications || []}
-                      onChange={(selectedQualifications) => {
-                        setJobDetails((prev) => ({
-                          ...prev,
-                          qualifications: selectedQualifications,
-                        }));
-                      }}
-                      title="Qualification"
-                    />
-                  </div>
-                </li>
-
                 {/* Employment Type */}
                 <li className="flex flex-col mb-4 mt-8">
                   <KeyHighlightsListItem
@@ -679,7 +763,7 @@ const JobApplicationProviderView = () => {
                         value={null}
                       />
                     </div>
-                    <div className="flex flex-row md:flex flex-row w-3/4 p-2 lg:w-[55%]">
+                    <div className="flex flex-col md:flex flex-row w-3/4 p-2 lg:w-[55%]">
                       <input
                         type="text"
                         name="package"
@@ -692,7 +776,7 @@ const JobApplicationProviderView = () => {
                         value={currency}
                         onChange={setCurrency}
                         options={currencyOptions}
-                        className="w-full mt-2 md:w-1/2 font-outfit"
+                        className="w-full mt-2 md:w-1/2 sm:w-1/4 font-outfit"
                       />
                     </div>
                   </div>
@@ -700,12 +784,9 @@ const JobApplicationProviderView = () => {
 
               </ul>
             </div>
-          </div>
 
-          {/* Right Section: About Company */}
-          <div className="w-full lg:w-[55%] job-apply-section relative">
             {/* Skills Section */}
-            <div className="w-full rounded-xl ml-0 mb-8 h-fit bg-white p-5 md:p-10 font-outfit">
+            <div className="w-full rounded-xl ml-0 mb-8 h-fit bg-white p-5 mt-8 md:p-10 font-outfit">
               <h1 className="text-xl md:text-2xl font-semibold mb-4">Skills</h1>
               <ul className="mt-3">
                 {/* Required Skills */}
@@ -760,7 +841,7 @@ const JobApplicationProviderView = () => {
               </ul>
             </div>
 
-            <div className="w-full lg:w-full mt-5 md:mt-0 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-2 md:p-5">
+            <div className="w-full lg:w-full mt-5 md:mt-0 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-5 md:p-5">
               <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
                 About Company
               </h1>
@@ -786,49 +867,28 @@ const JobApplicationProviderView = () => {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </form>
-
-        {/* Jobs Posted by You */}
-        {/* <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 font-outfit">
-          <h1 className="text-xl md:text-2 xl font-semibold mb-4">
-            Jobs Posted by You
-          </h1>
-          {jobs.length === 0 ? (
-            <p className="text-center text-gray-500">No jobs have been posted by you.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {jobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-white shadow-md rounded-lg p-4 flex justify-between items-center"
-                >
-                  <div>
-                    <h3 className="font-semibold text-lg">{job.title}</h3>
-                    <p className="text-sm mt-2">Applicants: {job.applicants}</p>
-                    <p className="text-sm mt-2 text-gray-500">Application ID: {job.applicationId}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm flex items-center"
-                      onClick={() => handleViewClick(job)}
-                    >
-                      <FaEye className="mr-1" />
-                    </button>
-
-                    <button 
-                      className="px-3 py-2 bg-black text-white rounded-lg text-sm flex items-center"
-                      onClick={() => handleDeleteClick(job.id)}
-                    >
-                      <FaTrash className="mr-1" />
-                    </button>
-                  </div>
+              
+              <div className="flex flex-row items-center mt-4 gap-2 sxl: flex flex-row">
+                  <button
+                    className="btn-orange-outline px-3 py-1 flex center gap-1"
+                    onClick={handleBackClick}
+                  >
+                    {"Back"}
+                  </button>
+                  <button
+                    className="btn-orange-outline px-3 py-1 flex center gap-1"
+                    onClick={handleSaveClick}
+                  >
+                    {saved ? (
+                      <FaCheckCircle className="text-orange-600" />
+                    ) : (
+                      <></>
+                    )}
+                    {saved ? "Saved" : "Save"}
+                  </button>
                 </div>
-              ))}
             </div>
-          )}
-        </div> */}
+        </form>
       </div>
     </MainContext>
   );

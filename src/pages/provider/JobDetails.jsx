@@ -25,9 +25,8 @@ const JobDetails = () => {
       {/* Wrapper for the entire content */}
       <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 lg:w-full flex flex-col gap-10">
         {/* Flex container for left and right sections */}
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
           {/* Left Section */}
-          <div className="w-full lg:w-[45%] job-apply-section relative">
             {/* Company and Person Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
               <img 
@@ -56,67 +55,35 @@ const JobDetails = () => {
               </div>
             </div>
 
-            {/* Key Highlights */}
-            <div className="w-full rounded-xl mt-8 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                Key Highlights
-              </h1>
-              <ul className="mt-3">
-                <li className="mb-4">
-                  <KeyHighlightsListItem
-                    key={"1"}
-                    title="Location"
-                    value={job.location ? job.location : "Not disclosed"}
-                  />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem
-                    key={"1-1"}
-                    title="Industry"
-                    value={job.industry}
-                  />
-                </li>
-              </ul>
-            </div>
-
             {/* More Details */}
             <div className="w-full rounded-xl mt-8 h-fit bg-white p-4 md:p-5 font-outfit">
               <h1 className="text-xl md:text-2xl font-semibold mb-4">
                 More Details
               </h1>
               <ul className="mt-3">
-                <li className="mb-4">
+              <li className="mb-4">
                   <KeyHighlightsListItem
                     key={"1"}
+                    title="Location"
+                    value={job.location ? job.location : "Not disclosed"}
+                  />
+                </li>
+
+                <li className="mb-4">
+                  <KeyHighlightsListItem
+                    key={"1-1"}
                     title="Department"
                     value={job.department ? job.department : "Not specified"}
                   />
                 </li>
                 <li className="mb-4">
                   <KeyHighlightsListItem
-                    key={"1-1"}
+                    key={"1-2"}
                     title="Role"
                     value={job.jobRole ? job.jobRole : "Not specified"}
                   />
                 </li>
-                <li className="mb-4">
-                <KeyHighlightsListItem
-                    key={"1-2"}
-                    title="Qualification"
-                    value={null}
-                  />
-                {job.qualifications && job.qualifications.length > 0 ? (
-                  job.qualifications.map((qualification, index) => (
-                    <div className="mt-2 mb-2">
-                      <li className="ml-7 list-disc">
-                        {qualification.value}
-                        </li>
-                    </div>
-                  ))
-                ) : (
-                  <p>Qualification not sepcified</p>
-                )}
-                </li>
+                
                 <li className="mb-4">
                   <KeyHighlightsListItem 
                     key={"1-3"} 
@@ -133,55 +100,97 @@ const JobDetails = () => {
                 </li>
               </ul>
             </div>
-          </div>
+
+            <div className="w-full rounded-xl mt-8 h-fit bg-white p-4 md:p-5 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">
+                Qualifications
+              </h1>
+              <ul className="mt-3">
+              <li className="mb-4">
+                <KeyHighlightsListItem
+                    key={"1"}
+                    title="Category"
+                    value={null}
+                  />
+                {job.qualifications && job.qualifications.length > 0 ? (
+                  job.qualifications.map((qualification, index) => (
+                    <div className="mt-3 mb-3">
+                      <li className="ml-7 list-disc">
+                        {qualification.value}
+                        </li>
+                    </div>
+                  ))
+                ) : (
+                  <p>Not sepcified</p>
+                )}
+                </li>
+
+                <li className="mb-4">
+                <KeyHighlightsListItem
+                    key={"1-1"}
+                    title="Sub-Category"
+                    value={null}
+                  />
+                {job.subCategories && job.subCategories.length > 0 ? (
+                  job.subCategories.map((subCategory, index) => (
+                    <div className="mt-3 mb-3">
+                      <li className="ml-7 list-disc">
+                        {subCategory.value}
+                        </li>
+                    </div>
+                  ))
+                ) : (
+                  <p>Not sepcified</p>
+                )}
+                </li>
+              </ul>
+            </div>
 
           {/* Right Section: About Company */}
-          <div className="w-full lg:w-[55%] job-apply-section relative">
-            <div className="w-full rounded-xl mt-8 h-fit bg-white p-4 md:p-5 md:mt-0 font-outfit">
-                <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                  Required Skills
-                </h1>
-                {job.skills && job.skills.length > 0 ? (
-                  job.skills.map((skill, index) => (
-                    <div className="mb-2">
-                      <KeyHighlightsListItem
-                        key={index}
-                        title={null}
-                        value={skill.value}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <p>No skills listed</p>
-                )}
+          <div className="w-full rounded-xl mt-8 h-fit bg-white p-4 md:p-5 md:mt-8 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">
+                Required Skills
+              </h1>
+              {job.skills && job.skills.length > 0 ? (
+                job.skills.map((skill, index) => (
+                  <div className="mb-2">
+                    <KeyHighlightsListItem
+                      key={index}
+                      title={null}
+                      value={skill.value}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p>No skills listed</p>
+              )}
 
-              <h1 className="text-xl md:text-2xl font-semibold mb-4 mt-6">
-                  Optional Skills
-                </h1>
-                {job.optionalSkills && job.optionalSkills.length > 0 ? (
-                  job.optionalSkills.map((optionalSkill, index) => (
-                    <div className="mb-2">
-                      <KeyHighlightsListItem
-                        key={index}
-                        title={null}
-                        value={optionalSkill.value}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <p>No skills listed</p>
-                )}
-              </div>
-
-              <div className="w-full lg:w-full mt-5 md:p-5 md:mt-8 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-4 md:p-5">
-                <strong>Job Description:</strong>
-                <div
-                  className="mt-2 p-4 text-justify"
-                  dangerouslySetInnerHTML={{ __html: job.jobDescription }}
-                />
-              </div>
+            <h1 className="text-xl md:text-2xl font-semibold mb-4 mt-6">
+                Optional Skills
+              </h1>
+              {job.optionalSkills && job.optionalSkills.length > 0 ? (
+                job.optionalSkills.map((optionalSkill, index) => (
+                  <div className="mb-2">
+                    <KeyHighlightsListItem
+                      key={index}
+                      title={null}
+                      value={optionalSkill.value}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p>No skills listed</p>
+              )}
             </div>
-        </div>
+
+            <div className="w-full lg:w-full mt-5 md:p-5 md:mt-8 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-4 md:p-5">
+              <strong>Job Description:</strong>
+              <div
+                className="mt-2 p-4 text-justify"
+                dangerouslySetInnerHTML={{ __html: job.jobDescription }}
+              />
+            </div>
+          </div>
       </div>
     </MainContext>
   );
