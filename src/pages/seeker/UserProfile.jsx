@@ -4,7 +4,7 @@ import ProfileAvatar from "../../components/ProfileAvatar";
 import InputBox from "../../components/InputBox";
 import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import { FaArrowLeft, FaCircleCheck } from "react-icons/fa6";
+import { FaArrowLeft} from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
 import { AutoComplete, DatePicker, message, Select, Spin } from "antd";
 import axios from "axios";
@@ -22,6 +22,7 @@ import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
 import CustomAutoComplete from "../../components/CustomAutoComplete";
+import { HiBadgeCheck } from "react-icons/hi";
 
 const { TextArea } = Input;
 
@@ -109,7 +110,7 @@ const UserProfile = () => {
         <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
           {/* BreadCrumbs */}
 
-          <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
+          <div className="w-full flex center py-3 pt-2   bg-slate-100">
             <CustomBreadCrumbs
               items={[
                 {
@@ -165,7 +166,7 @@ const UserProfile = () => {
 
           {/* Other Profile Details */}
 
-          <div className="w-[60%]   mx-auto flex flex-col gap-2 md:gap-0 sm:flex-row justify-evenly items-center p-1 border-t mt-2">
+          <div className="w-[100%]   mx-auto flex flex-col gap-2 md:gap-0 sm:flex-row justify-evenly items-center p-1 border-t mt-2">
             <DeatilsBadge
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Applied"
@@ -219,7 +220,7 @@ const UserProfile = () => {
                     freezeBody();
                   }}
                 >
-                  <div className="flex flex-wrap gap-1 w-full md:min-h-[100px]">
+                  <div className="flex flex-wrap gap-1 w-full md:max-h-[100px] custom-scroll-nowidth overflow-auto">
                     {profileSkills.length === 0 ? (
                       <div className="w-full gap-1 center flex">
                         <TbMoodEmptyFilled /> No Skills Selected
@@ -281,12 +282,12 @@ const UserProfile = () => {
                       <>
                         {Object.values(listOfIntership).map((idata, idx) => (
                           <div
-                            className="flex w-full justify-start items-center gap-1 "
+                            className="flex w-full justify-start items-start gap-1 "
                             key={idx}
                           >
                             <KeyHighlightsListItem
                               icon={
-                                <FaCircleCheck className="text-green-700" />
+                                <HiBadgeCheck className="text-green-700" />
                               }
                             />
                             <InternShipCard
@@ -402,7 +403,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={
-        "w-[250px] md:w-fit h-[50px] cursor-pointer  center flex gap-1 border bg-white rounded-lg px-3 "
+        "w-full md:w-fit h-[50px] cursor-pointer  center flex gap-1 border bg-white rounded-lg px-3 "
       }
     >
       {icon}{" "}
@@ -429,7 +430,7 @@ const Tag = ({ close = false, onClick = () => {}, val, className = "" }) => {
     <div
       onClick={onClick}
       className={
-        "rounded-full cursor-pointer center gap-1 bg-white h-10 border hover:border-gray-950  px-3 text-sm " +
+        "rounded-full cursor-pointer center gap-1 bg-slate-50 h-10 border hover:border-gray-950  px-3 text-sm " +
         (close && " active-tag ") +
         className
       }
@@ -465,7 +466,7 @@ const ProfileGender = ({
   return (
     <div
       className={
-        "w-full h-fit flex justify-start items-center gap-3 bg-gray-200 rounded-lg p-2 ps-4 " +
+        "w-full h-fit flex justify-start items-center gap-3 bg-white rounded-lg p-2 ps-4 " +
         customClass
       }
     >
@@ -558,7 +559,7 @@ const InternShipCard = ({
   return (
     <div
       className={
-        "flex flex-col gap-0 w-full  bg-white rounded-lg mb-2 p-2  md:px-1 "
+        "flex flex-col gap-0 w-full  bg-white rounded-lg mb-2  "
       }
     >
       <h1 className="mb-1 text-[1.1rem] flex justify-start items-center gap-2">
@@ -593,7 +594,7 @@ const ProfileSkillModal = ({
     if (open) {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/skills/");
+        const res = await axios.get("http://localhost:8087/skills/");
         if (res.data) {
           setOptions(res.data);
           setFetchedSkills(res.data);
@@ -775,7 +776,7 @@ const ProfileEducationModal = ({
     if (open) {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/qualifications/");
+        const res = await axios.get("http://localhost:8087/qualifications/");
         if (res.data) {
           setQualification(Object.keys(res.data));
           setFetchedData(res.data);
@@ -956,6 +957,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="fullName">
                 {({ field }) => (
                   <InputBox
+                  animate={false}
                     {...field}
                     icon={<MdPerson />} // Icon for full name
                     placeholder="Full Name"
@@ -971,6 +973,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="email">
                 {({ field }) => (
                   <InputBox
+                  animate={false}
                     {...field}
                     icon={<MdEmail />} // Icon for email
                     placeholder="Email"
@@ -985,6 +988,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="mobile">
                 {({ field }) => (
                   <InputBox
+                   animate={false}
                     {...field}
                     icon={<FaPhoneAlt />} // Icon for mobile
                     placeholder="Enter Mobile"
@@ -1088,6 +1092,7 @@ const ProfileIntershipModal = ({
               <Field name="company">
                 {({ field }) => (
                   <InputBox
+                   animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Company Name"
@@ -1100,6 +1105,7 @@ const ProfileIntershipModal = ({
               <Field name="project">
                 {({ field }) => (
                   <InputBox
+                  animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Project Name"
@@ -1114,6 +1120,7 @@ const ProfileIntershipModal = ({
               <Field name="description">
                 {({ field }) => (
                   <InputBox
+                  animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Description about project"

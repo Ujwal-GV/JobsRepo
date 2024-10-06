@@ -6,12 +6,104 @@ import SearchJobCard from "../../components/SearchJobCard";
 import { FaChevronCircleDown } from "react-icons/fa";
 import { Checkbox } from "antd";
 import { CiFilter } from "react-icons/ci";
+import { Popover } from "antd";
 
 const SearchFilterPage = () => {
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [totalData, setTotalData] = useState(50);
   const [currentPage, setCurrentPage] = useState(50);
+  const [locationFilter,setLocationFilter] = useState({})
+  const [workType,setWorkType] = useState({})
+
+
+  // All About Filters
+
+  const indianCities = [
+    
+    "Visakhapatnam",
+    "Vijayawada",
+    "Tirupati",
+    "Nellore",
+    "Kakinada",
+    "Guwahati",
+
+    "Patna",
+    "Muzaffarpur",
+    "Raipur",
+
+    // Goa
+    "Panaji",
+
+    // Gujarat
+    "Ahmedabad",
+    "Surat",
+    "Rajkot",
+
+    // Haryana
+    "Chandigarh",
+    "Gurgaon (Gurugram)",
+
+    // Himachal Pradesh
+    "Shimla",
+    "Dharamshala",
+    "Ranchi",
+    "Jamshedpur",
+    "Bangalore (Bengaluru)",
+    "Mysore (Mysuru)",
+    "Hubli-Dharwad",
+    "Mangalore",
+    "Thiruvananthapuram",
+    "Kochi (Cochin)",
+    "Kozhikode (Calicut)",
+    "Malappuram",
+    "Bhopal",
+    "Indore",
+    "Mumbai",
+    "Pune",
+    "Nagpur",
+    "Cuttack",
+    "Chandigarh",
+    "Amritsar",
+    "Jaipur",
+    "Udaipur",
+    "Jodhpur",
+    "Chennai",
+    "Coimbatore",
+    "Madurai",
+    "Tiruchirappalli",
+    "Hyderabad",
+    "Warangal",
+    "Agartala",
+    "Lucknow",
+    "Kanpur",
+    "Varanasi",
+    "Agra",
+    "Dehradun",
+    "Haridwar",
+    "Nainital",
+
+    "Kolkata",
+    "Siliguri",
+    "Howrah",
+    "Durgapur",
+
+    "Delhi",
+    "Puducherry",
+    "Jammu",
+    "Srinagar",
+  ];
+
+
+  const handleLocationFilter = (val)=>{
+
+    setLocationFilter((prev)=>{return {...val}})
+
+  }
+
+  const handleWorkTypeFilter = (val)=>{
+    setLocationFilter((prev)=>{return {...val}})
+  }
+
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -19,6 +111,10 @@ const SearchFilterPage = () => {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // You can change this to 'auto' if you don't want a smooth scroll
+    });
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -33,14 +129,17 @@ const SearchFilterPage = () => {
           <h2 className="mb-4 flex justify-between items-center px-2">
             <span>All Filters</span>
             <span className="relative">
-               <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white"/>
-              <CiFilter  className="text-xl"/>
+              <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
+              <CiFilter className="text-xl" onClick={()=>console.log(locationFilter)} />
             </span>
           </h2>
-          <FilterItem />
-          <FilterItem />
-          <FilterItem />
-          <FilterItem />
+          <FilterItem title={"Location"} data={indianCities} key={"location"} maxData={10}  onChange={handleLocationFilter}/>
+          <FilterItem
+            title={"Employeement Type"}
+            data={["Full Time", "Part Time", "Hybrid"]}
+            key={"emp_type"}
+            onChange={handleWorkTypeFilter}
+          />
         </div>
 
         {/* Search data */}
@@ -76,37 +175,30 @@ const SearchFilterPage = () => {
 
 export default SearchFilterPage;
 
-const FilterItem = () => {
+const FilterItem = ({ title, data = [] ,onChange=()=>{} ,maxData=4 }) => {
   const [maxHeight, setMaxHeight] = useState(0); // State to store maxHeight
   const contentRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
 
+  const [selectedFilter, setSelectedFilter] = useState({});
 
-  const [selectedFilter,setSelectedFilter] = useState({});
-
-
-  const handleFilterChnage =({name,checked})=>{
-    
-    let upadtedFilter = {...selectedFilter};
-    if(!checked)
-    {
-      delete upadtedFilter[`${name}`]
+  const handleFilterChnage = ({ name, checked }) => {
+    let upadtedFilter = { ...selectedFilter };
+    if (!checked) {
+      delete upadtedFilter[`${name}`];
+    } else {
+      upadtedFilter = { ...upadtedFilter, [`${name}`]: checked };
     }
-    else{
-        upadtedFilter = {...upadtedFilter ,[`${name}`]:checked}
+    setSelectedFilter((prev) => {
+      return { ...upadtedFilter };
+    });
+  };
+
+  useEffect(() => {
+    if (selectedFilter !== null) {
+      onChange(selectedFilter)
     }
-     setSelectedFilter((prev)=>{return { ...upadtedFilter}})
-     
-    
-  }
-
-
-  useEffect(()=>{
-       if(selectedFilter!==null)
-       {
-        console.log(selectedFilter)
-       }
-  },[selectedFilter])
+  }, [selectedFilter]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -120,18 +212,18 @@ const FilterItem = () => {
     }
   }, [collapse]);
 
-
-
   return (
     <div className="w-full px-1 border-b border-slate-100 mt-3">
       <h1 className="flex justify-between px-2 font-outfit">
-        Location{" "}
-        <FaChevronCircleDown
-          className={
-            "cursor-pointer duration-500 " + (!collapse && "rotate-180")
-          }
-          onClick={() => setCollapse((prev) => !prev)}
-        />{" "}
+        {title}
+        {data.length > 0 && (
+          <FaChevronCircleDown
+            className={
+              "cursor-pointer duration-500 " + (!collapse && "rotate-180")
+            }
+            onClick={() => setCollapse((prev) => !prev)}
+          />
+        )}
       </h1>
       <div
         ref={contentRef}
@@ -142,12 +234,55 @@ const FilterItem = () => {
           overflow: "hidden",
         }}
       >
-        {["Data1", "Data2", "Data3", "Data4"].map((item, idx) => (
-          <Checkbox checked={ selectedFilter[`${item}`] !=null ? true :false } className="font-outfit" key={idx} name={item} onChange={(e)=>handleFilterChnage(e.target)}>
+        {data.slice(0, maxData).map((item, idx) => (
+          <Checkbox
+            checked={selectedFilter[`${item}`] != null ? true : false}
+            className="font-outfit"
+            key={idx}
+            name={item}
+            onChange={(e) => handleFilterChnage(e.target)}
+          >
             {item}
           </Checkbox>
         ))}
+
+        {data.length > maxData && (
+          <p className="text-sm text-end cursor-pointer w-full">
+            <Popover
+              placement="rightTop"
+              content={
+                <FilterMorePopOverContent
+                  data={data}
+                  onChange={handleFilterChnage}
+                  selectedFilter={selectedFilter}
+                />
+              }
+              trigger={"click"}
+            >
+              <button>View more+</button>
+            </Popover>
+          </p>
+        )}
       </div>
+    </div>
+  );
+};
+
+const FilterMorePopOverContent = ({ data, onChange ,selectedFilter }) => {
+  return (
+   
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {data.map((d, idx) => (
+        <Checkbox
+          className="font-outfit max-w-fit"
+          checked={selectedFilter[`${d}`] != null ? true : false}
+          key={idx}
+          name={d}
+          onChange={(e) => onChange(e.target)}
+        >
+          {d}
+        </Checkbox>
+      ))}
     </div>
   );
 };
