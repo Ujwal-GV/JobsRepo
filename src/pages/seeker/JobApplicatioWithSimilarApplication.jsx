@@ -4,6 +4,8 @@ import { FaCheckCircle } from "react-icons/fa";
 import JobSuggestionCard from "../../components/JobSuggestionCard";
 import { jobData } from "../../../assets/dummyDatas/Data";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
+import { IoIosPeople  , IoIosBriefcase } from "react-icons/io";
+
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -20,7 +22,11 @@ const JobApplicatioWithSimilarApplication = () => {
     <MainContext>
       <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex justify-between md:gap-3 lg:gap-10 flex-col lg:flex-row">
         <div className="w-full  lg:w-[55%] job-apply-section">
-          <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit">
+          <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit relative">
+            <img
+              className="bg-red-500 absolute top-2 right-2 md:top-10 md:right-10 w-16 h-16 rounded-lg"
+              src="https://vakilsearch.com/blog/wp-content/uploads/2022/06/What-is-meant-by-Pvt-Ltd-company_-.jpg"
+            />
             <h1 className="text-[1.3rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
               React JS Developer{" "}
             </h1>
@@ -28,12 +34,12 @@ const JobApplicatioWithSimilarApplication = () => {
             <div className="flex gap-2">
               <span>Experinece</span>
               <VerticalBar />
-              <span>Salary</span>
+              <span className="flex center gap-1"><IoIosBriefcase/> Salary</span>
             </div>
             <hr className="mt-10 mb-2" />
             <div className="flex justify-between items-center">
               <div>
-                <span>Applicants : 22323</span>{" "}
+                <span className="flex center gap-1"> <IoIosPeople/> Applicants : 22323</span>
               </div>
               <div className="flex center gap-3">
                 <button className="btn-orange px-3 py-1 tracking-widest">
@@ -44,11 +50,13 @@ const JobApplicatioWithSimilarApplication = () => {
                   onClick={handleSaveClick}
                 >
                   {saved ? (
-                    <FaCheckCircle className="text-orange-600" />
+                    <>
+                      <FaCheckCircle className="text-orange-600" />
+                      Saved
+                    </>
                   ) : (
-                    <></>
+                    <>Save</>
                   )}
-                  {saved ? "Saved" : "Save"}
                 </button>
               </div>
             </div>
@@ -74,10 +82,26 @@ const JobApplicatioWithSimilarApplication = () => {
                 nulla quos est corporis, nemo eveniet!
               </p>
               <ul className="mt-3">
-                <KeyHighlightsListItem key={"1"} title="Qualification" value="B.E / B.Tech" />
-                <KeyHighlightsListItem key={"1-1"} title="Skills" value="Compueter Sci" />
-                <KeyHighlightsListItem key={"1-2"} title="Type" value="Full Time" />
-                <KeyHighlightsListItem key={"1-3"} title="Qualification" value="B.E / B.Tech" />
+                <KeyHighlightsListItem
+                  key={"1"}
+                  title="Qualification"
+                  value="B.E / B.Tech"
+                />
+                <KeyHighlightsListItem
+                  key={"1-1"}
+                  title="Skills"
+                  value="Compueter Sci"
+                />
+                <KeyHighlightsListItem
+                  key={"1-2"}
+                  title="Type"
+                  value="Full Time"
+                />
+                <KeyHighlightsListItem
+                  key={"1-3"}
+                  title="Qualification"
+                  value="B.E / B.Tech"
+                />
               </ul>
             </div>
           </div>

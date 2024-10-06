@@ -7,28 +7,37 @@ import { CiSearch } from "react-icons/ci";
 import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../../components/JobCard";
-import { RiH6 } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
-const VerticalBar = () => {
-  return <div className="w-0 h-5 border-r border-black"></div>;
+export const VerticalBar = ({className}) => {
+  return <div className={"w-0 h-5 border-r border-black " +className}></div>;
 };
 
-const NoPostFound = () => (
+export const NoPostFound = () => (
   <div className="mx-auto text-[1rem] md:text-2xl flex center gap-2">
     <CiSearch className=" text-orange-600" />
     <span className="md:text-[1.5rem] font-fredoka">No Post found</span>
   </div>
 );
 
-const JobsPostedByCompany = ({jobsPostedByCompany=[]}) =>(jobsPostedByCompany.length === 0 ? <NoPostFound/> : <AdvancedSwiper>
-    {jobsPostedByCompany.map((data) => (
-      <SwiperSlide key={data.id}>
-        <JobCard data={data} />
-      </SwiperSlide>
-    ))}
-    </AdvancedSwiper>)
+const JobsPostedByCompany = ({ jobsPostedByCompany = [] }) =>
+  jobsPostedByCompany.length === 0 ? (
+    <NoPostFound />
+  ) : (
+    <AdvancedSwiper>
+      {jobsPostedByCompany.map((data) => (
+        <SwiperSlide key={data.id}>
+          <JobCard data={data} />
+        </SwiperSlide>
+      ))}
+    </AdvancedSwiper>
+  );
 
 const CompanyPage = () => {
+
+
+  const navigate = useNavigate();
+
   return (
     <MainContext>
       {/* Wrapper for the entire content */}
@@ -114,11 +123,28 @@ const CompanyPage = () => {
 
         {/* Jobs Posted by You */}
         <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 flex flex-col">
-          <h1 className="text-xl md:text-2xl font-semibold mb-4">
-            Jobs Posted
-          </h1>
-          {/* Check if jobs exist else render the No jobs content */}
-            <JobsPostedByCompany jobsPostedByCompany={jobData}/>
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold mb-4 flex justify-between items-center">
+              All Post
+              <span className="text-sm text-orange-600 cursor-pointer hover:underline" onClick={()=>navigate("allpostedContent")}>
+                View All
+              </span>
+            </h1>
+            <JobsPostedByCompany jobsPostedByCompany={jobData} />
+          </div>
+         
+          {/* Business Posts */}
+
+          <div className="border-t border-gray-100 pt-4">
+            <h1 className="text-xl md:text-2xl font-semibold mb-4 flex justify-between items-center">
+              Business Post
+              <span className="text-sm text-orange-600 cursor-pointer hover:underline">
+                View All
+              </span>
+            </h1>
+            <JobsPostedByCompany jobsPostedByCompany={jobData} />
+          </div>
+          <div></div>
         </div>
       </div>
     </MainContext>

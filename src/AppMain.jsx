@@ -23,14 +23,20 @@ import JobDetails from './pages/provider/JobDetails'
 
 import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
+import CompanyAllPosts from './pages/seeker/CompanyAllPosts'
+import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 
 const AppMain = () => {
   return (
-
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <JobProvider>
       <BrowserRouter>
+        <Toaster/>
         <Routes>
           <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />
@@ -38,10 +44,11 @@ const AppMain = () => {
           <Route path = "/reset-password" element={ <SetNewPassword/> } />
           <Route path = "/select-role" element= { <OptionPage />} />
           <Route path="/user" element={<MainWrapper/>}>
-              <Route index element={ <MainPage/> } />
+              <Route index element={ <MainPage/> } /> 
               <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
               <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
               <Route path = "/user/company" element={ <CompanyPage/> } />
+              <Route path = "/user/company/allpostedContent" element={ <CompanyAllPosts/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
@@ -53,11 +60,12 @@ const AppMain = () => {
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />
               <Route path = '/provider/all-jobs' element = { <AllPostedJobs /> } />
-          </Route>
+          </Route> 
         </Routes> 
       </BrowserRouter>
       </JobProvider>
     </AuthProvider>
+    </QueryClientProvider>
   ) 
 }
 

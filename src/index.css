@@ -262,6 +262,10 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
   cursor: pointer;
 }
 
+.custom-scroll-nowidth::-webkit-scrollbar {
+  width: 0px;
+}
+
 
 /* Stepper */
 .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon-dot {
@@ -343,3 +347,17 @@ filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFFFFF", en
 input::placeholder{
   font-size: 0.9rem !important;
 }
+
+.css-t3ipsp-control  {
+  box-shadow: none !important;
+  border: 1px solid gray !important;
+  outline: none !important;
+}
+
+:where(.css-dev-only-do-not-override-5wsri9).ant-pagination .ant-pagination-item-active a{
+  color: black !important;
+}
+:where(.css-dev-only-do-not-override-5wsri9).ant-pagination .ant-pagination-item-active{
+  border-color: #001529 !important;
+}
+
