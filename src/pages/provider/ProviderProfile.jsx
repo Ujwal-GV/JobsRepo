@@ -15,8 +15,10 @@ import { BiSolidUser ,BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
 import { Input } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
+import { CiEdit, CiHome, CiUser } from "react-icons/ci";
 import { FaInstagram, FaFacebook, FaTwitter, FaGlobe } from "react-icons/fa";
-
+import { useJobContext } from '../../contexts/JobContext'
 
 const { TextArea } = Input;
 
@@ -35,13 +37,7 @@ const ProviderProfile = () => {
     location: "Bangalore",
   });
 
-  const [companySummary, setCompanySummary] = useState("");
-  const [companyLink, setCompanyLink] = useState({
-    website: "",
-    instagram: "",
-    facebook: "",
-    twitter: "",
-    });
+  const { links, summary, updateLinks, updateSummary } = useJobContext();
 
   const handlePersonalDetails = (val) => {
     setPersonalDetails((prev) => {
@@ -49,40 +45,51 @@ const ProviderProfile = () => {
     });
   };
 
-  const handleSummaryChange = (val) => {
-    setCompanySummary(val);
+  const handleSummaryChange = (newSummary) => {
+    updateSummary(newSummary);
   };
 
-  const handleCompanyLinkChange = (updatedLinks) => {
-    setCompanyLink(updatedLinks);
+  const handleCompanyLinkChange = (newLinks) => {
+    updateLinks(newLinks);
   };
-
-  const handleSaveClick = () => {
-    setSaved((prev) => !prev);
-    navigate(-1);
-  };
-
-  const handleBackClick = () => {
-    navigate(-1);
-  }
-  
 
   return (
     <MainContext>
       <div className="w-full h-screen bg-slate-50 ">
         <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
+          {/* BreadCrumbs */}
+
+          <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
+            <CustomBreadCrumbs
+              items={[
+                {
+                  path: "/provider/main",
+                  icon: <CiHome />,
+                  title: "Home",
+                },
+                { title: "Profile", icon: <CiUser /> },
+              ]}
+            />
+          </div>
+
           {/* Avatar and PersonalDetails */}
 
 
-          <div className="flex center flex-col w-[95%] z-999 md:flex-row md:w-full gap-2 relative top-0 pt-2   h-fit mx-auto">
+          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 relative top-0 pt-2   h-fit mx-auto">
 
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
               <ProfileAvatar />
             </div>
+
+            {/* Profile Application Deatils */}
+
             <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
               <MdEdit
                 className="absolute top-2 right-2  cursor-pointer" 
-                onClick={() => setpersonalDetailsModelOpen(true)}
+                onClick={() => { 
+                  setpersonalDetailsModelOpen(true);
+                  freezeBody();
+                }}
               />
               <h1 className="flex justify-start text-2xl font-bold items-center gap-1">
                 <BiSolidBadgeCheck className="text-orange-600" />
@@ -106,25 +113,6 @@ const ProviderProfile = () => {
                 <FaLocationArrow className="text-orange-600" />{" "}
                 {personalDetails.location}
               </h1>
-              <div className="flex flex-center mt-5 m-2 md:mt-5 md:mb-0 gap-3">
-                <button
-                  className="btn-orange-outline px-3 py-1 flex center gap-1"
-                  onClick={handleBackClick}
-                >
-                  {"Back"}
-                </button>
-                <button
-                    className="btn-orange-outline px-3 py-1 flex center gap-1"
-                    onClick={handleSaveClick}
-                  >
-                    {saved ? (
-                      <FaCheckCircle className="text-orange-600" />
-                    ) : (
-                      <></>
-                    )}
-                    {saved ? "Saved" : "Save"}
-                  </button>
-              </div>
             </div>
           </div>
 
@@ -150,73 +138,73 @@ const ProviderProfile = () => {
                 <CompanyInputWrapper>
                   <CompanyLinksField
                     title="Company Link"
-                    icon={Object.values(companyLink).every((link) => link.trim() === "") ? "Add" : "Edit"}
+                    icon={Object.values(links).every((link) => link.trim() === "") ? "Add" : "Edit"}
                     editOnClick={() => setCompanyLinkModel(true)}
                   >
                     <div className="flex flex-wrap gap-1 w-full pb-2">
                       {/* If no links are added */}
-                      {Object.values(companyLink).every((link) => link.trim() === "") ? (
+                      {Object.values(links).every((link) => link.trim() === "") ? (
                         <div className="w-full gap-1 center flex">
                           <TbMoodEmptyFilled /> Add Company Links
                         </div>
                       ) : (
                         <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
                           {/* Company Website Link */}
-                          {companyLink.website && (
+                          {links.website && (
                             <div className="flex items-center gap-2 mb-2">
                               <FaGlobe className="text-gray-500" />
                               <a
-                                href={companyLink.website.trim()}
+                                href={links.website.trim()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-500"
                               >
-                                {companyLink.website.trim()}
+                                {links.website.trim()}
                               </a>
                             </div>
                           )}
 
                           {/* Instagram Link */}
-                          {companyLink.instagram && (
+                          {links.instagram && (
                             <div className="flex items-center gap-2 mb-2">
                               <FaInstagram className="text-pink-500" />
                               <a
-                                href={companyLink.instagram.trim()}
+                                href={links.instagram.trim()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-500"
                               >
-                                {companyLink.instagram.trim()}
+                                {links.instagram.trim()}
                               </a>
                             </div>
                           )}
 
                           {/* Facebook Link */}
-                          {companyLink.facebook && (
+                          {links.facebook && (
                             <div className="flex items-center gap-2 mb-2">
                               <FaFacebook className="text-blue-600" />
                               <a
-                                href={companyLink.facebook.trim()}
+                                href={links.facebook.trim()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-500"
                               >
-                                {companyLink.facebook.trim()}
+                                {links.facebook.trim()}
                               </a>
                             </div>
                           )}
 
                           {/* Twitter Link */}
-                          {companyLink.twitter && (
+                          {links.twitter && (
                             <div className="flex items-center gap-2">
                               <FaTwitter className="text-blue-400" />
                               <a
-                                href={companyLink.twitter.trim()}
+                                href={links.twitter.trim()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-500"
                               >
-                                {companyLink.twitter.trim()}
+                                {links.twitter.trim()}
                               </a>
                             </div>
                           )}
@@ -230,17 +218,17 @@ const ProviderProfile = () => {
                 <CompanyInputWrapper>
                     <CompanyInfoField
                     title="Company Summary"
-                    icon={companySummary.trim() === "" ? "Add" : "Edit"}
+                    icon={summary === "" ? "Add" : "Edit"}
                     editOnClick={() => setSummaryModelOpen(true)}
                     >
                     <div className="flex flex-wrap gap-1 w-full pb-2 ">
-                        {!companySummary ? (
+                        {!summary ? (
                         <div className="w-full gap-1 center flex">
                             <TbMoodEmptyFilled /> Add summary about the Company
                         </div>
                         ) : (
                         <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis text-justify">
-                            {companySummary}
+                            {summary}
                         </div>
                         )}
                     </div>
@@ -248,45 +236,47 @@ const ProviderProfile = () => {
                 </CompanyInputWrapper>
             </div>
           </div>
+        </div>
+      </div>
 
         {/* Models */}
-
-          <ProfilePersonalDetailsModal
-            open={personalDetailsModelOpen}
-            onClose={() => setpersonalDetailsModelOpen(false)}
-            value={personalDetails}
-            onChange={handlePersonalDetails}
-          />
-      <AnimatePresence>
-              
-      {summaryModelOpen && (
-            <AnimateEnterExit>
-            <CompanySummaryModel
-                open={summaryModelOpen}
-                onClose={() => setSummaryModelOpen(false)}
-                value={companySummary}
-                onSummaryChange={handleSummaryChange}
-            />
-            </AnimateEnterExit>
-        )}
-
-        {companyLinkModel && (
-          <AnimateEnterExit>
-            <CompanyLinkModel
-              open={companyLinkModel}
-              onClose={() => setCompanyLinkModel(false)}
-              value={companyLink}
-              onLinkChange={handleCompanyLinkChange}
-            />
+        <AnimatePresence>
+            {personalDetailsModelOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }}>
+              <ProfilePersonalDetailsModal
+                open={personalDetailsModelOpen}
+                onClose={() => setpersonalDetailsModelOpen(false)}
+                value={personalDetails}
+                onChange={handlePersonalDetails}
+              />
           </AnimateEnterExit>
-        )}
+            )}
+                  
+          {summaryModelOpen && (
+                <AnimateEnterExit>
+                <CompanySummaryModel
+                    open={summaryModelOpen}
+                    onClose={() => setSummaryModelOpen(false)}
+                    value={summary}
+                    onSummaryChange={handleSummaryChange}
+                />
+                </AnimateEnterExit>
+            )}
 
-                  </AnimatePresence>
-                </div>
-            </div>
-            </MainContext>
-          );
-        };
+            {companyLinkModel && (
+              <AnimateEnterExit>
+                <CompanyLinkModel
+                  open={companyLinkModel}
+                  onClose={() => setCompanyLinkModel(false)}
+                  value={links}
+                  onLinkChange={handleCompanyLinkChange}
+                />
+              </AnimateEnterExit>
+            )}
+      </AnimatePresence>
+    </MainContext>
+  );
+};
 
 export default ProviderProfile;
 
@@ -382,13 +372,12 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
       fullName: null,
       email: null,
       mobile: null,
-      gender: null,
     },
   }) => {
     return (
       <div
         className={
-          "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+          "absolute top-[0] left-0 w-full flex center h-full bg-slate-200 profile-modal p-7 md:p-10 " +
           (open ? "profile-modal-show " : " ")
         }
       >
@@ -696,11 +685,11 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
     initial = { opacity: 0, scale: 0.8 },
     animate = { opacity: 1, scale: 1 },
     exit = { opacity: 0, scale: 0.8 },
-    transition={duration:0.6}
+    transition = { duration: 0.6 },
   }) => {
     return (
       <motion.div
-        className="w-full h-full absolute top-0 left-0"
+        className="w-full h-full absolute top-0 left-0 font-outfit"
         initial={initial}
         animate={animate}
         exit={exit}

@@ -14,13 +14,15 @@ const AllPostedJobs = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex gap-10 font-outfit">
       {/* Left Side: Jobs Posted */}
+      <div className='w-full lg:w-full flex flex-col lg:flex-row gap-10'>
       <div className="w-full lg:w-1/2 bg-white p-5 rounded-lg shadow-md">
         <h1 className="text-xl font-semibold mb-5">Jobs Posted by You</h1>
         
         {jobs.length === 0 ? (
           <p className="text-center text-gray-500">No jobs have been posted by you.</p>
         ) : (
-          <div className="flex flex-col gap-4">
+          // Scrollable container for job postings
+          <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
             {jobs.map((job) => (
               <div
                 key={job.id}
@@ -43,10 +45,12 @@ const AllPostedJobs = () => {
         )}
       </div>
 
+
       {/* Right Side: Blank Div */}
       <div className="w-full lg:w-1/2 bg-white p-5 rounded-lg shadow-md">
         <h1 className="text-xl font-semibold mb-5">Detailed View</h1>
         {/* Placeholder for the detailed job view */}
+      </div>
       </div>
     </div>
   );

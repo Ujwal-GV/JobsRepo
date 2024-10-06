@@ -93,7 +93,7 @@ function ProviderMainPage() {
             <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[200px] shadow-sm" />
             {/* Profile icon */}
             <HiUserCircle
-              className="absolute top-5 right-5 text-4xl cursor-pointer text-orange-600 hover:text-black" title="Profile"
+              className="w-[250px] mx-auto md:w-[300px] lg:w-[500px] text-4xl cursor-pointer text-orange-600 hover:text-black" title="Profile"
               onClick={handleProfileClick}
             />
           </div>
