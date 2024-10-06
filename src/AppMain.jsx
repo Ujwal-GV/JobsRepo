@@ -23,11 +23,15 @@ import JobDetails from './pages/provider/JobDetails'
 
 import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
+
 import CompanyAllPosts from './pages/seeker/CompanyAllPosts'
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
+
+import ScrollToTop from './components/ScrollToTop'
+
 
 
 const AppMain = () => {
@@ -36,7 +40,11 @@ const AppMain = () => {
     <AuthProvider>
       <JobProvider>
       <BrowserRouter>
+
         <Toaster/>
+
+      <ScrollToTop />
+
         <Routes>
           <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />
