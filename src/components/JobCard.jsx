@@ -23,12 +23,12 @@ const JobCard = ({data}) => {
         {title}
       </h3>
       <h2 className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">
-        {provider_info?.company_name}
+        {provider_info?.companyName}
       </h2>
       <div className="mt-2 flex justify-start items-center  gap-1">
         <IoLocationOutline />
         <span className=" font-extralight text-sm w-full overflow-hidden text-ellipsis text-nowrap">
-          {location}
+          {location ? location : "Remote"}
         </span>
       </div>
       <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1>

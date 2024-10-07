@@ -3,6 +3,7 @@ import React, { useState, useContext } from "react"; // Import useState and useC
 import { FaArrowRight } from "react-icons/fa";
 import { HiUserCircle } from "react-icons/hi";
 import Navbar from "../../components/Navbar";
+import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import MainContext from "../../components/MainContext";
 import SeachInput from "../../components/SeachInput";
 import AdvancedSwiper from "../../components/AdvanceSwiper";
@@ -10,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { JobProvider, useJobContext } from '../../contexts/JobContext';
 import { SwiperSlide } from "swiper/react";
 import { IoLocationOutline } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
+
 
 const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   return (
@@ -32,29 +35,30 @@ const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   );
 };
 
-const SwipeCard = ({ job }) => {
-  return (
-    <div className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
-      <h2 className="w-full text-[1 rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3">{job.title}</h2> 
-      <p className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">{job.companyName}</p>
-      <div className="flex">
-      <IoLocationOutline />
-      <p className="text-sm text-gray-500">{job.location ? job.location : "Remote"}</p>
-      </div>
-        <span className="text-end text-sm mt-2 text-slate-00">Posted on: {job.postedDate}</span>
-    </div>
-  );
-};
-
-
 function ProviderMainPage() {
   const navigate = useNavigate();
+
+  const fetchJobs = async () => {
+    const res = await axios.get("http://localhost:8087/jobs/?limit=10");
+    return res.data;
+  };
+
+  
+  // Call the useJobContext hook inside the component
+  const { jobs } = useJobContext(); // Use the JobContext to get jobs
+
+  const { isLoading: jobsDataLoading } = useQuery({
+    queryKey: ['jobs'], // Unique key for this query
+    queryFn: fetchJobs,      // The function that fetches the jobs data
+    staleTime: 300000,       // Data will remain fresh for 5 minutes (300,000 ms)
+    cacheTime: 300000,       // Cache the data for 5 minutes
+    onError: () => {
+      toast.error("Something went wrong while fetching jobs");
+    }
+  });
   
   // State to manage posted jobs
   const [postedJobs, setPostedJobs] = useState([]);
-
-  // Call the useJobContext hook inside the component
-  const { jobs } = useJobContext(); // Use the JobContext to get jobs
 
   const handlePostJobClick = () => {
     navigate('/provider/post-job');
@@ -111,22 +115,29 @@ function ProviderMainPage() {
           {/* Posted Jobs Slider */}
           <SwiperWrapper
             key={"jobs"}
-            title="Your Posted Jobs"
-            onViewClick={() => navigate('/provider/all-jobs')}
+            title="Jobs posted by you"
+            onViewClick={() => navigate("/provider/all-jobs")}
           >
-            <AdvancedSwiper>
-              {jobs.length === 0 ? (
-                <SwiperSlide>
-                  <div className="font-outfit center">No jobs posted yet.</div>
+            <AdvancedSwiper key={"jobs"}>
+            {jobsDataLoading ? (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
+                <SwiperSlide key={d}>
+                  <JobCardSkeleton id={d} />
                 </SwiperSlide>
-              ) : (
-                jobs.map((job) => (
-                  <SwiperSlide key={job.id}>
-                    <SwipeCard job={job} key={job.id} />
-                  </SwiperSlide>
-                ))
-              )}
-            </AdvancedSwiper>
+              ))
+            ) : jobs.length === 0 ? (
+                <div className="text-center w-full">
+                  <p className="text-gray-500">
+                    No jobs posted by you
+                  </p>
+                </div>
+            ) : (
+              jobs.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <JobCard key={item.id} data={item} />
+                </SwiperSlide>
+              )))}
+          </AdvancedSwiper>
           </SwiperWrapper>
         </MainContext>
       </JobProvider>

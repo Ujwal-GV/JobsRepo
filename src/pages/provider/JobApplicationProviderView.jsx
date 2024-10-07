@@ -170,9 +170,14 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:8087/qualifications/");
+      // console.log(res.data);
       if (res.data) {
-        setOptions(res.data);
-        setFetchedQualifications(res.data);
+        const fetchedOptions = Object.keys(res.data).map((key) => ({
+          label: key,
+          value: key,
+        }));
+        setOptions(fetchedOptions);
+        setFetchedQualifications(fetchedOptions);
       } else {
         message.error("Something Went Wrong");
       }
@@ -267,26 +272,42 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
   );
 };
 
-const SubCategorySelector = ({ defaultSubCategories = [], onChange = () => {}, title="" }) => {
+
+const SubCategorySelector = ({
+  defaultSubCategories = [],
+  onChange = () => {},
+  title = "",
+}) => {
   const [selectSubCategories, setSelectSubCategories] = useState(defaultSubCategories);
   const [options, setOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [fetchedSubCategories, setFetchedSubCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const fetchAllSubCategories = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/qualifications/subcategories/");
+      const res = await axios.get("http://localhost:8087/qualifications/");
+      // console.log(res.data);
+      
       if (res.data) {
-        setOptions(res.data);
-        setFetchedSubCategories(res.data);
+        const allValues = Object.values(res.data).flat();4
+
+        const uniqueValues = Array.from(new Set(allValues));
+        
+        const fetchedOptions = uniqueValues.map((subCategory) => ({
+          label: subCategory,
+          value: subCategory,
+        }));
+
+        // console.log("Allvalues", fetchedOptions);
+        setOptions(fetchedOptions);
+        setFetchedSubCategories(fetchedOptions);
       } else {
-        message.error("Something Went Wrong");
+        message.error("Something went wrong");
       }
     } catch (error) {
-      message.error("Something Went Wrong");
+      message.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -331,14 +352,18 @@ const SubCategorySelector = ({ defaultSubCategories = [], onChange = () => {}, t
   };
 
   const handleSelect = (value) => {
-    const alreadySelected = selectSubCategories.some((subCategory) => subCategory.value === value);
+    const alreadySelected = selectSubCategories.some(
+      (subCategory) => subCategory.value === value
+    );
 
     if (alreadySelected) {
-      message.error("Sub Category already selected");
+      message.error("Subcategory already selected");
       return;
     }
 
-    const selectedSubCategory = fetchedSubCategories.find((subCategory) => subCategory.value === value);
+    const selectedSubCategory = fetchedSubCategories.find(
+      (subCategory) => subCategory.value === value
+    );
     const newSubCategory = selectedSubCategory || { label: value, value };
 
     setSelectSubCategories([...selectSubCategories, newSubCategory]);
@@ -367,7 +392,7 @@ const SubCategorySelector = ({ defaultSubCategories = [], onChange = () => {}, t
           onSearch={handleSearch}
           onSelect={handleSelect}
           options={options}
-          placeholder="Search for a sub category"
+          placeholder="Search for a category"
           value={searchValue}
           className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
         />
