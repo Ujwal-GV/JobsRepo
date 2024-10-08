@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import MainContext from "../../components/MainContext";
-import Select from "react-select";
+import React, { useEffect, useRef, useState } from "react";
 import { Pagination } from "antd";
 import { CiLocationOn } from "react-icons/ci";
 import { VerticalBar } from "./CompanyPage";
@@ -14,9 +12,22 @@ export const CustomSkeleton = ({ width = "100%", height = "100%" }) => (
   <Skeleton width={width} height={height} duration={1} />
 );
 
-const PostCardSkeleton = () => {
+export const NoPostFound = ({ title }) => {
   return (
-    <div className="mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-200 mb-2 overflow-hidden">
+    <div className="w-full py-5 flex center">
+      {title ? title : "No Post Found"}
+    </div>
+  );
+};
+
+const PostCardSkeleton = ({ className }) => {
+  return (
+    <div
+      className={
+        "mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-200 mb-2 overflow-hidden " +
+        className
+      }
+    >
       <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
         <CustomSkeleton height="30px" />
       </h1>
@@ -34,18 +45,22 @@ const PostCardSkeleton = () => {
   );
 };
 
-const PostCard = ({ data }) => {
-
-    const {jobTitle,location,skills,salary,experience} = data
+const PostCard = ({ data, className }) => {
+  const { title, location, skills, package:salary,description, experience  } = data;
   return (
-    <div className="mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-300 mb-2 cursor-pointer primary-shadow-hover">
+    <div
+      className={
+        "mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-300 mb-2 cursor-pointer primary-shadow-hover " +
+        className
+      }
+    >
       <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
-        {jobTitle}
+        {title}
       </h1>
       <div className="w-full flex justify-start items-start gap-2 my-3">
         <span className="w-fit"> Skills : </span>
         <div className="flex-1 w-full flex text-wrap overflow-hidden text-ellipsis max-h-9 ">
-          {skills}
+          {description}
         </div>
       </div>
       <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
@@ -63,194 +78,171 @@ const PostCard = ({ data }) => {
   );
 };
 
-const CompanyAllPosts = () => {
-  const PostedSections = [" Job Posts", "Freelance Post"];
-  const [posttype, setPostType] = useState(0);
+export const JobPostContainer = ({ cardClassname ,companyId }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalDatas, setTotalDatas] = useState(20); // Set total data state
+
+  // Fetch Jobs
+  const fetchJobs = async ({ queryKey }) => {
+    const currentPage = queryKey[1]; // Extract current page
+    const res = await axios.get(
+      `http://localhost:8087/jobs/?provider_details=${companyId}&limit=10&page=${currentPage}`
+    );
+
+    if (res.status !== 200) {
+      throw new Error("Failed to fetch jobs data"); // Throw error if response is not OK
+    }
+    setTotalDatas(res.data.length);
+    return res.data;
+  };
+
+  // Using React Query for fetching and caching jobs
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["jobs", currentPage],
+    queryFn: fetchJobs,
+    keepPreviousData: true,
+    staleTime: 300000,
+  });
+
+  // Handle page change
+  const handlePageChange = (val) => {
+    setCurrentPage(val);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  console.log(data)
 
   return (
-    <div className="w-full min-h-[calc(100vh-80px)] bg-gray-100  px-1 md:px-6 lg:px-10 flex flex-col gap-10">
-      <div className="bg-white min-h-[calc(100vh-160px)] w-full mt-2  p-2  md:w-[95%] mx-auto md:p-4 lg:w-[80%]">
-        {/* Head Section */}
+    <>
+      {isLoading
+        ? [...Array(10)].map((_, index) => (
+            <PostCardSkeleton className={cardClassname} key={index} />
+          )) // Show loading skeletons
+        :data?.length >0 ?  data?.map((item, index) => (
+          <PostCard className={cardClassname} key={index} data={item} />
+        )) : <NoPostFound/> }
 
-        <div className="flex justify-between items-center md:px-4 border-b border-gray-100 py-2 lg:py-4">
-          <span>All Posts</span>
-          <span>
-            <Select className="w-[150px] md:w-[200px] text-sm p-0" />
-          </span>
-        </div>
-
-        {/* data Section */}
-
-        <div className="w-full mt-1 flex-col lg:flex-row md:mt-3 flex gap-0 lg:gap-2 justify-center items-start">
-          {/* Post Section */}
-          <div className="w-full lg:w-[30%] flex flex-row lg:flex-col items-center gap-2 p-4">
-            {PostedSections.map((data, idx) => (
-              <div
-                className={
-                  "w-fit lg:w-full text-start mt-3 border-b border-gray-100 cursor-pointer  hover:bg-gray-100 py-3 rounded-md px-4 " +
-                  (idx === posttype ? "bg-gray-100" : "")
-                }
-                onClick={() => setPostType(idx)}
-                key={idx}
-              >
-                {data}
-              </div>
-            ))}
-          </div>
-
-          <div className="w-full lg:w-[70%] ">
-
-            {
-                posttype === 0 ?  <JobPostContainer/>  :   <FreelanePostContainer/>
-            }
-
-          </div>
-        </div>
-      </div>
-    </div>
+      {
+        data?.length > 0 && <Pagination
+        disabled={isLoading} // Disable pagination if loading
+        defaultCurrent={1}
+        current={currentPage}
+        className="w-fit mx-auto"
+        total={totalDatas}
+        showSizeChanger={false}
+        pageSize={10}
+        onChange={(e) => handlePageChange(e)}
+        prevIcon={
+          <button
+          disabled={isLoading}
+            className={"hidden md:flex "+(totalDatas < 10 &&" !hidden") }
+            style={{ border: "none", background: "none" }}
+          >
+            ← Prev
+          </button>
+        }
+        nextIcon={
+          <button
+          disabled={isLoading}
+            className={"hidden md:flex "+(totalDatas < 10 &&" !hidden")}
+            style={{ border: "none", background: "none" }}
+          >
+            Next →
+          </button>
+        }
+      />
+      }
+    </>
   );
 };
 
-export default CompanyAllPosts;
+export const FreelanePostContainer = ({ cardClassname }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalDatas, setTotalDatas] = useState(20);
+  const prevTotal = useRef(totalDatas)
 
-const JobPostContainer = () =>
-  {
+  useEffect(()=>{
+    prevTotal.current = totalDatas
+  },[totalDatas])
 
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalDatas, setTotalDatas] = useState(20); // Set total data state
-  
-    // Fetch Jobs
-    const fetchJobs = async ({ queryKey }) => {
-      const currentPage = queryKey[1]; // Extract current page
-      const res = await axios.get(`http://localhost:8087/jobs/sample/jobs?page=${currentPage}`);
-      
-      if (res.status !== 200) {
-        throw new Error('Failed to fetch jobs data'); // Throw error if response is not OK
-      }
-      console.log(res.data)
-      setTotalDatas(res.data.length); 
-      return res.data; 
-    };
-  
-    // Using React Query for fetching and caching jobs
-    const { data, isLoading, isError, error } = useQuery({
-      queryKey: ["jobs", currentPage], 
-      queryFn: fetchJobs,              
-      keepPreviousData: true,          
-      staleTime: 300000,               
-    });
-  
-    // Handle page change
-    const handlePageChange = (val) => {
-      setCurrentPage(val);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth", 
-      });
-    };
-  
-    return (
-      <>
-        {isLoading
-          ? [...Array(10)].map((_, index) => <PostCardSkeleton key={index} />) // Show loading skeletons
-          : data?.pageData?.map((item, index) => <PostCard key={index} data={item} />)} 
-  
-        <Pagination
-          disabled={isLoading}  // Disable pagination if loading
-          defaultCurrent={1}
-          current={currentPage}
-          className="w-fit mx-auto"
-          total={totalDatas}
-          showSizeChanger={false}
-          pageSize={10}
-          onChange={(e) => handlePageChange(e)}
-          prevIcon={
-            <button
-              className="hidden md:flex"
-              style={{ border: "none", background: "none" }}
-            >
-              ← Prev
-            </button>
-          }
-          nextIcon={
-            <button
-              className="hidden md:flex"
-              style={{ border: "none", background: "none" }}
-            >
-              Next →
-            </button>
-          }
-        />
-      </>
+  // Fetch Jobs
+  const fetchJobs = async ({ queryKey }) => {
+    const currentPage = queryKey[1]; 
+    const res = await axios.get(
+      `http://localhost:8087/jobs/sample/jobs?page=${currentPage}`
     );
-  };
 
-
-
-const FreelanePostContainer = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [totalDatas,setTotalDatas] = useState(20);
-    const [data,setData] = useState([]);
-
-
-    const fetchData = async ()=>{
-        setLoading(true)
-        const res = await axios.get(`http://localhost:8087/jobs/sample/jobs?page=${currentPage}`);
-        setLoading(false)
-        const {length ,pageData} = res.data;
-        setData(pageData)
-        setTotalDatas(length)
+    if (res.status !== 200) {
+      throw new Error("Failed to fetch jobs data"); 
     }
-  
-    useEffect(() => {
-
-
-        fetchData()
-
-    }, [currentPage]);
-  
-    const handlePageChange = (val) => {
-      setCurrentPage(val);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth", // You can change this to 'auto' if you don't want a smooth scroll
-      });
-    };
-  
-    return (
-      <>
-        {loading
-          ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i, j) => <PostCardSkeleton key={j}/>)
-          : data.map((i, j) => <PostCard key={j} data={i}/>)}
-  
-        <Pagination
-          disabled={loading}
-          defaultCurrent={1}
-          current={currentPage}
-          className="w-fit mx-auto"
-          total={totalDatas}
-          showSizeChanger={false}
-          pageSize={10}
-          onChange={(e) => handlePageChange(e)}
-          prevIcon={
-            <button
-              className="hidden md:flex"
-              style={{ border: "none", background: "none" }}
-            >
-              ← Prev
-            </button>
-          }
-          nextIcon={
-            <button
-              className="hidden md:flex"
-              style={{ border: "none", background: "none" }}
-            >
-              Next →
-            </button>
-          }
-        />
-      </>
-    );
+    console.log(res.data);
+    setTotalDatas(res.data.length);
+    return res.data;
   };
+
+  // Using React Query for fetching and caching jobs
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["freeLance", currentPage],
+    queryFn: fetchJobs,
+    keepPreviousData: true,
+    staleTime: 300000,
+  });
+
+  // Handle page change
+  const handlePageChange = (val) => {
+    setCurrentPage(val);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <>
+      {isLoading ? (
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i, j) => (
+          <PostCardSkeleton className={cardClassname} key={j} />
+        ))
+      ) : data?.pageData?.length > 0 ? (
+        data?.pageData?.map((i, j) => (
+          <PostCard key={j} className={cardClassname} data={i} />
+        ))
+      ) : (
+        <NoPostFound />
+      )}
+         
+      {
+        data?.pageData?.length > 0 && <Pagination
+        disabled={isLoading}
+        defaultCurrent={1}
+        current={currentPage}
+        className="w-fit mx-auto"
+        total={prevTotal.current}
+        showSizeChanger={false}
+        pageSize={10}
+        onChange={(e) => handlePageChange(e)}
+        prevIcon={
+          <button
+            className="hidden md:flex"
+            style={{ border: "none", background: "none" }}
+          >
+            ← Prev
+          </button>
+        }
+        nextIcon={
+          <button
+            className="hidden md:flex"
+            style={{ border: "none", background: "none" }}
+          >
+            Next →
+          </button>
+        }
+      />
+      }
+       
+    </>
+  );
+};

@@ -15,16 +15,12 @@ import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 import ProviderProfile from './pages/provider/ProviderProfile'
 import AllPostedJobs from './pages/provider/AllPostedJobs'
-
 import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
 import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
 import SearchFilterPage from './pages/seeker/SearchFilterPage'
 import JobDetails from './pages/provider/JobDetails'
-
 import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
-
-import CompanyAllPosts from './pages/seeker/CompanyAllPosts'
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -55,8 +51,7 @@ const AppMain = () => {
               <Route index element={ <MainPage/> } /> 
               <Route path = "/user/job-apply" element={ <JobApplicatioWithSimilarApplication/> } />
               <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
-              <Route path = "/user/company" element={ <CompanyPage/> } />
-              <Route path = "/user/company/allpostedContent" element={ <CompanyAllPosts/> } />
+              <Route path = "/user/company/:id" element={ <CompanyPage/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
