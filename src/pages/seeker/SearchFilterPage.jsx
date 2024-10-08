@@ -12,14 +12,12 @@ const SearchFilterPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [totalData, setTotalData] = useState(50);
   const [currentPage, setCurrentPage] = useState(50);
-  const [locationFilter,setLocationFilter] = useState({})
-  const [workType,setWorkType] = useState({})
-
+  const [locationFilter, setLocationFilter] = useState({});
+  const [workType, setWorkType] = useState({});
 
   // All About Filters
 
   const indianCities = [
-    
     "Visakhapatnam",
     "Vijayawada",
     "Tirupati",
@@ -93,17 +91,17 @@ const SearchFilterPage = () => {
     "Srinagar",
   ];
 
+  const handleLocationFilter = (val) => {
+    setLocationFilter((prev) => {
+      return { ...val };
+    });
+  };
 
-  const handleLocationFilter = (val)=>{
-
-    setLocationFilter((prev)=>{return {...val}})
-
-  }
-
-  const handleWorkTypeFilter = (val)=>{
-    setLocationFilter((prev)=>{return {...val}})
-  }
-
+  const handleWorkTypeFilter = (val) => {
+    setLocationFilter((prev) => {
+      return { ...val };
+    });
+  };
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -122,18 +120,27 @@ const SearchFilterPage = () => {
 
   return (
     <MainContext>
-      <div className="w-full gap-2 bg-slate-50 md:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] min-h-[150vh] flex-col md:flex-row pt-5 md:pt-10 ">
+      <div className="w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] min-h-[150vh] flex-col md:flex-row pt-5 md:pt-10 ">
         {/* Search Filter  */}
 
-        <div className="w-[30%] h-fit bg-white primary-shadow py-3 px-2 ms-4">
+        <div className="w-[30%] hidden md:block h-fit bg-white primary-shadow py-3 px-2 ms-4">
           <h2 className="mb-4 flex justify-between items-center px-2">
             <span>All Filters</span>
             <span className="relative">
               <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
-              <CiFilter className="text-xl" onClick={()=>console.log(locationFilter)} />
+              <CiFilter
+                className="text-xl"
+                onClick={() => console.log(locationFilter)}
+              />
             </span>
           </h2>
-          <FilterItem title={"Location"} data={indianCities} key={"location"} maxData={10}  onChange={handleLocationFilter}/>
+          <FilterItem
+            title={"Location"}
+            data={indianCities}
+            key={"location"}
+            maxData={10}
+            onChange={handleLocationFilter}
+          />
           <FilterItem
             title={"Employeement Type"}
             data={["Full Time", "Part Time", "Hybrid"]}
@@ -142,10 +149,61 @@ const SearchFilterPage = () => {
           />
         </div>
 
+        <div className="flex lg:hidden justify-start items-center">
+           <h5 className="mr-2 text-sm lg:text-xl">All Filters</h5>
+           <div className="max-w-full overflow-x-auto flex justify-start items-center flex-nowrap bg-orange-300   h-10">
+          <span className="mx-1 flex-shrink-0 w-fit h-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+          <span className="mx-1 flex-shrink-0 w-fit bg-green-500">
+            Location
+          </span>
+        </div>
+        </div>
+
         {/* Search data */}
 
         <div className="flex w-full  md:w-[70%] me-0 flex-col ">
-          <div className="w-[90%] mx-auto gap-2 flex  flex-col px-2  pt-0">
+          <div className="w-[95%] mx-auto gap-2 flex  flex-col px-2  pt-0">
             {jobData.map((data, idx) => (
               <SearchJobCard data={data} key={idx} />
             ))}
@@ -175,7 +233,7 @@ const SearchFilterPage = () => {
 
 export default SearchFilterPage;
 
-const FilterItem = ({ title, data = [] ,onChange=()=>{} ,maxData=4 }) => {
+const FilterItem = ({ title, data = [], onChange = () => {}, maxData = 4 }) => {
   const [maxHeight, setMaxHeight] = useState(0); // State to store maxHeight
   const contentRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
@@ -196,7 +254,7 @@ const FilterItem = ({ title, data = [] ,onChange=()=>{} ,maxData=4 }) => {
 
   useEffect(() => {
     if (selectedFilter !== null) {
-      onChange(selectedFilter)
+      onChange(selectedFilter);
     }
   }, [selectedFilter]);
 
@@ -268,10 +326,9 @@ const FilterItem = ({ title, data = [] ,onChange=()=>{} ,maxData=4 }) => {
   );
 };
 
-const FilterMorePopOverContent = ({ data, onChange ,selectedFilter }) => {
+const FilterMorePopOverContent = ({ data, onChange, selectedFilter }) => {
   return (
-   
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {data.map((d, idx) => (
         <Checkbox
           className="font-outfit max-w-fit"
