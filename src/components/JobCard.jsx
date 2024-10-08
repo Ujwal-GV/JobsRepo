@@ -42,7 +42,7 @@ export default JobCard;
 export const JobCardSkeleton =({id})=>{
 
   return (
-    <div key={id} className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
+    <div key={id} className="w-full md:w-full job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
       <Skeleton className="w-[30%] md:w-[38%] h-[30%] md:h-[38%] rounded-lg border-gray job-card-img"/>
       <h3 className="w-full text-[0.9rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3 ">
         <Skeleton className="w-full h-3"/>

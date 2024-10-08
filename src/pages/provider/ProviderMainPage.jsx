@@ -1,39 +1,14 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import React, { useState, useContext } from "react"; // Import useState and useContext
-import { FaArrowRight } from "react-icons/fa";
+import { FaEye } from "react-icons/fa6";
 import { HiUserCircle } from "react-icons/hi";
 import Navbar from "../../components/Navbar";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import MainContext from "../../components/MainContext";
 import SeachInput from "../../components/SeachInput";
-import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { useNavigate } from "react-router-dom";
 import { JobProvider, useJobContext } from '../../contexts/JobContext';
-import { SwiperSlide } from "swiper/react";
-import { IoLocationOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
-
-
-const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
-  return (
-    <div className="my-5 w-full p-3">
-      <div className="job-slider md:border w-full rounded-2xl h-full shadow-black p-1 md:p-5">
-        <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
-          <span className="flex center text-[1rem] md:text-[1.2rem] ms-1 font-outfit">
-            {title} <FaArrowRight className="ms-2" />
-          </span>
-          <span
-            className="text-orange-600 text-sm cursor-pointer hover:underline font-outfit me-1"
-            onClick={onViewClick}
-          >
-            View All
-          </span>
-        </h1>
-        <div className="mt-5 md:py-3">{children}</div>
-      </div>
-    </div>
-  );
-};
 
 function ProviderMainPage() {
   const navigate = useNavigate();
@@ -43,8 +18,6 @@ function ProviderMainPage() {
     return res.data;
   };
 
-  
-  // Call the useJobContext hook inside the component
   const { jobs } = useJobContext(); // Use the JobContext to get jobs
 
   const { isLoading: jobsDataLoading } = useQuery({
@@ -57,7 +30,6 @@ function ProviderMainPage() {
     }
   });
   
-  // State to manage posted jobs
   const [postedJobs, setPostedJobs] = useState([]);
 
   const handlePostJobClick = () => {
@@ -66,11 +38,6 @@ function ProviderMainPage() {
 
   const handleProfileClick = () => {
     navigate('/provider/profile');
-  };
-
-  // Function to simulate posting a job (you can replace this with your actual job posting logic)
-  const postJob = (jobDetails) => {
-    setPostedJobs((prevJobs) => [...prevJobs, jobDetails]);
   };
 
   return (
@@ -102,43 +69,52 @@ function ProviderMainPage() {
             />
           </div>
 
-          {/* Post Job Button */}
-          <div className="my-5 text-center">
-            <button
-              onClick={handlePostJobClick}
-              className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
-            >
-              Post a Job
-            </button>
-          </div>
+          {/* Posted Jobs List */}
+          <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
+            {/* Header and Post Job Button */}
+            <div className="my-5 flex flex-col gap-4 items-center justify-center text-center">
+              <h2 className="text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
+              <button
+                onClick={handlePostJobClick}
+                className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
+              >
+                Post a Job
+              </button>
+            </div>
+            
+            <hr className="mt-5 mb-2 border-gray" />
 
-          {/* Posted Jobs Slider */}
-          <SwiperWrapper
-            key={"jobs"}
-            title="Jobs posted by you"
-            onViewClick={() => navigate("/provider/all-jobs")}
-          >
-            <AdvancedSwiper key={"jobs"}>
-            {jobsDataLoading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
-                <SwiperSlide key={d}>
-                  <JobCardSkeleton id={d} />
-                </SwiperSlide>
-              ))
-            ) : jobs.length === 0 ? (
-                <div className="text-center w-full">
-                  <p className="text-gray-500">
-                    No jobs posted by you
-                  </p>
+            {/* Scrollable Jobs List */}
+            <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
+              {jobsDataLoading ? (
+                [1, 2, 3, 4, 5].map((d) => (
+                  <div key={d} className="flex-1 bg-white w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md">
+                    <JobCardSkeleton id={d} />
+                  </div>
+                ))
+              ) : jobs.length === 0 ? (
+                <div className="text-center flex flex-col my-auto text-gray-500">
+                  No jobs posted by you.
                 </div>
-            ) : (
-              jobs.map((item) => (
-                <SwiperSlide key={item.id}>
-                  <JobCard key={item.id} data={item} />
-                </SwiperSlide>
-              )))}
-          </AdvancedSwiper>
-          </SwiperWrapper>
+              ) : (
+                jobs.map((job) => (
+                  <div key={job.id} className="p-4 bg-white shadow rounded-lg flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <h3 className="font-bold">{job.title}</h3>
+                      <p className="text-sm text-gray-600">Company: {job.companyName}</p>
+                      <p className="text-sm text-gray-600">Applicants: {job.applicants}</p>
+                    </div>
+                    <button
+                      className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
+                      onClick={() => navigate(`/provider/all-jobs`, { state: { job } })}
+                    >
+                      <FaEye className="mr-1" /> View
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </MainContext>
       </JobProvider>
     </div>

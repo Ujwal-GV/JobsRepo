@@ -11,52 +11,18 @@ import { AiFillProject } from "react-icons/ai";
 import { CiUser } from "react-icons/ci";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import axios from 'axios';
+import { useLocation } from "react-router-dom";
 
-const UserProfile = () => {
+const ViewCandidate = () => {
 
-    const [personalDetails, setPersonalDetails] = useState(null);
+    const { state } = useLocation();
+    const applicant = state?.applicant; // Retrieve the applicant data from state
+    
+    // console.log(applicant);
+
     const [errorMessage, setErrorMessage] = useState("");
     
-    const user_id = "USER-2";
-
-    useEffect(() => {
-        const fetchPersonalDetails = async () => {
-          try {
-            const response = await axios.get(`http://localhost:8087/user/${user_id}`);
-            if (response.status === 200) {
-              setPersonalDetails(response.data);
-            //   console.log(response);
-            }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-            setErrorMessage(error.response?.data?.message || "Failed to fetch user details.");
-          }
-        };
-    
-        fetchPersonalDetails();
-      }, [user_id]);
-
-    // const personalDetails = {
-    //     fullName: "Shivuroopesh",
-    //     email: "shivuroopesh6362@gmail.com",
-    //     mobile: "6362379895",
-    //     gender: "Male",
-    //     skills: ["JavaScript", "React"],
-    //     educationDetails: {
-    //       qualification: "B.Tech",
-    //       college: "ABC College",
-    //       percentage: "80%",
-    //       passedYear: "2022",
-    //     },
-    //     internshipDetails: {
-    //       title: "Software Engineer Intern",
-    //       description: "Worked on various web development projects.",
-    //     },
-    //     profileSummary:
-    //       "A passionate software engineer with experience in building web applications.",
-    //   };
-
-    if (!personalDetails) {
+    if (!applicant) {
         return <div className="flex justify-center items-center"><p>Loading...</p></div>;
     }
 
@@ -68,49 +34,56 @@ const UserProfile = () => {
           <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 h-fit mx-auto">
             <div className="w-[200px] h-[200px] flex center relative rounded-full bg-white">
               <img 
-                src={personalDetails.profile_details.profileImg}
+                src={applicant.profile_details.profileImg}
                 alt="Profile Image" 
                 className="w-full h-full rounded-full object-fill"
             />
             </div>
             <div className="bg-white w-full md:w-[500px] h-full p-3 md:p-7 rounded-xl relative shadow-md">
-              <h1 className="text-xl font-semibold">{personalDetails.name}</h1>
-              <a href="mailto: ${personalDetails.email}">
+              <h1 className="text-xl font-semibold">{applicant.name}</h1>
+              <a href="mailto: ${applicant.email}">
               <h1 className="flex justify-start items-center gap-2 mt-2 text-sm text-gray-600">
                 <MdEmail className="text-orange-600" />
-                {personalDetails.email}
+                {applicant.email}
               </h1>
               </a>
               <h1 className="flex justify-start items-center gap-2 text-sm text-gray-600">
                 <FaPhoneAlt className="text-orange-600" />
-                {personalDetails.mobile}
+                {applicant.mobile}
               </h1>
               <h1 className="flex justify-start items-center gap-2 text-sm text-gray-600">
                 <IoIosMale className="text-orange-600" />
-                {personalDetails.profile_details.gender}
+                {applicant.profile_details.gender}
               </h1>
             </div>
           </div>
           <hr className="mt-5 mb-2" />
+
+          {/* Profile Summary */}
+          <div className="bg-white w-full h-full p-5 md:p-7 rounded-xl shadow-md mt-6">
+            <h1 className="text-lg font-semibold">Profile Summary</h1>
+            <hr className="mt-2 mb-2" />
+            <p className="mt-3 text-sm text-gray-600">{applicant.profile_details.summary || "No summary provided"}</p>
+          </div>
 
           {/* Education Details */}
           <div className="bg-white w-full p-5 md:p-5 rounded-xl shadow-md font-outfit mt-6">
             <h1 className="text-lg font-semibold">Education Details</h1>
             <hr className="mt-2 mb-2" />
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Qualification:</strong> {personalDetails.education_details.qualification || "Not Provided"}
+              <strong>Qualification:</strong> {applicant.education_details.qualification || "Not Provided"}
             </div>
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Specialization:</strong> {personalDetails.education_details.specification || "Not Provided"}
+              <strong>Specialization:</strong> {applicant.education_details.specification || "Not Provided"}
             </div>
             <div className="mt-3 text-sm text-gray-600">
-              <strong>College:</strong> {personalDetails.education_details.institute_name || "Not Provided"}
+              <strong>College:</strong> {applicant.education_details.institute_name || "Not Provided"}
             </div>
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Percentage:</strong> {personalDetails.education_details.percentage || "Not Provided"}
+              <strong>Percentage:</strong> {applicant.education_details.percentage || "Not Provided"}
             </div>
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Passed Year:</strong> {personalDetails.education_details.yearOfPassout ? dayjs(personalDetails.education_details.yearOfPassout).format('YYYY') : "Not Provided"}
+              <strong>Passed Year:</strong> {applicant.education_details.yearOfPassout ? dayjs(applicant.education_details.yearOfPassout).format('YYYY') : "Not Provided"}
             </div>
           </div>
 
@@ -119,8 +92,8 @@ const UserProfile = () => {
             <h1 className="text-lg font-semibold">Skills</h1>
             <hr className="mt-2 mb-2" />
             <div className="flex flex-wrap gap-2 mt-3">
-              {personalDetails.profile_details.skills.length > 0 ? (
-                personalDetails.profile_details.skills.map((skill, index) => (
+              {applicant.profile_details.skills.length > 0 ? (
+                applicant.profile_details.skills.map((skill, index) => (
                   <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm">
                     {skill}
                   </span>
@@ -136,18 +109,11 @@ const UserProfile = () => {
             <h1 className="text-lg font-semibold">Internship Details</h1>
             <hr className="mt-2 mb-2" />
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Internship Title:</strong> {personalDetails.internship_details.title || "Not Provided"}
+              <strong>Internship Title:</strong> {applicant.internship_details.title || "Not Provided"}
             </div>
             <div className="mt-3 text-sm text-gray-600">
-              <strong>Internship Description:</strong> {personalDetails.internship_details.description || "Not Provided"}
+              <strong>Internship Description:</strong> {applicant.internship_details.description || "Not Provided"}
             </div>
-          </div>
-
-          {/* Profile Summary */}
-          <div className="bg-white w-full h-full p-5 md:p-7 rounded-xl shadow-md mt-6">
-            <h1 className="text-lg font-semibold">Profile Summary</h1>
-            <hr className="mt-2 mb-2" />
-            <p className="mt-3 text-sm text-gray-600">{personalDetails.profile_details.summary || "No summary provided"}</p>
           </div>
 
           <div className="bg-white w-full h-full p-5 md:p-7 rounded-xl shadow-md mt-6">
@@ -167,4 +133,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default ViewCandidate;

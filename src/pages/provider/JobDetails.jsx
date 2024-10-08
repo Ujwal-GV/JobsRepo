@@ -121,7 +121,7 @@ const JobDetails = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Not sepcified</p>
+                  <p className="m-5">Not specified</p>
                 )}
                 </li>
 
@@ -140,7 +140,7 @@ const JobDetails = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Not sepcified</p>
+                  <p className="m-5">Not specified</p>
                 )}
                 </li>
               </ul>
@@ -162,7 +162,7 @@ const JobDetails = () => {
                   </div>
                 ))
               ) : (
-                <p>No skills listed</p>
+                <p className="ml-5">No skills listed</p>
               )}
 
             <h1 className="text-xl md:text-2xl font-semibold mb-4 mt-6">
@@ -179,7 +179,7 @@ const JobDetails = () => {
                   </div>
                 ))
               ) : (
-                <p>No skills listed</p>
+                <p className="ml-5">No skills listed</p>
               )}
             </div>
 
