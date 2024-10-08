@@ -7,6 +7,7 @@ import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { JobCardSkeleton } from '../../components/JobCard';
 import { useQuery } from "@tanstack/react-query";
 import axios from 'axios';
+import { Pagination } from "antd";
 
 
 const AllPostedJobs = () => {
@@ -24,8 +25,10 @@ const AllPostedJobs = () => {
       throw new Error("Job not found");
     }
 
+    const job_id = "APP-1";
+
     try {
-      const response = await axios.get(`http://localhost:8087/jobs/APP-1`, {
+      const response = await axios.get(`http://localhost:8087/jobs/${job_id}`, {
         params: 
         {
           applied_details: true,
@@ -38,11 +41,15 @@ const AllPostedJobs = () => {
         throw new Error("Failed to fetch applicants");
       }
       
-      response.data.job.forEach(job => {
-        console.log("Hi",job);
-        setApplicants(job.User_info);
+      const applicants = response.data.job[0].User_info;
+        setApplicants(applicants);
         setLoading(false);
-      });
+      
+      // response.data.job.forEach(job => {
+      //   console.log("Hi",job);
+      //   setApplicants(job.User_info);
+      //   setLoading(false);
+      // });
       
     } catch (err) {
       setLoading(false);
@@ -68,13 +75,14 @@ const AllPostedJobs = () => {
       {/* Left Side: Jobs List with Scroll */}
       <div className="w-full lg:w-1/2 p-5 rounded-lg shadow-md h-[75vh] overflow-y-auto custom-scroll relative">
         <MainContext>
+        <h1 className="text-xl font-semibold mb-5">Job Details</h1>
           <div className="w-full flex flex-col gap-3">
             {/* Company and Job Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
               <img 
                 src="/Logo.png" 
                 alt="Company Logo" 
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-8 right-8" 
+                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-15 right-8" 
               />
               <h1 className="text-xl md:text-2xl font-bold">{job.title}</h1>
               <h2 className="text-xl md:text-2xl font-semibold">{job.companyName}</h2>
@@ -186,17 +194,17 @@ const AllPostedJobs = () => {
             </div>
           ))
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm">
             {applicants.length > 0 ? (
               applicants.map((applicant) => (
                 <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-md relative">
                   <h2 className="font-semibold">{applicant.name}</h2>
-                  <div className="w-[60px] h-[60px] flex center absolute right-2 top-4 rounded-lg bg-gray-200">
+                  <div className="w-[60px] h-[60px] flex center absolute right-4 top-4 rounded-lg bg-gray-200">
                     <img 
                       src={applicant.profile_details.profileImg}
                       alt="Profile Image" 
                       className="w-full h-full rounded-lg object-fill"
-                  />
+                    />
                   </div>
                   {/* Qualification */}
                   <p>
@@ -218,17 +226,15 @@ const AllPostedJobs = () => {
                       <p className="text-sm text-gray-600">No skills added</p>
                     )}
                   </div>
-                  {console.log("here",applicant)}
                   
                   <hr className='mt-2 mb-2' />
                   <button
-                      className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
-                      onClick={() => navigate(`/provider/view-candidate`, { state: { applicant } })}
-                    >
-                      <FaEye className="mr-1" /> View
-                    </button>
+                    className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
+                    onClick={() => navigate(`/provider/view-candidate`, { state: { applicant } })}
+                  >
+                    <FaEye className="mr-1" /> View
+                  </button>
                 </div>
-                
               ))
             ) : (
               <p>No applicants found for this job.</p>
