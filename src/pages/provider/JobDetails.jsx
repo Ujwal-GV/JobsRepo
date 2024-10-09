@@ -7,9 +7,6 @@ import { useNavigate } from "react-router-dom";
 const JobDetails = () => {
   const { state } = useLocation();
   const job = state?.job;
-  console.log(job);
-  
-
   if (!job) {
     return <p>Job not found!</p>;
   }

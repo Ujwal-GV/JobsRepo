@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import MainContext from "../../components/MainContext";
-import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import { jobData } from "../../../assets/dummyDatas/Data";
-import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { CiSearch } from "react-icons/ci";
 import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../../components/JobCard";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import Loading from "../Loading";
+import { HiPlus } from "react-icons/hi";
+import { Rate } from "antd";
+import { FreelanePostContainer, JobPostContainer } from "./CompanyAllPosts";
 
-export const VerticalBar = ({className}) => {
-  return <div className={"w-0 h-5 border-r border-black " +className}></div>;
+export const VerticalBar = ({ className }) => {
+  return <div className={"w-0 h-5 border-r border-black " + className}></div>;
 };
 
 export const NoPostFound = () => (
@@ -26,7 +30,7 @@ const JobsPostedByCompany = ({ jobsPostedByCompany = [] }) =>
   ) : (
     <AdvancedSwiper>
       {jobsPostedByCompany.map((data) => (
-        <SwiperSlide key={data.id}>
+        <SwiperSlide key={data.id} className="mx-2">
           <JobCard data={data} />
         </SwiperSlide>
       ))}
@@ -34,105 +38,128 @@ const JobsPostedByCompany = ({ jobsPostedByCompany = [] }) =>
   );
 
 const CompanyPage = () => {
+  const { id:companyId } = useParams();
+  const PostedSections = [" Job Posts", "Freelance Post"];
+  const [posttype, setPostType] = useState(0);
 
+  const fetchCompanyData = async () => {
+    const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
+    return res.data;
+  };
 
   const navigate = useNavigate();
+
+  const { data, isLoading: companyDataLoading } = useQuery({
+    queryKey: ["companyData", companyId], // Unique key for this query
+    queryFn: fetchCompanyData, // The function that fetches the jobs data
+    staleTime: 300000, // Data will remain fresh for 5 minutes (300,000 ms)
+    cacheTime: 300000, // Cache the data for 5 minutes
+    onError: () => {
+      toast.error("Something went wrong while fetching jobs");
+    },
+  });
+
+  if (companyDataLoading) {
+    return <Loading />;
+  }
+
+  const { company_name, img, company_links, email, location, description } =
+    data.accountData;
 
   return (
     <MainContext>
       {/* Wrapper for the entire content */}
       <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex flex-col gap-10">
         {/* Top Section: Company and Person Details */}
-        <div className="w-full lg:w-full flex flex-col lg:flex-row gap-10">
-          {/* Left Section */}
-          <div className="w-full lg:w-[55%] job-apply-section relative">
-            {/* Company and Person Details */}
-            <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 font-outfit">
-              <img
-                src="Logo.png"
-                alt="Company Logo"
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-4 right-4"
-              />
-              <h1 className="text-[1.3rem] md:text-2xl font-semibold">
-                Company Name
-              </h1>
-              <h3 className="font-light mt-5">Posted by: Provider Name</h3>
-              <div className="flex gap-2 mt-3">
-                <span>Experience</span>
-                <VerticalBar />
-                <span>Posted Jobs: 5</span>
-              </div>
-              <hr className="mt-10 mb-2" />
-              {/* <div className="flex justify-between items-center">
-                <div>
-                  <span>Applicants: {20}</span>
-                </div>
-                <div className="flex center gap-3">
-                  <button
-                    className="btn-orange-outline px-3 py-1 flex center gap-1"
-                    onClick={handleSaveClick}
-                  >
-                    {saved ? (
-                      <FaCheckCircle className="text-orange-600" />
-                    ) : (
-                      <></>
-                    )}
-                    {saved ? "Saved" : "Save"}
+        <div className="w-full  mx-auto gap-10 bg-white grid grid-cols-1 lg:grid-cols-2">
+          <div>
+            {/* Company deatils with logo */}
+            <div className="w-full job-apply-section relative">
+              {/* Company and Person Details */}
+              <div className="w-full rounded-none h-fit bg-white p-2 md:p-10 font-outfit">
+                <img
+                  src={img ? img.url : ""}
+                  alt="Company Logo"
+                  className="w-16 h-16 md:w-24 md:h-24  object-cover mb-4 absolute top-4 right-4 lg:top-8 lg:right-8"
+                />
+                <h1 className="text-[1.3rem] md:text-2xl font-semibold">
+                  {company_name}{" "}
+                  <span className="text-sm">
+                    <Rate count={1} disabled value={1} />
+                    {4.5}
+                  </span>
+                </h1>
+                <h3 className="font-light mt-5">
+                  Website :{" "}
+                  <a className="text-blue-600 cursor-pointer">
+                    {company_links[0].url}
+                  </a>
+                </h3>
+                <div className="flex gap-2 mt-3">
+                  <button className="py-2 px-4 bg-orange-600 text-white flex center gap-1 rounded-2xl">
+                    {" "}
+                    <HiPlus /> Follow
                   </button>
                 </div>
-              </div> */}
+                <hr className="mt-10 mb-2" />
+              </div>
             </div>
 
-            {/* Key Highlights */}
-            {/* <div className="w-full rounded-xl mt-8 h-fit bg-white p-2 md:p-10">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                Key Highlights
+            {/*  About Company */}
+            <div className="w-full  mt-5 md:mt-0 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-2 md:p-5">
+              <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
+                {`About ${company_name}`}
               </h1>
-              <ul className="mt-3">
-                <KeyHighlightsListItem key={"1"} title="Location" value="Bangalore" />
-                <KeyHighlightsListItem key={"1-1"} title="Industry" value="IT Services" />
-                <KeyHighlightsListItem key={"1-2"} title="Posted On" value="1 Week Ago" />
-              </ul>
-            </div> */}
+              <p className="font-outfit">{description}</p>
+
+              {/* Company Details */}
+              <div className="mt-4">
+                <h2 className="text-lg font-semibold">More Details</h2>
+                <ul className="list-disc list-inside mt-3">
+                  <li>
+                    <span className="font-semibold">Email :</span> {email}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Location :</span> {location}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Type : </span> Software
+                    Development
+                  </li>
+                  <li>Employees: 500+</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
-          {/* Right Section: About Company */}
-          <div className="w-full lg:w-[45%] mt-5 md:mt-0 flex-1 flex flex-col gap-2 h-fit bg-white rounded-lg p-2 md:p-5">
-            <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
-              About Company
-            </h1>
-            <p className="font-outfit">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit
-              praesentium eveniet ratione saepe aliquid illo exercitationem,
-              porro commodi ipsum asperiores omnis quisquam accusamus distinctio
-              ipsa, lorem50
-            </p>
-
-            {/* Company Details */}
-            <div className="mt-4">
-              <h2 className="text-lg font-semibold">Company Details</h2>
-              <ul className="list-disc list-inside mt-3">
-                <li>Company Name: Example Corp</li>
-                <li>Location: New York, USA</li>
-                <li>Industry: Software Development</li>
-                <li>Employees: 500+</li>
-              </ul>
+          <div className="px-2 md:px-5 mb-4">
+            <div className="flex  justify-start items-center gap-2 py-5">
+              {PostedSections.map((data, idx) => {
+                return (
+                  <div
+                  key={idx}
+                    onClick={() => setPostType(idx)}
+                    className={
+                      "rounded-full  cursor-pointer center gap-1 bg-slate-50 h-10 border hover:border-gray-950  px-3 text-sm " +
+                      (posttype === idx && "border-gray-950")
+                    }
+                  >
+                    {data}
+                  </div>
+                );
+              })}
             </div>
+
+            {posttype === 0 ? (
+              <JobPostContainer cardClassname={" mx-auto lg:!mx-0 "} companyId={companyId}/>
+            ) : (
+              <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} />
+            )}
           </div>
         </div>
 
         {/* Jobs Posted by You */}
         <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 flex flex-col">
-          <div>
-            <h1 className="text-xl md:text-2xl font-semibold mb-4 flex justify-between items-center">
-              All Post
-              <span className="text-sm text-orange-600 cursor-pointer hover:underline" onClick={()=>navigate("allpostedContent")}>
-                View All
-              </span>
-            </h1>
-            <JobsPostedByCompany jobsPostedByCompany={jobData} />
-          </div>
-         
           {/* Business Posts */}
 
           <div className="border-t border-gray-100 pt-4">
@@ -142,7 +169,7 @@ const CompanyPage = () => {
                 View All
               </span>
             </h1>
-            <JobsPostedByCompany jobsPostedByCompany={jobData} />
+            <h1>All Post in grid design</h1>
           </div>
           <div></div>
         </div>

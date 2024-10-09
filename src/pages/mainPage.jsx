@@ -12,7 +12,7 @@ import {
 } from "../../assets/dummyDatas/Data";
 import { SwiperSlide } from "swiper/react";
 import JobCard, { JobCardSkeleton } from "../components/JobCard";
-import CompanyCard from "../components/CompanyCard";
+import CompanyCard, { CompanyCardSkeleton } from "../components/CompanyCard";
 import ProjectCard from "../components/ProjectCard";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -131,9 +131,9 @@ function MainPage() {
                
                companyDataLoading ? 
                
-               companyData.map((data) => (
-                <SwiperSlide key={data.id}>
-                  <CompanyCard data={data} />
+               [1,2,3,4,5,6,7,8,9,0].map((data) => (
+                <SwiperSlide key={data}>
+                  <CompanyCardSkeleton  id={data} />
                 </SwiperSlide>
               ))
                : 
