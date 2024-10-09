@@ -163,51 +163,6 @@ const ProviderProfile = () => {
                               </a>
                             </div>
                           )}
-
-                          {/* Instagram Link */}
-                          {links.instagram && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <FaInstagram className="text-pink-500" />
-                              <a
-                                href={links.instagram.trim()}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500"
-                              >
-                                {links.instagram.trim()}
-                              </a>
-                            </div>
-                          )}
-
-                          {/* Facebook Link */}
-                          {links.facebook && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <FaFacebook className="text-blue-600" />
-                              <a
-                                href={links.facebook.trim()}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500"
-                              >
-                                {links.facebook.trim()}
-                              </a>
-                            </div>
-                          )}
-
-                          {/* Twitter Link */}
-                          {links.twitter && (
-                            <div className="flex items-center gap-2">
-                              <FaTwitter className="text-blue-400" />
-                              <a
-                                href={links.twitter.trim()}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500"
-                              >
-                                {links.twitter.trim()}
-                              </a>
-                            </div>
-                          )}
                         </div>
                       )}
                     </div>
@@ -538,43 +493,6 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
                     onChange={handleChange}
                   />
                 </div>
-  
-                {/* Instagram Link */}
-                <div className="flex items-center mb-4">
-                  <InputBox
-                    name="instagram"
-                    type="url"
-                    icon={<FaInstagram className="text-pink-500 w-5 h-5 mr-2" />}
-                    placeholder="Instagram Profile URL"
-                    value={values.instagram}
-                    onChange={handleChange}
-                  />
-                </div>
-  
-                {/* Facebook Link */}
-                <div className="flex items-center mb-4">
-                  <InputBox
-                    name="facebook"
-                    type="url"
-                    icon={<FaFacebook className="text-blue-600 w-5 h-5 mr-2" />}
-                    placeholder="Facebook Profile URL"
-                    value={values.facebook}
-                    onChange={handleChange}
-                  />
-                </div>
-  
-                {/* Twitter Link */}
-                <div className="flex items-center mb-4">
-                  <InputBox
-                    name="twitter"
-                    type="url"
-                    icon={<FaTwitter className="text-blue-400 w-5 h-5 mr-2" />}
-                    placeholder="Twitter Profile URL"
-                    value={values.twitter}
-                    onChange={handleChange}
-                  />
-                </div>
-  
                 {/* Action Buttons */}
                 <div className="w-full mt-4 flex justify-end gap-3">
                   <button

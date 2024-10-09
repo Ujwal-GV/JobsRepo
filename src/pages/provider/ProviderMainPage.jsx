@@ -1,60 +1,36 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import React, { useState, useContext } from "react"; // Import useState and useContext
-import { FaArrowRight } from "react-icons/fa";
+import { FaEye } from "react-icons/fa6";
 import { HiUserCircle } from "react-icons/hi";
 import Navbar from "../../components/Navbar";
+import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import MainContext from "../../components/MainContext";
 import SeachInput from "../../components/SeachInput";
-import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { useNavigate } from "react-router-dom";
 import { JobProvider, useJobContext } from '../../contexts/JobContext';
-import { SwiperSlide } from "swiper/react";
-import { IoLocationOutline } from "react-icons/io5";
-
-const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
-  return (
-    <div className="my-5 w-full p-3">
-      <div className="job-slider md:border w-full rounded-2xl h-full shadow-black p-1 md:p-5">
-        <h1 className="text-xl md:text-2xl font-semibold flex items-center justify-between gap-2">
-          <span className="flex center text-[1rem] md:text-[1.2rem] ms-1 font-outfit">
-            {title} <FaArrowRight className="ms-2" />
-          </span>
-          <span
-            className="text-orange-600 text-sm cursor-pointer hover:underline font-outfit me-1"
-            onClick={onViewClick}
-          >
-            View All
-          </span>
-        </h1>
-        <div className="mt-5 md:py-3">{children}</div>
-      </div>
-    </div>
-  );
-};
-
-const SwipeCard = ({ job }) => {
-  return (
-    <div className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 ">
-      <h2 className="w-full text-[1 rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3">{job.title}</h2> 
-      <p className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">{job.companyName}</p>
-      <div className="flex">
-      <IoLocationOutline />
-      <p className="text-sm text-gray-500">{job.location ? job.location : "Remote"}</p>
-      </div>
-        <span className="text-end text-sm mt-2 text-slate-00">Posted on: {job.postedDate}</span>
-    </div>
-  );
-};
-
+import { useQuery } from "@tanstack/react-query";
 
 function ProviderMainPage() {
   const navigate = useNavigate();
-  
-  // State to manage posted jobs
-  const [postedJobs, setPostedJobs] = useState([]);
 
-  // Call the useJobContext hook inside the component
+  const fetchJobs = async () => {
+    const res = await axios.get("http://localhost:8087/jobs/?limit=10");
+    return res.data;
+  };
+
   const { jobs } = useJobContext(); // Use the JobContext to get jobs
+
+  const { isLoading: jobsDataLoading } = useQuery({
+    queryKey: ['jobs'], // Unique key for this query
+    queryFn: fetchJobs,      // The function that fetches the jobs data
+    staleTime: 300000,       // Data will remain fresh for 5 minutes (300,000 ms)
+    cacheTime: 300000,       // Cache the data for 5 minutes
+    onError: () => {
+      toast.error("Something went wrong while fetching jobs");
+    }
+  });
+  
+  const [postedJobs, setPostedJobs] = useState([]);
 
   const handlePostJobClick = () => {
     navigate('/provider/post-job');
@@ -62,11 +38,6 @@ function ProviderMainPage() {
 
   const handleProfileClick = () => {
     navigate('/provider/profile');
-  };
-
-  // Function to simulate posting a job (you can replace this with your actual job posting logic)
-  const postJob = (jobDetails) => {
-    setPostedJobs((prevJobs) => [...prevJobs, jobDetails]);
   };
 
   return (
@@ -98,36 +69,52 @@ function ProviderMainPage() {
             />
           </div>
 
-          {/* Post Job Button */}
-          <div className="my-5 text-center">
-            <button
-              onClick={handlePostJobClick}
-              className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
-            >
-              Post a Job
-            </button>
-          </div>
+          {/* Posted Jobs List */}
+          <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
+            {/* Header and Post Job Button */}
+            <div className="my-5 flex flex-col gap-4 items-center justify-center text-center">
+              <h2 className="text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
+              <button
+                onClick={handlePostJobClick}
+                className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
+              >
+                Post a Job
+              </button>
+            </div>
+            
+            <hr className="mt-5 mb-2 border-gray" />
 
-          {/* Posted Jobs Slider */}
-          <SwiperWrapper
-            key={"jobs"}
-            title="Your Posted Jobs"
-            onViewClick={() => navigate('/provider/all-jobs')}
-          >
-            <AdvancedSwiper>
-              {jobs.length === 0 ? (
-                <SwiperSlide>
-                  <div className="font-outfit center">No jobs posted yet.</div>
-                </SwiperSlide>
+            {/* Scrollable Jobs List */}
+            <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
+              {jobsDataLoading ? (
+                [1, 2, 3, 4, 5].map((d) => (
+                  <div key={d} className="flex-1 bg-white w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md">
+                    <JobCardSkeleton id={d} />
+                  </div>
+                ))
+              ) : jobs.length === 0 ? (
+                <div className="text-center flex flex-col my-auto text-gray-500">
+                  No jobs posted by you.
+                </div>
               ) : (
                 jobs.map((job) => (
-                  <SwiperSlide key={job.id}>
-                    <SwipeCard job={job} key={job.id} />
-                  </SwiperSlide>
+                  <div key={job.id} className="p-4 bg-white shadow rounded-lg flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <h3 className="font-bold">{job.title}</h3>
+                      <p className="text-sm text-gray-600">Company: {job.companyName}</p>
+                      <p className="text-sm text-gray-600">Applicants: {job.applicants}</p>
+                    </div>
+                    <button
+                      className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
+                      onClick={() => navigate(`/provider/all-jobs`, { state: { job } })}
+                    >
+                      <FaEye className="mr-1" /> View
+                    </button>
+                  </div>
                 ))
               )}
-            </AdvancedSwiper>
-          </SwiperWrapper>
+            </div>
+          </div>
         </MainContext>
       </JobProvider>
     </div>
