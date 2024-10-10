@@ -113,8 +113,6 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
     });
   };
 
-  console.log(data)
-
   return (
     <>
       {isLoading
@@ -126,7 +124,7 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
         )) : <NoPostFound/> }
 
       {
-        data?.length > 0 && <Pagination
+        data?.length > 10 && <Pagination
         disabled={isLoading} // Disable pagination if loading
         defaultCurrent={1}
         current={currentPage}

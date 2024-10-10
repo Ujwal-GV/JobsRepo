@@ -47,7 +47,7 @@ function MainPage() {
 
   const fetchJobs = async () => {
     const res = await axios.get("http://localhost:8087/jobs/?limit=10");
-    return res.data;
+    return res.data.pageData;
   };
 
   const fetchCompanies = async () => {

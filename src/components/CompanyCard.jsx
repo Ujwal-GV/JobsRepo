@@ -3,7 +3,6 @@ import Skeleton from "react-loading-skeleton";
 
 const CompanyCard = ({ data }) => {
   const { img, company_name = " ", _id = "", company_id } = data;
-  console.log(data);
   return (
     <div
       onClick={() =>{window.open(`/user/company/${company_id}`, '_blank');}}
