@@ -19,7 +19,7 @@ const ViewCandidate = () => {
     const applicant = state?.applicant; // Retrieve the applicant data from state
     
     // console.log(applicant);
-
+    
     const [errorMessage, setErrorMessage] = useState("");
     
     if (!applicant) {
