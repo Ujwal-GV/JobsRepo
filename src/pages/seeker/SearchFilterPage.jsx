@@ -237,6 +237,8 @@ const SearchFilterPage = () => {
               }
             /> : (!searchLoading ? <NoPostFound/> :<></>)
           }
+
+          
         </div>
       </div>
 
