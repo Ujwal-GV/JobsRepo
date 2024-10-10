@@ -28,10 +28,9 @@ import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import ScrollToTop from './components/ScrollToTop'
-
-
 
 const AppMain = () => {
   return (
@@ -71,6 +70,7 @@ const AppMain = () => {
         </Routes> 
       </BrowserRouter>
       </JobProvider>
+      <ReactQueryDevtools initialIsOpen={true} />
     </AuthProvider>
     </QueryClientProvider>
   ) 
