@@ -56,24 +56,30 @@ function MainPage() {
   };
 
   const { data: jobsData, isLoading: jobsDataLoading } = useQuery({
-    queryKey: ['jobsData'], // Unique key for this query
-    queryFn: fetchJobs,      // The function that fetches the jobs data
-    staleTime: 300000,       // Data will remain fresh for 5 minutes (300,000 ms)
-    cacheTime: 300000,       // Cache the data for 5 minutes
+    queryKey: ['jobsData'], 
+    queryFn: fetchJobs,      
+    staleTime: 300000,  
+    refetchOnWindowFocus: false,  
+  refetchOnMount: false, 
+    cacheTime: 300000, 
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
     }
   });
 
   const { data: companiesData, isLoading: companyDataLoading } = useQuery({
-    queryKey: ['companyData'], // Unique key for this query
-    queryFn: fetchCompanies,      // The function that fetches the jobs data
-    staleTime: 300000,       // Data will remain fresh for 5 minutes (300,000 ms)
-    cacheTime: 300000,       // Cache the data for 5 minutes
+    queryKey: ['companyData'],
+    queryFn: fetchCompanies,      
+    staleTime: 300000,
+    cacheTime:300000, 
+    refetchOnWindowFocus: false,  
+    refetchOnMount: false,       
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
     }
   });
+
+
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">

@@ -12,7 +12,6 @@ const SearchJobCard = ({ data }) => {
     provider_info,
     experience=""
   } = data;
-  console.log(data);
   return (
     <div
       onClick={() => alert(data.job_id)}

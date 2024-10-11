@@ -47,7 +47,6 @@ const CompanyPage = () => {
     return res.data;
   };
 
-  const navigate = useNavigate();
 
   const { data, isLoading: companyDataLoading } = useQuery({
     queryKey: ["companyData", companyId], // Unique key for this query
@@ -66,6 +65,9 @@ const CompanyPage = () => {
   const { company_name, img, company_links, email, location, description } =
     data.accountData;
 
+
+    console.log(data)
+
   return (
     <MainContext>
       {/* Wrapper for the entire content */}
@@ -80,16 +82,16 @@ const CompanyPage = () => {
                 <img
                   src={img ? img.url : ""}
                   alt="Company Logo"
-                  className="w-16 h-16 md:w-24 md:h-24  object-cover mb-4 absolute top-4 right-4 lg:top-8 lg:right-8"
+                  className="w-10 h-10 md:w-24 md:h-24  object-cover mb-4 absolute top-4 right-4 lg:top-8 lg:right-8"
                 />
-                <h1 className="text-[1.3rem] md:text-2xl font-semibold">
+                <h1 className="text-[1.3rem] md:text-2xl font-semibold mt-2 md:mt-0">
                   {company_name}{" "}
                   <span className="text-sm">
                     <Rate count={1} disabled value={1} />
                     {4.5}
                   </span>
                 </h1>
-                <h3 className="font-light mt-5">
+                <h3 className="font-light mt-7">
                   Website :{" "}
                   <a className="text-blue-600 cursor-pointer">
                     {company_links[0].url}
@@ -115,14 +117,14 @@ const CompanyPage = () => {
               {/* Company Details */}
               <div className="mt-4">
                 <h2 className="text-lg font-semibold">More Details</h2>
-                <ul className="list-disc list-inside mt-3">
-                  <li>
+                <ul className="list-disc list-inside mt-3 text-sm md:text-[1rem]">
+                  <li className="text-nowrap">
                     <span className="font-semibold">Email :</span> {email}
                   </li>
-                  <li>
+                  <li className="text-nowrap">
                     <span className="font-semibold">Location :</span> {location}
                   </li>
-                  <li>
+                  <li className="text-nowrap">
                     <span className="font-semibold">Type : </span> Software
                     Development
                   </li>
