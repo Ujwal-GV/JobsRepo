@@ -65,7 +65,7 @@ const AppMain = () => {
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />
               <Route path = '/provider/all-jobs' element = { <AllPostedJobs /> } />
-              <Route path = '/provider/view-candidate' element = { <ViewCandidate /> } />
+              <Route path = '/provider/view-candidate/:user_id' element = { <ViewCandidate /> } />
           </Route> 
         </Routes> 
       </BrowserRouter>

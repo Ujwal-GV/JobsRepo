@@ -5,7 +5,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { useNavigate } from "react-router-dom";
-import { industryOptions, employmentOptions, jobLocations } from "../../../assets/dummyDatas/Data"
+import { jobTypes, employmentOptions, jobLocations } from "../../../assets/dummyDatas/Data"
 import ReactQuill from "react-quill"; // Import ReactQuill
 import "react-quill/dist/quill.snow.css"; // Import styles for ReactQuill
 import Select from "react-select";
@@ -230,7 +230,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
     const alreadySelected = selectQualifications.some((qualification) => qualification.value === value);
 
     if (alreadySelected) {
-      message.error("Category already selected");
+      message.error("Qualification already selected");
       return;
     }
 
@@ -263,7 +263,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
           onSearch={handleSearch}
           onSelect={handleSelect}
           options={options}
-          placeholder="Search for a category"
+          placeholder="Search for qualification"
           value={searchValue}
           className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
         />
@@ -273,18 +273,18 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
 };
 
 
-const SubCategorySelector = ({
-  defaultSubCategories = [],
+const SpecializationSelector = ({
+  defaultSpecializations = [],
   onChange = () => {},
   title = "",
 }) => {
-  const [selectSubCategories, setSelectSubCategories] = useState(defaultSubCategories);
+  const [selectSpecializations, setSelectSpecializations] = useState(defaultSpecializations);
   const [options, setOptions] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [fetchedSubCategories, setFetchedSubCategories] = useState([]);
+  const [fetchedSpecializations, setFetchedSpecializations] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchAllSubCategories = async () => {
+  const fetchAllSpecializations = async () => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:8087/qualifications/");
@@ -295,14 +295,14 @@ const SubCategorySelector = ({
 
         const uniqueValues = Array.from(new Set(allValues));
         
-        const fetchedOptions = uniqueValues.map((subCategory) => ({
-          label: subCategory,
-          value: subCategory,
+        const fetchedOptions = uniqueValues.map((specialization) => ({
+          label: specialization,
+          value: specialization,
         }));
 
         // console.log("Allvalues", fetchedOptions);
         setOptions(fetchedOptions);
-        setFetchedSubCategories(fetchedOptions);
+        setFetchedSpecializations(fetchedOptions);
       } else {
         message.error("Something went wrong");
       }
@@ -314,18 +314,18 @@ const SubCategorySelector = ({
   };
 
   useEffect(() => {
-    fetchAllSubCategories();
+    fetchAllSpecializations();
   }, []);
 
   const handleSearch = (value) => {
     setSearchValue(value);
-    const filteredOptions = fetchedSubCategories
-      .filter((subCategory) =>
-        subCategory.label.toLowerCase().includes(value.toLowerCase())
+    const filteredOptions = fetchedSpecializations
+      .filter((specialization) =>
+        specialization.label.toLowerCase().includes(value.toLowerCase())
       )
-      .map((subCategory) => ({
-        label: subCategory.label,
-        value: subCategory.value,
+      .map((specialization) => ({
+        label: specialization.label,
+        value: specialization.value,
       }));
 
     if (
@@ -344,32 +344,32 @@ const SubCategorySelector = ({
   };
 
   const handleDelete = (label) => {
-    const subCategoriesAfterDelete = selectSubCategories.filter(
-      (subCategory) => subCategory.label.toLowerCase() !== label.toLowerCase()
+    const specializationsAfterDelete = selectSpecializations.filter(
+      (specialization) => specialization.label.toLowerCase() !== label.toLowerCase()
     );
-    setSelectSubCategories(subCategoriesAfterDelete);
-    onChange(subCategoriesAfterDelete);
+    setSelectSpecializations(specializationsAfterDelete);
+    onChange(specializationsAfterDelete);
   };
 
   const handleSelect = (value) => {
-    const alreadySelected = selectSubCategories.some(
-      (subCategory) => subCategory.value === value
+    const alreadySelected = selectSpecializations.some(
+      (specialization) => specialization.value === value
     );
 
     if (alreadySelected) {
-      message.error("Subcategory already selected");
+      message.error("Specialization already selected");
       return;
     }
 
-    const selectedSubCategory = fetchedSubCategories.find(
-      (subCategory) => subCategory.value === value
+    const selectedSpecialization = fetchedSpecializations.find(
+      (specialization) => specialization.value === value
     );
-    const newSubCategory = selectedSubCategory || { label: value, value };
+    const newSpecialization = selectedSpecialization || { label: value, value };
 
-    setSelectSubCategories([...selectSubCategories, newSubCategory]);
+    setSelectSpecializations([...selectSpecializations, newSpecialization]);
     setSearchValue("");
-    setOptions(fetchedSubCategories);
-    onChange([...selectSubCategories, newSubCategory]);
+    setOptions(fetchedSpecializations);
+    onChange([...selectSpecializations, newSpecialization]);
   };
 
   return (
@@ -377,7 +377,7 @@ const SubCategorySelector = ({
       <Spin spinning={loading}>
         <KeyHighlightsListItem key={"1"} title={title} value={null} />
         <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
-          {selectSubCategories.map((data) => (
+          {selectSpecializations.map((data) => (
             <Tag
               val={data.value}
               key={data.label}
@@ -392,7 +392,7 @@ const SubCategorySelector = ({
           onSearch={handleSearch}
           onSelect={handleSelect}
           options={options}
-          placeholder="Search for a category"
+          placeholder="Search for specialization"
           value={searchValue}
           className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
         />
@@ -435,11 +435,22 @@ const JobApplicationProviderView = () => {
   const [location, setLocation] = useState(null);
   const [locationsList, setLocationsList] = useState(jobLocations);
 
+  const [jobType, setJobType] = useState(null);
+  const [jobTypeList, setJobTypeList] = useState(jobTypes);
+
   const handleLocationChange = (selectedOption) => {
     setLocation(selectedOption);
     // Add new location if it's not already in the list
     if (selectedOption && !locationsList.find(loc => loc.value === selectedOption.value)) {
       setLocationsList([...locationsList, selectedOption]);
+    }
+  };
+
+  const handleJobTypeChange = (selectedOption) => {
+    setJobType(selectedOption);
+    // Add new job type if it's not already in the list
+    if (selectedOption && !jobTypeList.find(loc => loc.value === selectedOption.value)) {
+      setJobTypeList([...jobTypeList, selectedOption]);
     }
   };
 
@@ -651,25 +662,58 @@ const JobApplicationProviderView = () => {
                           qualifications: selectedQualifications,
                         }));
                       }}
-                      title="Category"
+                      title="Qualification"
                     />
                   </div>
                 </li>
 
                 <li className="flex flex-col md:flex flex-col items-start mb-4">
                   <div className="w-full lg:w-full flex flex-col lg:flex-col gap-4 md:gap-2">
-                    <SubCategorySelector
-                      defaultSubCategories={jobDetails.subCategories || []}
-                      onChange={(selectedSubCategories) => {
+                    <SpecializationSelector
+                      defaultSpecializations={jobDetails.specializations || []}
+                      onChange={(selectedSpecializations) => {
                         setJobDetails((prev) => ({
                           ...prev,
-                          subCategories: selectedSubCategories,
+                          specializations: selectedSpecializations,
                         }));
                       }}
-                      title="Sub Category"
+                      title="Specialization"
                     />
                   </div>
                 </li>
+
+                {/* Job Type */}
+                <li className="flex flex-col md:flex flex-col items-start mb-4">
+                <KeyHighlightsListItem key={"1-2"} title="Job Type" value={null} />
+                <div className="lg:w-[25%] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
+                  <Select
+                    value={jobDetails.jobType ? { label: jobDetails.jobType, value: jobDetails.jobType } : null}
+                    onChange={(selectedOption) => {
+                      setJobDetails((prev) => ({
+                        ...prev,
+                        jobType: selectedOption ? selectedOption.value : ""
+                      }));
+                    }}
+                    options={jobTypeList}
+                    placeholder="Select Job Type"
+                    isClearable
+                    onInputChange={(inputValue) => {
+                      if (inputValue && !jobTypeList.find(loc => loc.value === inputValue)) {
+                        setJobTypeList([...jobTypeList, { label: inputValue, value: inputValue }]);
+                      }
+                    }}
+                    noOptionsMessage={() => "Type to add a new Job Type"}
+                    className="sm:w-full lg:w-full md:w-full h-10 bg-black text-black focus:shadow-none border rounded-md"
+                    styles={{
+                      placeholder: (provided) => ({
+                        ...provided,
+                        fontSize: '0.9rem',
+                        color: 'black',
+                      }),
+                    }}
+                  />
+                </div>
+              </li>
               </ul>
             </div>
 
@@ -679,13 +723,13 @@ const JobApplicationProviderView = () => {
               <ul className="mt-3">
 
                 {/* Location */}
-                <li className="flex flex-col md:flex-row mb-4">
+                <li className="flex flex-col md:flex flex-col items-start mb-4">
                   <KeyHighlightsListItem
                     key={"1"}
                     title="Location"
                     value={null}
                   />
-                  <div className="flex flex-col w-auto md:ml-4 mt-2 w-full md:w-auto">
+                  <div className="lg:w-[25%] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
                     <Select
                       value={jobDetails.location ? { label: jobDetails.location, value: jobDetails.location } : null}
                       onChange={(selectedOption) => {
@@ -703,7 +747,14 @@ const JobApplicationProviderView = () => {
                         }
                       }}
                       noOptionsMessage={() => "Type to add a new location"}
-                      className="w-auto md:w-auto lg:w-auto sm:w-auto border rounded-lg cursor-pointer"
+                      className="sm:w-full lg:w-full md:w-full h-10 bg-black text-black focus:shadow-none border rounded-md cursor-pointer"
+                      styles={{
+                        placeholder: (provided) => ({
+                          ...provided,
+                          fontSize: '0.9rem',
+                          color: 'black',
+                        }),
+                      }}
                     />
                   </div>
                 </li>

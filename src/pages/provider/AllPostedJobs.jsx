@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useJobContext } from '../../contexts/JobContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaEye } from 'react-icons/fa6'
+import { FaEye } from 'react-icons/fa6';
 import MainContext from "../../components/MainContext";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { JobCardSkeleton } from '../../components/JobCard';
@@ -9,73 +9,81 @@ import { useQuery } from "@tanstack/react-query";
 import axios from 'axios';
 import { Pagination } from "antd";
 
-
 const AllPostedJobs = () => {
   const { jobs } = useJobContext();
   const navigate = useNavigate();
   const { state } = useLocation();
   const job = state?.job;
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchApplicants = async () => {
-    if (!job) {
-      throw new Error("Job not found");
-    }
-
-    const job_id = "APP-1";
-
+  const fetchApplicants = async (job_id) => {
     try {
       const response = await axios.get(`http://localhost:8087/jobs/${job_id}`, {
-        params: 
-        {
+        params: {
           applied_details: true,
+          page: "1",
+          limit: "2",
         }
       });
 
-      // console.log(response.data);
+      // console.log("API_DATA",response.data);
       
-      if (!response) {
-        throw new Error("Failed to fetch applicants");
+
+      if (response.data) {
+        return response.data;
+      } else {
+        throw new Error("No applicants found");
       }
-      
-      const applicants = response.data.job[0].User_info;
-        setApplicants(applicants);
-        setLoading(false);
-      
-      // response.data.job.forEach(job => {
-      //   console.log("Hi",job);
-      //   setApplicants(job.User_info);
-      //   setLoading(false);
-      // });
-      
     } catch (err) {
-      setLoading(false);
+      throw new Error("Failed to fetch applicants");
     }
   };
 
-  const { isLoading: jobsDataLoading } = useQuery({
-    queryKey: ['applicants'], // Unique key for this query
-    queryFn: fetchApplicants, // The function that fetches the applicants data
-    staleTime: 300000, // Data will remain fresh for 5 minutes (300,000 ms)
+  // Using useQuery to fetch applicants
+  const { isLoading: jobsDataLoading, data: applicantsData, error: applicantsError } = useQuery({
+    queryKey: ['applicants', "APP-2"],
+    queryFn: () => fetchApplicants("APP-2"),
+    staleTime: 300000, // Data will remain fresh for 5 minutes
     cacheTime: 300000, // Cache the data for 5 minutes
     onError: () => {
-      toast.error("Something went wrong while fetching applicants");
+      setError("Something went wrong while fetching applicants");
     },
   });
 
-  const handleViewClick = (job) => {
-    navigate(`/provider/post-job/${job.id}`, { state: { job } });
+  // applicantsData.job.forEach(job => {
+  //     console.log("Hi",job);
+  //     setApplicants(applicantsData.job.User_info);
+  //     setLoading(false);
+  //   });
+  // console.log("Data",applicantsData);
+
+  const handleViewClick = (applicant) => {
+    navigate(`/provider/view-candidate/${applicant.user_id}`, { state: { applicant } });
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    if (applicantsData && applicantsData.job && applicantsData.job.User_info) {
+      const applicants = applicantsData.job.User_info;
+      // console.log("Applicants",applicants);
+      setApplicants(applicants);
+    }
+  }, [applicantsData]);
+
 
   return (
     <div className="w-full lg:w-full flex flex-col lg:flex-row gap-10 min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 font-outfit">
       {/* Left Side: Jobs List with Scroll */}
       <div className="w-full lg:w-1/2 p-5 rounded-lg shadow-md h-[75vh] overflow-y-auto custom-scroll relative">
         <MainContext>
-        <h1 className="text-xl font-semibold mb-5">Job Details</h1>
+          <h1 className="text-xl font-semibold mb-5">Job Details</h1>
           <div className="w-full flex flex-col gap-3">
             {/* Company and Job Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
@@ -91,87 +99,51 @@ const AllPostedJobs = () => {
               <p>Vacancies: {job.vacancies || "Not mentioned"}</p>
             </div>
 
-            {/* More Details */}
-            <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                More Details
-              </h1>
-              <ul className="mt-3">
-              <li className="mb-4">
-                  <KeyHighlightsListItem
-                    key={"1"}
-                    title="Location"
-                    value={job.location ? job.location : "Not disclosed"}
-                  />
-                </li>
-
-                <li className="mb-4">
-                  <KeyHighlightsListItem
-                    key={"1-1"}
-                    title="Department"
-                    value={job.department ? job.department : "Not specified"}
-                  />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem
-                    key={"1-2"}
-                    title="Role"
-                    value={job.jobRole ? job.jobRole : "Not specified"}
-                  />
-                </li>
-                
-                <li className="mb-4">
-                  <KeyHighlightsListItem 
-                    key={"1-3"} 
-                    title="Employment Type"
-                    value={job.employmentType} 
-                  />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem 
-                    key={"1-4"} 
-                    title="Package"
-                    value={`${job.package}` ? `${job.package} ${job.currency || 'INR'}` : 'Not Disclosed'} 
-                  />
-                </li>
-              </ul>
-            </div>
-
             {/* Qualifications */}
             <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">
-                Required Skills
-              </h1>
-              {job.skills && job.skills.length > 0 ? (
-                job.skills.map((skill, index) => (
-                  <div className="mb-2">
-                    <KeyHighlightsListItem
-                      key={index}
-                      title={null}
-                      value={skill.value}
-                    />
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">Qualifications</h1>
+              {job.qualifications && job.qualifications.length > 0 ? (
+                job.qualifications.map((qualification, index) => (
+                  <div key={index} className="mb-3">
+                    <KeyHighlightsListItem value={qualification.value} />
                   </div>
                 ))
               ) : (
-                <p className="ml-5">No skills listed</p>
+                <p className="ml-5">No qualifications listed</p>
               )}
 
-              <h1 className="text-xl md:text-2xl font-semibold mb-2 mt-8">
-                Optional Skills
-              </h1>
-              {job.optionalSkills && job.optionalSkills.length > 0 ? (
-                job.optionalSkills.map((optionalSkill, index) => (
-                  <div className="mb-2">
-                    <KeyHighlightsListItem
-                      key={index}
-                      title={null}
-                      value={optionalSkill.value}
-                    />
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">Specializations</h1>
+              {job.specializations && job.specializations.length > 0 ? (
+                job.specializations.map((specialization, index) => (
+                  <div key={index} className="mb-3">
+                    <KeyHighlightsListItem value={specialization.value} />
                   </div>
                 ))
               ) : (
-                <p className="ml-5">No skills listed</p>
+                <p className="ml-5">No specializations listed</p>
               )}
+            </div>
+
+            {/* More Details */}
+            <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
+              <h1 className="text-xl md:text-2xl font-semibold mb-4">More Details</h1>
+              <ul className="mt-3">
+                <li className="mb-4">
+                  <KeyHighlightsListItem title="Location" value={job.location || "Not disclosed"} />
+                </li>
+                <li className="mb-4">
+                  <KeyHighlightsListItem title="Department" value={job.department || "Not specified"} />
+                </li>
+                <li className="mb-4">
+                  <KeyHighlightsListItem title="Role" value={job.jobRole || "Not specified"} />
+                </li>
+                <li className="mb-4">
+                  <KeyHighlightsListItem title="Employment Type" value={job.employmentType} />
+                </li>
+                <li className="mb-4">
+                  <KeyHighlightsListItem title="Package" value={`${job.package} ${job.currency || 'INR'}`} />
+                </li>
+              </ul>
             </div>
 
             {/* Job Description */}
@@ -186,7 +158,7 @@ const AllPostedJobs = () => {
       {/* Right Side: Applicants View */}
       <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[75vh]">
         <h1 className="text-xl font-semibold mb-5">Applicants</h1>
-        {/* Placeholder for applicants */}
+
         {jobsDataLoading ? (
           [1, 2, 3, 4, 5].map((d) => (
             <div key={d} className="flex-1 bg-white w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md">
@@ -195,7 +167,7 @@ const AllPostedJobs = () => {
           ))
         ) : (
           <div className="grid grid-cols-1 gap-4 text-sm">
-            {applicants.length > 0 ? (
+          {applicants && applicants.length > 0 ? (
               applicants.map((applicant) => (
                 <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-md relative">
                   <h2 className="font-semibold">{applicant.name}</h2>
@@ -206,12 +178,7 @@ const AllPostedJobs = () => {
                       className="w-full h-full rounded-lg object-fill"
                     />
                   </div>
-                  {/* Qualification */}
-                  <p>
-                    Qualification: {applicant.profile_details.qualification ? applicant.profile_details.qualification : "Not mentioned"}
-                  </p>
-                  
-                  {/* Skills */}
+                  <p>Qualification: {applicant.profile_details.qualification || "Not mentioned"}</p>
                   <div className="mt-2 mb-2">
                     <h4 className="font-semibold">Skills:</h4>
                     {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
@@ -226,21 +193,25 @@ const AllPostedJobs = () => {
                       <p className="text-sm text-gray-600">No skills added</p>
                     )}
                   </div>
-                  
                   <hr className='mt-2 mb-2' />
+                  {console.log("APP",applicant)}
+                  
                   <button
-                    className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
-                    onClick={() => navigate(`/provider/view-candidate`, { state: { applicant } })}
+                    className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700"
+                    onClick={() => handleViewClick(applicant)}
                   >
-                    <FaEye className="mr-1" /> View
+                    <FaEye className="mr-2" /> View Profile
                   </button>
                 </div>
               ))
             ) : (
-              <p>No applicants found for this job.</p>
+              <p>No applicants found</p>
             )}
           </div>
         )}
+       <div className='mt-4 center'>
+        <Pagination total={10} current={1} onChange={handlePageChange} />
+       </div>
       </div>
     </div>
   );
