@@ -92,7 +92,7 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
     if (res.status !== 200) {
       throw new Error("Failed to fetch jobs data"); // Throw error if response is not OK
     }
-    setTotalDatas(res.data.length);
+    setTotalDatas(res.data.searchdatas);
     return res.data;
   };
 
@@ -113,13 +113,14 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
     });
   };
 
+
   return (
     <>
       {isLoading
         ? [...Array(10)].map((_, index) => (
             <PostCardSkeleton className={cardClassname} key={index} />
           )) // Show loading skeletons
-        :data?.length >0 ?  data?.map((item, index) => (
+        : data?.pageData?.length >0 ?  data?.pageData?.map((item, index) => (
           <PostCard className={cardClassname} key={index} data={item} />
         )) : <NoPostFound/> }
 
@@ -144,7 +145,7 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
         }
         nextIcon={
           <button
-          disabled={isLoading}
+          disabled={isLoading }
             className={"hidden md:flex "+(totalDatas < 10 &&" !hidden")}
             style={{ border: "none", background: "none" }}
           >

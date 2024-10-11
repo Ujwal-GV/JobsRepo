@@ -19,6 +19,7 @@ const SearchFilterPage = () => {
 
   // All About Filters
   const [allFilters, setAllFilters] = useState({});
+  const [indicateFilter,setIndicateFilter]= useState(false);
 
   const [locationFilter, setLocationFilter] = useState({});
   const [workTypeFilter, setWorkTypeFilter] = useState({});
@@ -79,7 +80,7 @@ const SearchFilterPage = () => {
     setWindowWidth(window.innerWidth);
   };
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -89,40 +90,57 @@ const SearchFilterPage = () => {
     });
     return () => {
       window.removeEventListener("resize", handleResize);
-      queryClient.removeQueries(["search"]);
+      queryClient.invalidateQueries(["search"])
     };
-  }, [queryClient]);
+  }, []);
+
+  useEffect(()=>{
+    
+    const values = Object.values(allFilters);
+     
+    if(values.some((d)=>Object.keys(d).length >0))
+    {
+      setIndicateFilter(true)
+    }else{
+      setIndicateFilter(false)
+    }
+
+
+  },[allFilters])
 
   //Api request
 
   const [totalData, setTotalData] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [firstLoading, setFirstLoading] = useState(true);
-  const [pageSize,setPageSize]= useState(5);
+  const [pageSize, setPageSize] = useState(5);
 
-  const fetchSearchData = async () => {
+  const fetchSearchData = async (page) => {
     if (firstLoading) {
       setFirstLoading(false);
     }
     const res = await axios.get(
-      `http://localhost:8087/jobs?page=${currentPage}&limit=${pageSize}&type=${Object.keys(workTypeFilter).join(",")}&location=${Object.keys(locationFilter).join(",")}`
+      `http://localhost:8087/jobs?page=${page}&limit=${pageSize}&type=${Object.keys(workTypeFilter).join(",")}&location=${Object.keys(locationFilter).join(",")}`
     );
-    console.log(res.data.pageData)
     setTotalData(res.data.searchdatas);
     return res.data.pageData;
   };
 
-  const { data, isLoading: searchLoading ,refetch } = useQuery({
+  const {
+    data : searchData,
+    isLoading: searchLoading,
+    refetch,
+    isFetching : searchFetching
+  } = useQuery({
     queryKey: ["search", currentPage],
-    queryFn: fetchSearchData,
+    queryFn: ()=>fetchSearchData(currentPage),
     keepPreviousData: true,
-    staleTime: 5000, 
-    cacheTime: 5000, 
+    staleTime:300000,
+    cacheTime:10000,
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
     },
   });
-
 
   const handlePageChange = (val) => {
     setCurrentPage(val);
@@ -132,21 +150,28 @@ const SearchFilterPage = () => {
     });
   };
 
-  const handleSearchApplyButton=()=>{
-    queryClient.removeQueries(["search"]);
-     refetch();
-  }
+  const handleSearchApplyButton = () => {
+    refetch();
+  };
+
 
   return (
     <MainContext>
-      <div className="w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] h-fit pb-10 flex-col md:flex-row pt-5 md:pt-10 ">
+      <div
+        className={
+          `w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] pb-10 flex-col md:flex-row pt-5 md:pt-10 ` +
+          (searchData?.length === 0 ? "min-h-screen" : "h-fit")
+        }
+      >
         {/* Search Filter  */}
 
         <div className="w-[30%] hidden md:block h-fit bg-white primary-shadow py-3 px-2 ms-4">
           <h2 className="mb-4 flex justify-between items-center px-2">
             <span>All Filters</span>
             <span className="relative">
-              <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
+              {
+                indicateFilter && <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
+              }
               <CiFilter
                 className="text-xl"
                 onClick={() => console.log(JSON.stringify(allFilters))}
@@ -195,17 +220,15 @@ const SearchFilterPage = () => {
         <div className="flex w-full  md:w-[70%] me-0 flex-col ">
           <div className="w-[95%] mx-auto gap-2 flex  flex-col px-2  pt-0">
             <h4 className="lg:ps-24">Search Results :</h4>
-            {searchLoading
+            {searchLoading  || searchFetching
               ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d, idx) => (
                   <SearchJobCardSkeleton key={idx} />
                 ))
-              : data.map((d, idx) => <SearchJobCard data={d} key={idx} />)}
-          </div>
-
-          {
-            (data?.length > 0)  ?
-            <Pagination
-              disabled={searchLoading} // Disable pagination if loading
+              : searchData?.length > 0 && (searchData?.map((d, idx) => <SearchJobCard data={d} key={idx} />))}
+          </div>    
+            {
+              searchData?.length > 0 ? <Pagination
+              disabled={searchLoading || searchFetching }
               defaultCurrent={1}
               current={currentPage}
               className="w-fit mx-auto mb-5 mt-3"
@@ -215,9 +238,9 @@ const SearchFilterPage = () => {
               onChange={(e) => handlePageChange(e)}
               prevIcon={
                 <button
-                  disabled={searchLoading}
+                  disabled={searchLoading || searchFetching || currentPage === 1}
                   className={
-                    "hidden md:flex " + (totalData < pageSize && " !hidden")
+                    "hidden md:flex " + (currentPage ===1 && " !hidden")
                   }
                   style={{ border: "none", background: "none" }}
                 >
@@ -226,19 +249,16 @@ const SearchFilterPage = () => {
               }
               nextIcon={
                 <button
-                  disabled={searchLoading}
-                  className={
-                    "hidden md:flex " + (totalData < pageSize && " !hidden")
-                  }
+                  disabled={searchLoading || searchFetching }
+                  className={"hidden md:flex " + (currentPage*pageSize === totalData && "!hidden")}
                   style={{ border: "none", background: "none" }}
                 >
                   Next →
                 </button>
               }
-            /> : (!searchLoading ? <NoPostFound/> :<></>)
-          }
-
-          
+            /> :  (!searchFetching && <NoPostFound/>)
+            }
+         
         </div>
       </div>
 
@@ -247,8 +267,8 @@ const SearchFilterPage = () => {
         open={openLocationDrawer}
         title={
           <div className="w-full flex justify-between items-center px-2">
-            <span>Location</span>{" "}
-            <span onClick={() => alert(JSON.stringify(locationFilter))}>
+            <span>Location</span>
+            <span className="text-sm" onClick={() => {handleSearchApplyButton();setLocationDrawer(false)}}>
               Apply
             </span>
           </div>
@@ -293,7 +313,7 @@ const SearchFilterPage = () => {
         title={
           <div className="w-full flex justify-between items-center px-2">
             <span>Work Type</span>{" "}
-            <span onClick={() => alert(JSON.stringify(workType))}>Apply</span>
+            <span className="text-sm" onClick={() => {handleSearchApplyButton();setWorkTypeDrawer(false)}}>Apply</span>
           </div>
         }
         height={"40vh"}
@@ -301,8 +321,7 @@ const SearchFilterPage = () => {
         placement="bottom"
       >
         <div className="w-full grid grid-cols-2 gap-1">
-          <div className="w-full grid grid-cols-2 gap-1">
-            {workTypes.map((d, idx) => (
+        {workTypes.map((d, idx) => (
               <Checkbox
                 className="font-outfit max-w-fit"
                 key={idx}
@@ -329,7 +348,6 @@ const SearchFilterPage = () => {
                 {d}
               </Checkbox>
             ))}
-          </div>
         </div>
       </Drawer>
     </MainContext>
@@ -344,7 +362,7 @@ const FilterItem = ({
   onChange = () => {},
   maxData = 4,
   defaultSelect,
-  onApplyClick=()=>{}
+  onApplyClick = () => {},
 }) => {
   const [maxHeight, setMaxHeight] = useState(0); // State to store maxHeight
   const contentRef = useRef(null);
@@ -420,7 +438,7 @@ const FilterItem = ({
             {item}
           </Checkbox>
         ))}
-         
+
         {data.length > maxData && (
           <p className="text-sm flex justify-between items-center cursor-pointer w-full">
             <Popover
@@ -438,7 +456,9 @@ const FilterItem = ({
             </Popover>
           </p>
         )}
-        <div className="mt-1 flex justify-end pe-1 items-center w-full mb-2 text-sm"><button onClick={onApplyClick}>Apply</button></div>
+        <div className="mt-1 flex justify-end pe-1 items-center w-full mb-2 text-sm">
+          <button onClick={onApplyClick}>Apply</button>
+        </div>
       </div>
     </div>
   );
