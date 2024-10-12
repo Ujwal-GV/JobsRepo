@@ -31,6 +31,7 @@ const queryClient = new QueryClient();
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import ScrollToTop from './components/ScrollToTop'
+import NewsPage from './pages/NewsPage'
 
 const AppMain = () => {
   return (
@@ -55,6 +56,7 @@ const AppMain = () => {
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
+              <Route  path='/user/news' element={<NewsPage/>}/>
           </Route>
           <Route path="/provider" element={<MainWrapper/>}>
               <Route path = "/provider/main" element={ <ProviderMainPage/> } />
