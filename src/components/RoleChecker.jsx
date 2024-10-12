@@ -28,7 +28,7 @@ const RoleChecker = ({
               layoutId="underline"
               className={"absolute -bottom-1 h-1 w-full bg-orange-600  "+indicatorClassName}
             />
-          )}{" "}
+          )}
         </div>
       ))}
     </div>
