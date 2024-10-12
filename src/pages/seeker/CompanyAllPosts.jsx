@@ -7,6 +7,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 export const CustomSkeleton = ({ width = "100%", height = "100%" }) => (
   <Skeleton width={width} height={height} duration={1} />
@@ -46,13 +47,17 @@ const PostCardSkeleton = ({ className }) => {
 };
 
 const PostCard = ({ data, className }) => {
-  const { title, location, skills, package:salary,description, experience  } = data;
+
+  const navigate = useNavigate()
+
+  const { title, location, skills, package:salary,description, experience ,job_id  } = data;
   return (
     <div
       className={
         "mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-300 mb-2 cursor-pointer primary-shadow-hover " +
         className
       }
+      onClick={()=>navigate(`/user/job-post/${job_id}`)}
     >
       <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
         {title}
@@ -65,14 +70,14 @@ const PostCard = ({ data, className }) => {
       </div>
       <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
         <span className="flex center">
-          <CiLocationOn /> {location}
+          <CiLocationOn /> {location.slice(0,2).join(" , ")}
         </span>
         <VerticalBar className={"!border-slate-500 h-3 md:h-5"} />
         <span className="flex center">
-          <LiaRupeeSignSolid /> {salary}
+          <LiaRupeeSignSolid /> {!salary.disclosed ? "Not Disclosed" : <>{salary.min} - {salary.max}</> }
         </span>
         <VerticalBar className={"!border-slate-500 h-3 md:h-5"} />
-        <span className="flex center">Experience:{experience}</span>
+        <span className="flex center">Experience: {experience && <>{experience.min} - {experience.max} yrs</>}</span>
       </div>
     </div>
   );
@@ -117,7 +122,7 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
   return (
     <>
       {isLoading
-        ? [...Array(10)].map((_, index) => (
+        ? [...Array(7)].map((_, index) => (
             <PostCardSkeleton className={cardClassname} key={index} />
           )) // Show loading skeletons
         : data?.pageData?.length >0 ?  data?.pageData?.map((item, index) => (
