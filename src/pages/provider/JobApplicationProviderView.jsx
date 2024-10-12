@@ -900,7 +900,7 @@ const JobApplicationProviderView = () => {
                     {/* Conditional Skill Selector for Optional Skills */}
                     {!isOptionalChecked && (
                       <SkillSelector
-                        defaultSkills={jobDetails.optionalSkills || []} // Default to current optional skills
+                        defaultSkills={jobDetails.optionalSkills || []} 
                         onChange={(selectedSkills) => {
                           setJobDetails((prev) => ({
                             ...prev,

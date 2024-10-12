@@ -21,10 +21,10 @@ function ProviderMainPage() {
   const { jobs } = useJobContext(); // Use the JobContext to get jobs
 
   const { isLoading: jobsDataLoading } = useQuery({
-    queryKey: ['jobs'], // Unique key for this query
-    queryFn: fetchJobs,      // The function that fetches the jobs data
-    staleTime: 300000,       // Data will remain fresh for 5 minutes (300,000 ms)
-    cacheTime: 300000,       // Cache the data for 5 minutes
+    queryKey: ['jobs'], 
+    queryFn: fetchJobs,      
+    staleTime: 300000,      
+    cacheTime: 300000,      
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
     }

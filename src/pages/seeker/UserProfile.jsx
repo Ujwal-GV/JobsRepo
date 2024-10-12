@@ -29,8 +29,7 @@ const { TextArea } = Input;
 const UserProfile = () => {
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [educationModalOpen, setEducationModalOpen] = useState(false);
-  const [personalDetailsModalOpen, setPersonalDetailsModalOpen] =
-    useState(false);
+  const [personalDetailsModalOpen, setPersonalDetailsModalOpen] = useState(false);
   const [intershipModalOpen, setInternShipModalOpen] = useState(false);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
 
@@ -702,10 +701,9 @@ const ProfileSkillModal = ({
           </div>
 
           <AutoComplete
-            allowClear
             onChange={(value) => {
               if (value.trim().length === 0) {
-                alert("Cleared");
+                setSearchValue("")
               }
             }}
             className="w-full mt-7 md:mt-10 h-10 focus:shadow-none"

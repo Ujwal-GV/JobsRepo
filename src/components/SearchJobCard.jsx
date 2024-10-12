@@ -10,7 +10,7 @@ const SearchJobCard = ({ data }) => {
     postedBy = "",
     package: salary,
     provider_info,
-    experience=""
+    experience
   } = data;
   return (
     <div
@@ -39,23 +39,23 @@ const SearchJobCard = ({ data }) => {
           {location.join(",")}
         </span>
       </div>
-      <div className="flex center flex-col sm:flex-row">
+      <div className="flex items-start justify-start flex-col sm:flex-row">
         <div className="mt-2 flex justify-start items-center  gap-1">
           <IoBriefcaseOutline />
           <span className=" font-extralight text-sm  overflow-hidden text-ellipsis text-nowrap">
-            {salary}
+            {!salary?.disclosed ? "Not Disclosed" : <>{salary.min} - {salary.max}</>}
           </span>
         </div>
         {
-          experience && <div className="mt-2 flex justify-start items-center  gap-1 ms-2">
+          experience && <div className="mt-2 flex justify-start items-center  gap-1 md:ms-2 md:border-s border-black md:ps-2">
           <span className="text-sm">Experience</span>
           <span className=" font-extralight text-sm  overflow-hidden text-ellipsis text-nowrap">
-            {experience}
+            {experience && <>{experience?.min} - {experience.max} yrs</>}
           </span>
         </div>
         }
       </div>
-      <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1>
+      <h1 className="text-end text-sm mt-2 text-slate-400">posted by  {postedBy}</h1>
     </div>
   );
 };

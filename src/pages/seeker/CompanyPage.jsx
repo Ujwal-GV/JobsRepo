@@ -5,13 +5,17 @@ import { CiSearch } from "react-icons/ci";
 import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../../components/JobCard";
-import {  useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "../Loading";
 import { HiPlus } from "react-icons/hi";
 import { Rate } from "antd";
+import { FaCheck } from "react-icons/fa6";
 import { FreelanePostContainer, JobPostContainer } from "./CompanyAllPosts";
+import { axiosInstance, getError } from "../../utils/axiosInstance";
+import toast from "react-hot-toast";
+import { LuLoader2 } from "react-icons/lu";
 
 export const VerticalBar = ({ className }) => {
   return <div className={"w-0 h-5 border-r border-black " + className}></div>;
@@ -38,23 +42,106 @@ const JobsPostedByCompany = ({ jobsPostedByCompany = [] }) =>
   );
 
 const CompanyPage = () => {
-  const { id:companyId } = useParams();
+  const { id: companyId } = useParams();
   const PostedSections = [" Job Posts", "Freelance Post"];
   const [posttype, setPostType] = useState(0);
+  const [following, setFollowing] = useState(false);
 
   const fetchCompanyData = async () => {
     const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
+    const { followers } = res.data.accountData;
+    if (followers) {
+      if (followers.find((id) => id === "USER-9e9c26a7")) {
+        setFollowing(true);
+      }
+    }
+    console.log(res.data.accountData);
     return res.data;
   };
 
-
   const { data, isLoading: companyDataLoading } = useQuery({
-    queryKey: ["companyData", companyId], // Unique key for this query
-    queryFn: fetchCompanyData, // The function that fetches the jobs data
-    staleTime: 300000, // Data will remain fresh for 5 minutes (300,000 ms)
-    cacheTime: 300000, // Cache the data for 5 minutes
+    queryKey: ["companyData", companyId],
+    queryFn: async () => await fetchCompanyData(),
+    staleTime: 20000,
+    cacheTime: 0,
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
+    },
+  });
+
+  // const handleFollowBtnClick = async () => {
+  //   if (!following) {
+  //     try {
+  //       const res = await axiosInstance.post("/user/company/follow", {
+  //         companyId: companyId,
+  //       });
+  //       if (res.data.success) {
+  //         toast.success("Stated Follwing");
+  //         setFollowing(true);
+  //       }
+  //     } catch (error) {
+  //       const { message, isError } = getError(error);
+  //       toast.error(message);
+  //     }
+  //   } else {
+  //     try {
+  //       const res = await axiosInstance.post("/user/company/unfollow", {
+  //         companyId: companyId,
+  //       });
+  //       if (res.data.success) {
+  //         toast.success("Unfollowed");
+  //         setFollowing(false);
+  //       }
+  //     } catch (error) {
+  //       const { message, isError } = getError(error);
+  //       toast.error(message);
+  //     }
+  //   }
+  // };
+
+  const handleFollowBtnClick = () => {
+    if (!following) {
+      followMutation.mutate(companyId);
+    } else {
+      unfollowMutation.mutate(companyId);
+    }
+  };
+
+  const followCompany = async (companyId) => {
+    const res = await axiosInstance.post("/user/company/follow", {
+      companyId: companyId,
+    });
+    return res.data;
+  };
+
+  const unFollowCompany = async (companyId) => {
+    const res = await axiosInstance.post("/user/company/unfollow", {
+      companyId: companyId,
+    });
+    return res.data;
+  };
+
+  const followMutation = useMutation({
+    mutationFn: followCompany,
+    onSuccess: () => {
+      toast.success("Started Following");
+      setFollowing(true);
+    },
+    onError: (error) => {
+      const { message } = getError(error); // Error handling function
+      toast.error(message);
+    },
+  });
+
+  const unfollowMutation = useMutation({
+    mutationFn: unFollowCompany,
+    onSuccess: () => {
+      toast.success("Unfollowed");
+      setFollowing(false);
+    },
+    onError: (error) => {
+      const { message } = getError(error);
+      toast.error(message);
     },
   });
 
@@ -62,11 +149,16 @@ const CompanyPage = () => {
     return <Loading />;
   }
 
-  const { company_name, img, company_links, email, location, description } =
-    data.accountData;
+  const {
+    company_name,
+    img,
+    company_links,
+    email,
+    location,
+    description,
+    followers,
+  } = data?.accountData || {};
 
-
-    console.log(data)
 
   return (
     <MainContext>
@@ -92,15 +184,31 @@ const CompanyPage = () => {
                   </span>
                 </h1>
                 <h3 className="font-light mt-7">
-                  Website :{" "}
+                  Website :
                   <a className="text-blue-600 cursor-pointer">
                     {company_links[0].url}
                   </a>
                 </h3>
                 <div className="flex gap-2 mt-3">
-                  <button className="py-2 px-4 bg-orange-600 text-white flex center gap-1 rounded-2xl">
-                    {" "}
-                    <HiPlus /> Follow
+                  <button
+                    type="button"
+                    disabled={unfollowMutation.isPending || followMutation.isPending}
+                    onClick={() => handleFollowBtnClick()}
+                    className="py-2 px-4 bg-orange-600  text-white flex center gap-1 rounded-2xl relative"
+                  >
+
+                    {
+                      unfollowMutation.isPending || followMutation.isPending ? <LuLoader2 className="animate-spin-slow "/> :  (following ? (
+                        <>
+                          <FaCheck /> Following
+                        </>
+                      ) : (
+                        <>
+                          <HiPlus /> Follow
+                        </>
+                      ))
+                    }
+
                   </button>
                 </div>
                 <hr className="mt-10 mb-2" />
@@ -139,7 +247,7 @@ const CompanyPage = () => {
               {PostedSections.map((data, idx) => {
                 return (
                   <div
-                  key={idx}
+                    key={idx}
                     onClick={() => setPostType(idx)}
                     className={
                       "rounded-full  cursor-pointer center gap-1 bg-slate-50 h-10 border hover:border-gray-950  px-3 text-sm " +
@@ -153,7 +261,10 @@ const CompanyPage = () => {
             </div>
 
             {posttype === 0 ? (
-              <JobPostContainer cardClassname={" mx-auto lg:!mx-0 "} companyId={companyId}/>
+              <JobPostContainer
+                cardClassname={" mx-auto lg:!mx-0 "}
+                companyId={companyId}
+              />
             ) : (
               <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} />
             )}

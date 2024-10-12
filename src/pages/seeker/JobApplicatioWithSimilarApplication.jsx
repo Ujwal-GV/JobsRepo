@@ -7,12 +7,41 @@ import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { IoIosPeople, IoIosBriefcase } from "react-icons/io";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import ReadMore from "../../components/ReadMore";
+import { useParams } from "react-router-dom";
+import { axiosInstance } from "../../utils/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import Loading from "../Loading";
+import toast from "react-hot-toast";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
 };
 
 const JobApplicatioWithSimilarApplication = () => {
+  const { id: jobApplicationId } = useParams();
+
+  const fetchJobDetails = async (jobId) => {
+    const res = await axiosInstance.get(`/jobs/${jobId}`);
+    return res.data;
+  };
+
+  const {
+    data: jobApplicationData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["jobApplication", jobApplicationId],
+    queryFn: () => fetchJobDetails(jobApplicationId),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+    onError: (err) => {
+      console.error("Error fetching job details:", err.message);
+      toast.error("Failed to fetch job details");
+    },
+  });
+
   const [saved, setSaved] = useState(false);
 
   const handleSaveClick = () => {
@@ -22,6 +51,36 @@ const JobApplicatioWithSimilarApplication = () => {
   const description =
     "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nobis ipsum, officia animi iste, porro quos totam quas officiis cupiditate quae et expedita debitis. Fugit dolores possimus sequi illo odio aut quos perferendis neque quod voluptatum, eaque consequuntur, quisquam impedit delectus vel, in nisi nostrum. Hic reiciendis neque iure aliquid voluptatibus ipsa maiores ipsum distinctio, totam esse nesciunt. Aut assumenda quos provident cum quidem blanditiis repellat. Labore aliquid doloribus repellendus, corporis minima totam sit corrupti, tempora aliquam id temporibus molestiae veritatis expedita consectetur a suscipit. Modi aut nisi sequi error temporibus eum, ipsam tempora qui voluptas quasi autem aspernatur magnam reiciendis.";
 
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (isError) {
+    toast.error(error.response.data.message);
+  }
+
+  console.log(jobApplicationData);
+
+  const {
+    title: jobTitle,
+    package: salary,
+    experience,
+    vacancy,
+    applied_ids,
+    description: job_description,
+    qualification,
+    type,
+    must_skills,
+    other_skills,
+    specification,
+    location,
+    job_role
+  } = jobApplicationData.job;
+  const {
+    company_name,
+    img,
+    description: company_description,
+  } = jobApplicationData.company;
+
   return (
     <MainContext>
       <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10  !pb-2 ">
@@ -29,29 +88,33 @@ const JobApplicatioWithSimilarApplication = () => {
           <div className="w-full  lg:w-[55%] job-apply-section">
             <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit relative">
               <img
-                className="bg-red-500 absolute top-2 right-2 md:top-10 md:right-10 w-16 h-16 rounded-lg"
-                src="https://vakilsearch.com/blog/wp-content/uploads/2022/06/What-is-meant-by-Pvt-Ltd-company_-.jpg"
+                className="border border-gray-100  absolute top-2 right-2 md:top-10 md:right-10 w-16 h-16 rounded-lg"
+                src={img?.url}
+                alt={company_name}
               />
               <h1 className="text-[1.3rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
-                React JS Developer{" "}
+                {jobTitle}
               </h1>
-              <h3 className="font-light mt-5">Company Name</h3>
+              <h3 className="font-light mt-5">{company_name}</h3>
               <div className="flex gap-2 text-sm">
                 <span className="flex center gap-1 text-sm ">
-                  <IoIosBriefcase /> Salary
+                  <IoIosBriefcase /> {!salary.disclosed ? "Not Disclosed" : <>{salary.min} - {salary.max} </>}
                 </span>
-                <VerticalBar />
-                <span className="text-sm">Experinece</span>
+                {experience && (
+                  <>
+                    <VerticalBar />
+                    <span className="text-sm">Experience : {experience.min} - {experience.max} yrs</span>
+                  </>
+                )}
               </div>
               <div className="mt-1 text-sm">
-                <span>Vancancies 5</span>
+                <span>Vancancies : {vacancy}</span>
               </div>
               <hr className="mt-3 mb-2" />
               <div className="flex justify-between items-center">
                 <div>
                   <span className="flex center gap-1">
-                    {" "}
-                    <IoIosPeople /> Applicants : 22323
+                    <IoIosPeople /> Applicants : {applied_ids?.length}
                   </span>
                 </div>
                 <div className="flex center gap-3">
@@ -79,42 +142,84 @@ const JobApplicatioWithSimilarApplication = () => {
                 Key Highlights
               </h1>
               <div className="high-light-content font-outfit">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit
-                  praesentium eveniet ratione saepe aliquid illo exercitationem,
-                  porro commodi ipsum asperiores omnis quisquam accusamus
-                  distinctio ipsa, facere, nisi laudantium. Optio hic veritatis
-                  quam recusandae reiciendis sequi deleniti voluptatibus magni
-                  eos soluta error quae, provident assumenda est? Excepturi,
-                  voluptas. Enim, eligendi, pariatur quos dolores ipsa quas
-                  recusandae perferendis deserunt dolorem ratione molestiae
-                  repellat aut iure ad numquam sed reprehenderit? Quam quia
-                  maiores, deleniti aliquam dolore reiciendis minus molestiae
-                  consequatur numquam. Nobis consequatur impedit cupiditate
-                  dolorem, earum laudantium exercitationem delectus a enim saepe
-                  soluta rem sequi fugiat nulla quos est corporis, nemo eveniet!
-                </p>
+                <p>{job_description}</p>
                 <ul className="mt-3">
-                  <KeyHighlightsListItem
-                    key={"1"}
-                    title="Qualification"
-                    value="B.E / B.Tech"
-                  />
-                  <KeyHighlightsListItem
-                    key={"1-1"}
-                    title="Skills"
-                    value="Compueter Sci"
-                  />
-                  <KeyHighlightsListItem
-                    key={"1-2"}
-                    title="Type"
-                    value="Full Time"
-                  />
-                  <KeyHighlightsListItem
-                    key={"1-3"}
-                    title="Qualification"
-                    value="B.E / B.Tech"
-                  />
+                  {qualification && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"qualification"}
+                      title="Qualification"
+                      value={qualification.join(" / ")}
+                    />
+                  )}
+                  {must_skills.length > 0 && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"must_skills"}
+                      title="Required Skills"
+                      value={must_skills.join(" , ")}
+                    />
+                  )}
+
+                  {other_skills.length > 0 && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"other_skills"}
+                      title="Other Skills"
+                      value={other_skills.join(" , ")}
+                    />
+                  )}
+                  {specification.length > 0 && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"specification"}
+                      title="Specification"
+                      value={specification.join(" , ")}
+                    />
+                  )}
+                  {type && (
+                    <KeyHighlightsListItem
+                      className={" text-sm md:text-[1rem] mb-2"}
+                      key={"Employment Type"}
+                      title="Employment Type"
+                      value={type}
+                    />
+                  )}
+
+                  {location.length > 0 && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"location"}
+                      title="Location"
+                      value={location.join(" , ")}
+                    />
+                  )}
+                  {job_role && (
+                    <KeyHighlightsListItem
+                      className={
+                        "flex-col mb-2 text-sm md:flex-row md:text-[1rem]"
+                      }
+                      valueClasses={"ms-4 md:ms-1"}
+                      key={"Jobrole"}
+                      title="Job Role"
+                      value={job_role}
+                    />
+                  )}
                 </ul>
               </div>
             </div>
@@ -122,9 +227,9 @@ const JobApplicatioWithSimilarApplication = () => {
               <h1 className="text-xl md:text-2xl font-semibold mb-4">
                 About Company
               </h1>
-              <p className="font-outfit">
-                <ReadMore content={description} maxLength={550}/>
-              </p>
+              <div className="font-outfit">
+                <ReadMore content={company_description} maxLength={250} />
+              </div>
             </div>
           </div>
           <div className="w-full  lg:w-[45%] mt-5 md:mt-0 flex-1 flex flex-col gap-2  h-fit job-apply-suggestion-section bg-white rounded-lg p-2 md:p-5">
