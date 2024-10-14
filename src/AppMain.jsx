@@ -32,6 +32,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import ScrollToTop from './components/ScrollToTop'
 import NewsPage from './pages/NewsPage'
+import ProviderMainWrapper from './pages/provider/components/ProviderMainWrapper'
 
 const AppMain = () => {
   return (
@@ -58,8 +59,8 @@ const AppMain = () => {
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
           </Route>
-          <Route path="/provider" element={<MainWrapper/>}>
-              <Route path = "/provider/main" element={ <ProviderMainPage/> } />
+          <Route path="/provider" element={<ProviderMainWrapper/>}>
+              <Route index element={ <ProviderMainPage/> } />
               <Route path = "/provider/post-job" element={ <JobApplicationProviderView/> } />
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />

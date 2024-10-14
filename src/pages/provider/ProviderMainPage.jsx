@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import React, { useState, useContext } from "react"; // Import useState and useContext
 import { FaEye } from "react-icons/fa6";
 import { HiUserCircle } from "react-icons/hi";
-import Navbar from "../../components/Navbar";
+import ProviderNavbar from "./components/ProviderNavbar";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import MainContext from "../../components/MainContext";
 import SeachInput from "../../components/SeachInput";

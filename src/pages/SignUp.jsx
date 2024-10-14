@@ -1,85 +1,109 @@
-import React, { useState } from 'react';
-import { Formik, Form, ErrorMessage } from 'formik';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
-import { loginValidationSchema, signupValidationSchema } from '../formikYup/ValidationSchema';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { MdEmail } from 'react-icons/md';
-import { FaKey ,FaUser } from 'react-icons/fa';
-import InputBox from '../components/InputBox';
-import RoleChecker from '../components/RoleChecker';
+import React, { useState } from "react";
+import { Formik, Form, ErrorMessage } from "formik";
+import { MdEmail } from "react-icons/md";
+import { FaKey, FaUser, FaBuilding } from "react-icons/fa"; // Added FaBuilding icon for company
+import { signupValidationSchema } from "../formikYup/ValidationSchema";
+import { useNavigate } from "react-router-dom";
+import InputBox from "../components/InputBox";
+import RoleChecker from "../components/RoleChecker";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { axiosInstance } from "../utils/axiosInstance";
 
 function SignUp() {
-
-  const roleData = ["Job Seeker" ,"Job Provider"]
-
-  const [role, setRole] = useState('');
-  // const [errorMessage, setErrorMessage] = useState('');
+  const roleData = ["Job Seeker", "Job Provider"];
+  const [role, setRole] = useState("Job Seeker");
   const navigate = useNavigate();
 
+  // Mutation for Job Seeker SignUp
+  const SeekerSignUpMutation = useMutation({
+    mutationKey: "seeker-signup",
+    mutationFn: async (values) => {
+      const res = await axiosInstance.post("/user/register", values);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Registration successful!");
+      navigate("/login");
+    },
+    onError: (error) => {
+      const { message } = error.response.data;
+      toast.error(message || "Signup failed. Please try again.");
+    },
+  });
 
-  const handleSubmit = async (values) => {
-    // setErrorMessage('');
-    try {
-      const response = await axios.post('http://localhost:5000/user/register', {
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        role,
-      });
-
-      if (response.status === 200) {
-        navigate('/login');
-      }
-    } catch (error) {
-      console.error('Error during signup:', error);
-      if (error.response && error.response.data) {
-        console.log(error.response.data.message);
-        alert(error.response.data.message);
-        // setErrorMessage(error.response.data.message || 'Signup failed. Please try again.');
-      } else {
-        console.log(error.response.data.message);
-        alert(error.response.data.message);
-        // setErrorMessage('Signup failed. Please try again.');
-      }
-    }
-  };
-
+  // Mutation for Job Provider SignUp
+  const ProviderSignUpMutation = useMutation({
+    mutationKey: "provider-signup",
+    mutationFn: async (values) => {
+      const res = await axiosInstance.post("/provider/create", values);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Registration successful!");
+      navigate("/login");
+    },
+    onError: (error) => {
+      const { message } = error.response.data;
+      console.log(message);
+      toast.error(message || "Signup failed. Please try again.");
+    },
+  });
 
   return (
     <div className="h-screen w-full center font-outfit">
-       <Formik
-        initialValues={{  email: "", password: "" ,name:""}}
+      <Formik
+        initialValues={{ email: "", password: "", name: "" }}
         validationSchema={signupValidationSchema}
-        onSubmit={handleSubmit}
+        onSubmit={(values) => {
+          const updatedValues = role === "Job Seeker" 
+            ? { ...values, name: values.name } 
+            : { ...values, company_name: values.name, name: undefined };
+
+          if (role === "Job Seeker") {
+            SeekerSignUpMutation.mutate(updatedValues);
+          } else {
+            ProviderSignUpMutation.mutate(updatedValues);
+          }
+        }}
       >
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
           <Form className="bg-white w-[90%] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 px-4 md:px-6 ">
             <div className="mt-4 flex justify-center items-center">
-              {/* <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" /> */}
-              <span className="text-2xl md:text-2xl uppercase font-bold">Register</span>
+              <span className="text-2xl md:text-2xl uppercase font-bold">
+                Register
+              </span>
             </div>
+
             <div className="mb-4 w-full">
-              <hr className='m-4' />
+              <hr className="m-4" />
               <label className="text-center block mb-2">Register As:</label>
               <div className="flex items-center justify-center mb-2 font-outfit">
-
-                  {/* Set Selected Role onChange={(d)=>alert(JSON.stringify(d))} */}
-                 <RoleChecker data={roleData} indicatorClassName='!bg-black rounded-full'/>
+                {/* Set Selected Role */}
+                <RoleChecker
+                  data={roleData}
+                  onChange={({ selectedData }) => setRole(selectedData)}
+                  indicatorClassName="!bg-black rounded-full"
+                />
               </div>
             </div>
-              
+
+            {/* Dynamic Name/Company Name Field */}
             <div className="mb-4 w-full">
               <InputBox
                 key={"name"}
                 name={"name"}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                placeholder="Enter FullName"
+                placeholder={
+                  role === "Job Seeker"
+                    ? "Enter Full Name"
+                    : "Enter Company Name"
+                }
                 type="text"
                 customClass={touched.name && errors.name ? "input-error" : ""}
                 value={values.name}
-                icon={<FaUser />}
+                icon={role === "Job Seeker" ? <FaUser /> : <FaBuilding />}
               />
               <ErrorMessage
                 name="name"
@@ -88,6 +112,7 @@ function SignUp() {
               />
             </div>
 
+            {/* Email */}
             <div className="mb-4 w-full">
               <InputBox
                 key={"email"}
@@ -107,6 +132,7 @@ function SignUp() {
               />
             </div>
 
+            {/* Password */}
             <div className="mb-4 w-full">
               <InputBox
                 key={"password"}
@@ -128,15 +154,26 @@ function SignUp() {
               />
             </div>
 
-            {/* {errorMessage && <div className="text-red-500 text-center mb-2">{errorMessage}</div>} */}
-
+            {/* Submit Button */}
             <button
+              disabled={
+                SeekerSignUpMutation.isPending ||
+                ProviderSignUpMutation.isPending
+              }
               type="submit"
-              className={"mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base "+(!isValid && "cursor-not-allowed"  )} 
+              className={
+                "mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base " +
+                (!isValid && "cursor-not-allowed")
+              }
             >
+              {(SeekerSignUpMutation.isPending ||
+                ProviderSignUpMutation.isPending) && (
+                <span className="loader animate-spin-slow"></span>
+              )}
               Register
             </button>
-             <hr />
+
+            <hr />
             <p className="m-2 text-center text-gray-400 text-sm">
               Already have an account?{" "}
               <a href="/login" className="text-black text-[1rem] hover:underline">

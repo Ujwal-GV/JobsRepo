@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import MainContext from "../../components/MainContext";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useJobContext } from '../../contexts/JobContext';
+import { useMutation } from "@tanstack/react-query";
+import MainContext from "../../components/MainContext";
 import { AuthContext } from '../../contexts/AuthContext';
 import { FaCheckCircle, FaEye, FaTrash } from "react-icons/fa";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
-import { useNavigate } from "react-router-dom";
 import { jobTypes, employmentOptions, jobLocations } from "../../../assets/dummyDatas/Data"
 import ReactQuill from "react-quill"; // Import ReactQuill
 import "react-quill/dist/quill.snow.css"; // Import styles for ReactQuill
@@ -12,6 +13,7 @@ import Select from "react-select";
 import { AutoComplete, Spin, message } from "antd";
 import axios from "axios";
 import { IoMdClose } from "react-icons/io";
+import { axiosInstance } from '../../utils/axiosInstance';
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -34,7 +36,7 @@ const Tag = ({ close = false, onClick = () => {}, val, className = "" }) => {
 
 const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChecked, setOptionalSkills, title="" }) => {
   const [selectSkills, setSelectSkills] = useState(defaultSkills);
-  const [options, setOptions] = useState([]);
+  const [options, setChoices] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [fetchedSkills, setFetchedSkills] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
       setLoading(true);
       const res = await axios.get("http://localhost:8087/skills/");
       if (res.data) {
-        setOptions(res.data);
+        setChoices(res.data);
         setFetchedSkills(res.data);
       } else {
         message.error("Something Went Wrong");
@@ -84,7 +86,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
       });
     }
 
-    setOptions(filteredOptions);
+    setChoices(filteredOptions);
   };
 
   const handleDelete = (label) => {
@@ -112,7 +114,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
 
     setSelectSkills([...selectSkills, newSkill]);
     setSearchValue("");
-    setOptions(fetchedSkills);
+    setChoices(fetchedSkills);
     onChange([...selectSkills, newSkill]);
 
     if (isOptionalChecked) {
@@ -151,7 +153,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
           options={options}
           placeholder="Search for a skill"
           value={searchValue}
-          className="w-full mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
+          className="w-[12rem] mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
         />
       </Spin>
     </div>
@@ -160,7 +162,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
 
 const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}, title="" }) => {
   const [selectQualifications, setSelectQualifications] = useState(defaultQualifications);
-  const [options, setOptions] = useState([]);
+  const [options, setChoices] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [fetchedQualifications, setFetchedQualifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -176,7 +178,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
           label: key,
           value: key,
         }));
-        setOptions(fetchedOptions);
+        setChoices(fetchedOptions);
         setFetchedQualifications(fetchedOptions);
       } else {
         message.error("Something Went Wrong");
@@ -215,7 +217,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
       });
     }
 
-    setOptions(filteredOptions);
+    setChoices(filteredOptions);
   };
 
   const handleDelete = (label) => {
@@ -239,7 +241,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
 
     setSelectQualifications([...selectQualifications, newQualification]);
     setSearchValue("");
-    setOptions(fetchedQualifications);
+    setChoices(fetchedQualifications);
     onChange([...selectQualifications, newQualification]);
   };
 
@@ -265,13 +267,12 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
           options={options}
           placeholder="Search for qualification"
           value={searchValue}
-          className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
+          className="w-[12rem] mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
         />
       </Spin>
     </div>
   );
 };
-
 
 const SpecializationSelector = ({
   defaultSpecializations = [],
@@ -279,7 +280,7 @@ const SpecializationSelector = ({
   title = "",
 }) => {
   const [selectSpecializations, setSelectSpecializations] = useState(defaultSpecializations);
-  const [options, setOptions] = useState([]);
+  const [options, setChoices] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [fetchedSpecializations, setFetchedSpecializations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -301,7 +302,7 @@ const SpecializationSelector = ({
         }));
 
         // console.log("Allvalues", fetchedOptions);
-        setOptions(fetchedOptions);
+        setChoices(fetchedOptions);
         setFetchedSpecializations(fetchedOptions);
       } else {
         message.error("Something went wrong");
@@ -340,7 +341,7 @@ const SpecializationSelector = ({
       });
     }
 
-    setOptions(filteredOptions);
+    setChoices(filteredOptions);
   };
 
   const handleDelete = (label) => {
@@ -368,7 +369,7 @@ const SpecializationSelector = ({
 
     setSelectSpecializations([...selectSpecializations, newSpecialization]);
     setSearchValue("");
-    setOptions(fetchedSpecializations);
+    setChoices(fetchedSpecializations);
     onChange([...selectSpecializations, newSpecialization]);
   };
 
@@ -394,13 +395,12 @@ const SpecializationSelector = ({
           options={options}
           placeholder="Search for specialization"
           value={searchValue}
-          className="w-full mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
+          className="w-[12rem] bg-black mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
         />
       </Spin>
     </div>
   );
 };
-
 
 const JobApplicationProviderView = () => {
   const [saved, setSaved] = useState(false);
@@ -412,25 +412,29 @@ const JobApplicationProviderView = () => {
   const [jobDetails, setJobDetails] = useState({
     title: "",
     companyName: "Google",
-    providerName: "",
-    // location: "",
-    industry: "",
-    jobDescription: "",
+    vacancy: "",
+    postedBy: "",
+    location: "",
+    description: "",
     experience: "",
     department: "",
-    jobRole: "",
-    employmentType: "",
-    education: "",
-    package: "",
-    skills: [], // Initialize skills as an empty array
-    optionalSkills: [], // Initialize optionalSkills as an empty array
+    job_role: "",
+    salaryMin: "",
+    salaryMax: "",
+    experienceMin: "",
+    experienceMax: "",
+    type: "",
+    specification: [],
+    qualification: [],
+    must_skills: [],
+    other_skills: [],
   });
 
   useEffect(() => {
     if (isOptionalChecked) {
-      setJobDetails((prev) => ({ ...prev, optionalSkills: [...prev.skills] }));
+      setJobDetails((prev) => ({ ...prev, other_skills: [...prev.must_skills] }));
     }
-  }, [jobDetails.skills, isOptionalChecked]);
+  }, [jobDetails.must_skills, isOptionalChecked]);
 
   const [location, setLocation] = useState(null);
   const [locationsList, setLocationsList] = useState(jobLocations);
@@ -456,16 +460,19 @@ const JobApplicationProviderView = () => {
 
   const currencyOptions = [
     { value: 'INR', label: 'INR' },
-    { value: 'USD', label: 'USD' },
+    { value: 'USD', label: 'USD ' },
   ];
 
   const navigate = useNavigate();
 
-  const handleSaveClick = () => {
-    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.jobDescription) {
-      alert("Please fill in all required fields: Job Title, Company Name, and Job Description.");
+  const handleSaveClick = async(jobDetails) => {
+    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.description) {
+      message.error("Please enter all details");
       return;
     }
+    const response = await axiosInstance.post('/jobs/create', jobDetails);
+    console.log("RESPONSE:", response.data);
+    return response.data;
     setSaved((prev) => !prev);
     navigate(-1);
   };
@@ -474,67 +481,103 @@ const JobApplicationProviderView = () => {
     navigate(-1);
   }
 
-  // const handleDeleteClick = (id) => {
-  //   const updatedJobs = jobs.filter((job) => job.id !== id);
-  //   setJobs(updatedJobs);
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setJobDetails((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleIndustryChange = (e) => {
-    setJobDetails((prev) => ({ ...prev, industry: e.target.value }));
-  };
-
   const handleEmploymentChange = (e) => {
-    setJobDetails((prev) => ({ ...prev, employmentType: e.target.value }));
+    setJobDetails((prev) => ({ ...prev, type: e.target.value }));
   };
 
   const handleOptionalChange = (e) => {
     setIsOptionalChecked(e.target.checked);
     if (e.target.checked) {
-      setJobDetails((prev) => ({ ...prev, optionalSkills: [...prev.skills] }));
+      setJobDetails((prev) => ({ ...prev, other_skills: [...prev.must_skills] }));
     } else {
-      setJobDetails((prev) => ({ ...prev, optionalSkills: [] }));
+      setJobDetails((prev) => ({ ...prev, other_skills: [] }));
     }
   };
+
+  // Define the mutation function
+  const submitJobApplication = async (jobDetails) => {
+    const response = await axiosInstance.post('/jobs/create', jobDetails);
+    console.log("RESPONSE:", response.data);
+    return response.data;
+  };
+
+  const mutation = useMutation({
+    mutationFn: submitJobApplication,
+    onSuccess: (data) => {
+      console.log(data);
+      window.replace('/provider/main');
+      console.log('Job posted successfully:', data);
+    },
+    onError: (error) => {
+      const { message } = error.response.data;
+      console.log(message);
+      toast.error(message);
+    },
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (jobDetails.title && jobDetails.companyName  && jobDetails.jobDescription) {
+    if (jobDetails.title && jobDetails.companyName  && jobDetails.description) {
       const newJob = {
         ...jobDetails,
         currency: currency ? currency.value : 'INR',
-        id: Math.random().toString(36).substring(7),
-        applicationId: "APP-" + Math.floor(100000 + Math.random() * 900000), // Generate unique Application ID
       };
       setJobs((prevJobs) => [...prevJobs, newJob]);
       console.log("New Jobs added:" , newJob);
-      
-      setJobDetails({
-        title: "",
-        companyName: "",
-        providerName: "",
-        // location: "",
-        industry: "",
-        jobDescription: "",
-        experience: "",
-        department: "",
-        jobRole: "",
-        employmentType: "",
-        education: "",
-        package: "",
-        skills: [], // Reset skills
-        optionalSkills: [], // Reset optionalSkills
-      });
-    }
-  };
+ 
+    setJobDetails({
+      title: "",
+      companyName: "Google",
+      vacancy: "",
+      postedBy: "",
+      location: "",
+      description: "",
+      experience: "",
+      department: "",
+      job_role: "",
+      salaryMin: "",
+      salaryMax: "",
+      experienceMin: "",
+      experienceMax: "",
+      type: "",
+      specification: [],
+      qualification: [],
+      must_skills: [],
+      other_skills: [],
+    });
 
-  const handleViewClick = (job) => {
-    navigate(`/provider/post-job/${job.id}`, { state: { job } }); // Set selected job to display the details
-  };
+    mutation.mutate({
+      title: jobDetails.title,
+      description: jobDetails.description,
+      vacancy: jobDetails.vacancy,
+      experience: {
+        min: jobDetails.experienceMin,
+        max: jobDetails.experienceMax,
+      },
+      package: {
+        min: jobDetails.salaryMin,
+        max: jobDetails.salaryMax,
+      },
+      location: jobDetails.location,
+      qualification: jobDetails.qualification,
+      specification: jobDetails.specification,
+      must_skills: jobDetails.must_skills,
+      other_skills: jobDetails.other_skills,
+      type: jobDetails.type,
+      postedBy: jobDetails.postedBy,
+      job_role: jobDetails.job_role,
+    });
+  }
+};
+    
+    const handleViewClick = (job) => {
+      navigate(`/provider/post-job/${job.id}`, { state: { job } }); // Set selected job to display the details
+    };
 
   return (
     <MainContext>
@@ -577,39 +620,48 @@ const JobApplicationProviderView = () => {
                 Posted by: 
                 <input
                   type="text"
-                  name="providerName"
+                  name="postedBy"
                   placeholder="Enter Provider Name"
-                  value={jobDetails.providerName}
+                  value={jobDetails.postedBy}
                   onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
+                  className="w-full border rounded -lg p-2"
                   required
                 />
               </h3>
 
-              <div className="flex items-center gap-2 mt-3">
-                <span className="font-light">Experience:</span>
-                <input
-                  type="text"
-                  name="experience"
-                  placeholder="Enter Experience (in years)"
-                  value={jobDetails.experience}
-                  onChange={handleChange}
-                  className="border rounded-lg p-2"
-                  required
-                />
-                {/* <VerticalBar /> */}
-                {/* <span>Posted Jobs: {jobs.length}</span> */}
+              <div className="flex flex-col md:flex-row items-start">
+                <div className="flex flex-col mt-4 w-full lg:w-[45%]">
+                  <KeyHighlightsListItem key={"1"} title="Experience" value={null} />
+                </div>
+                <div className="flex flex-col md:flex-row w-full p-2 lg:w-[55%]">
+                  <input
+                    type="number"
+                    name="experienceMin"
+                    placeholder="Min Experience"
+                    value={jobDetails.experienceMin}
+                    onChange={handleChange}
+                    className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-2 md:mb-0 md:mr-3"
+                  />
+                  <input
+                    type="number"
+                    name="experienceMax"
+                    placeholder="Max Experience"
+                    value={jobDetails.experienceMax}
+                    onChange={handleChange}
+                    className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-2 md:mb-0"
+                  />
+                </div>
               </div>
 
-              <hr className="mt-10 mb-2" />
+              <hr className="mt-4 mb-2" />
               <div className="flex flex-col justify-between items-start">
                 <div>
-                  <span>Vacancies: {jobs.vacancies}</span>
+                  <span>Vacancies: {jobs.vacancy}</span>
                     <input
                       type="number"
-                      name="vacancies"
+                      name="vacancy"
                       placeholder="Enter the vacancies"
-                      value={jobDetails.vacancies}
+                      value={jobDetails.vacancy}
                       onChange={handleChange}
                       className="border rounded-lg p-2"
                   />
@@ -618,35 +670,6 @@ const JobApplicationProviderView = () => {
             </div>
 
             {/* Key Highlights */}
-            {/* <div className="w-full rounded-xl mt-8 h-fit bg-white p-5 md:p-10 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">Key Highlights</h1>
-              <ul className="mt-3">
-                Industry
-                {/* <li className="flex flex-col mb-4 mt-4">
-                  <KeyHighlightsListItem
-                    key={'1-1'}
-                    title="Industry"
-                  />
-                  <div className="flex flex-col mt-4">
-                    {industryOptions.map((option) => (
-                      <label key={option.id} className="flex items-center mb-2 mx-7">
-                        <input
-                          type="radio"
-                          name="industry"
-                          value={option.label}
-                          checked={jobDetails.industry === option.label}
-                          onChange={handleIndustryChange}
-                          className="mr-2 cursor-pointer accent-orange-600"
-                          required
-                        />
-                        {option.label}
-                      </label>
-                    ))}
-                  </div>
-                </li>
-              </ul>
-            </div> */}
-
             {/* Qualification Section */}
             <div className="w-full rounded-xl ml-0 mb-8 h-fit bg-white p-5 mt-8 md:p-10 font-outfit">
               <h1 className="text-xl md:text-2xl font-semibold mb-4">Qualifications</h1>
@@ -655,11 +678,11 @@ const JobApplicationProviderView = () => {
                 <li className="flex flex-col md:flex flex-col items-start mb-4">
                   <div className="w-full lg:w-full flex flex-col lg:flex-col gap-4 md:gap-2">
                     <QualificationSelector
-                      defaultQualifications={jobDetails.qualifications || []}
+                      defaultQualifications={jobDetails.qualification || []}
                       onChange={(selectedQualifications) => {
                         setJobDetails((prev) => ({
                           ...prev,
-                          qualifications: selectedQualifications,
+                          qualification: selectedQualifications,
                         }));
                       }}
                       title="Qualification"
@@ -670,11 +693,11 @@ const JobApplicationProviderView = () => {
                 <li className="flex flex-col md:flex flex-col items-start mb-4">
                   <div className="w-full lg:w-full flex flex-col lg:flex-col gap-4 md:gap-2">
                     <SpecializationSelector
-                      defaultSpecializations={jobDetails.specializations || []}
+                      defaultSpecializations={jobDetails.specification || []}
                       onChange={(selectedSpecializations) => {
                         setJobDetails((prev) => ({
                           ...prev,
-                          specializations: selectedSpecializations,
+                          specification: selectedSpecializations,
                         }));
                       }}
                       title="Specialization"
@@ -682,16 +705,16 @@ const JobApplicationProviderView = () => {
                   </div>
                 </li>
 
-                {/* Job Type */}
+                {/* Job Role */}
                 <li className="flex flex-col md:flex flex-col items-start mb-4">
-                <KeyHighlightsListItem key={"1-2"} title="Job Type" value={null} />
-                <div className="lg:w-[25%] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
+                <KeyHighlightsListItem key={"1-2"} title="Job Role" value={null} />
+                <div className="lg:w-[12rem] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
                   <Select
-                    value={jobDetails.jobType ? { label: jobDetails.jobType, value: jobDetails.jobType } : null}
+                    value={jobDetails.job_role ? { label: jobDetails.job_role, value: jobDetails.job_role } : null}
                     onChange={(selectedOption) => {
                       setJobDetails((prev) => ({
                         ...prev,
-                        jobType: selectedOption ? selectedOption.value : ""
+                        job_role: selectedOption ? selectedOption.value : ""
                       }));
                     }}
                     options={jobTypeList}
@@ -703,7 +726,7 @@ const JobApplicationProviderView = () => {
                       }
                     }}
                     noOptionsMessage={() => "Type to add a new Job Type"}
-                    className="sm:w-full lg:w-full md:w-full h-10 bg-black text-black focus:shadow-none border rounded-md"
+                    className="sm:w-[12rem] lg:w-[12rem] md:w-[12rem] xsl:w-[12rem] h-10 bg-black text-black focus:shadow-none border rounded-md"
                     styles={{
                       placeholder: (provided) => ({
                         ...provided,
@@ -729,7 +752,7 @@ const JobApplicationProviderView = () => {
                     title="Location"
                     value={null}
                   />
-                  <div className="lg:w-[25%] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
+                  <div className="lg:w-[12rem] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
                     <Select
                       value={jobDetails.location ? { label: jobDetails.location, value: jobDetails.location } : null}
                       onChange={(selectedOption) => {
@@ -747,7 +770,7 @@ const JobApplicationProviderView = () => {
                         }
                       }}
                       noOptionsMessage={() => "Type to add a new location"}
-                      className="sm:w-full lg:w-full md:w-full h-10 bg-black text-black focus:shadow-none border rounded-md cursor-pointer"
+                      className="sm:w-[12rem] lg:w-[12rem] md:w-[12rem] xsm:w-[12rem] h-10 bg-black text-black focus:shadow-none border rounded-md cursor-pointer"
                       styles={{
                         placeholder: (provided) => ({
                           ...provided,
@@ -782,33 +805,10 @@ const JobApplicationProviderView = () => {
                   </div>
                 </li>
 
-                {/* Role */}
-                <li className="flex flex-col md:flex-col items-start mb-4">
-                  <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
-                    <div className="flex flex-col mt-4 w-full lg:w-[55%]">
-                      <KeyHighlightsListItem
-                        key={"1-1"}
-                        title="Role"
-                        value={null}
-                      />
-                    </div>
-                    <div className="flex flex-col w-full p-2 lg:w-[45%]">
-                      <input
-                        type="text"
-                        name="jobRole"
-                        placeholder="Enter the Job Role / Title"
-                        value={jobDetails.jobRole}
-                        onChange={handleChange}
-                        className="w-full md:w-auto border rounded-lg p-2"
-                      />
-                    </div>
-                  </div>
-                </li>
-
                 {/* Employment Type */}
                 <li className="flex flex-col mb-4 mt-8">
                   <KeyHighlightsListItem
-                    key={'1-3'}
+                    key={'1-2'}
                     title="Employment Type"
                   />
                   <div className="flex flex-col mt-4">
@@ -818,7 +818,7 @@ const JobApplicationProviderView = () => {
                           type="radio"
                           name="employmentType"
                           value={option.label}
-                          checked={jobDetails.employmentType === option.label}
+                          checked={jobDetails.type === option.label}
                           onChange={handleEmploymentChange}
                           className="mr-2 cursor-pointer accent-orange-600"
                           required
@@ -828,36 +828,38 @@ const JobApplicationProviderView = () => {
                     ))}
                   </div>
                 </li>
-
-                {/* Package */}
+      
                 <li className="flex flex-col md:flex-row items-start mb-4">
-                  <div className="w-full lg:w-ful flex flex-col lg:flex-row gap-4 md:gap-2 ">
-                    <div className="flex flex-col mt-4 w-[1/2] lg:w-[45%]">
-                      <KeyHighlightsListItem
-                        key={"1-4"}
-                        title="Package"
-                        value={null}
-                      />
+                  <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
+                    <div className="flex flex-col mt-4 w-full lg:w-[45%]">
+                      <KeyHighlightsListItem key={"1-3"} title="Salary" value={null} />
                     </div>
-                    <div className="flex flex-col md:flex flex-row w-3/4 p-2 lg:w-[55%]">
+                    <div className="flex flex-col md:flex-row w-full p-2 lg:w-[55%]">
                       <input
-                        type="text"
-                        name="package"
-                        placeholder="Enter the Package"
-                        value={jobDetails.package}
+                        type="number"
+                        name="salaryMin"
+                        placeholder="Min Salary"
+                        value={jobDetails.salaryMin}
                         onChange={handleChange}
-                        className="w-full md:w-full border rounded-lg p-2 mb-3 md:mb-0 md:mr-3"
+                        className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-3 md:mb-0 md:mr-3"
+                      />
+                      <input
+                        type="number"
+                        name="salaryMax"
+                        placeholder="Max Salary"
+                        value={jobDetails.salaryMax}
+                        onChange={handleChange}
+                        className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-3 md:mb-0 md:mr-3"
                       />
                       <Select
                         value={currency}
                         onChange={setCurrency}
                         options={currencyOptions}
-                        className="w-full mt-2 md:w-1/2 sm:w-1/4 font-outfit"
+                        className="w-[10rem] md:w-1/2 lg:w-full font-outfit"
                       />
                     </div>
                   </div>
                 </li>
-
               </ul>
             </div>
 
@@ -869,16 +871,16 @@ const JobApplicationProviderView = () => {
                 <li className="flex flex-col md:flex-row mb-4">
                   <div className="flex flex-col w-auto md:ml-4 mt-2 w-full md:w-auto">
                     <SkillSelector
-                      defaultSkills={jobDetails.skills || []}
+                      defaultSkills={jobDetails.must_skills || []}
                       onChange={(selectedSkills) => {
                         setJobDetails((prev) => ({
                           ...prev,
-                          skills: selectedSkills,
+                          must_skills: selectedSkills,
                         }));
                       }}
                       title="Required Skills"
-                      optionalSkills={jobDetails.optionalSkills || []}
-                      setOptionalSkills={(skills) => setJobDetails((prev) => ({ ...prev, optionalSkills: skills }))}
+                      other_skills={jobDetails.other_skills || []}
+                      setOptionalSkills={(must_skills) => setJobDetails((prev) => ({ ...prev, other_skills: must_skills }))}
                     />
                   </div>
                 </li>
@@ -900,16 +902,16 @@ const JobApplicationProviderView = () => {
                     {/* Conditional Skill Selector for Optional Skills */}
                     {!isOptionalChecked && (
                       <SkillSelector
-                        defaultSkills={jobDetails.optionalSkills || []} 
+                        defaultSkills={jobDetails.other_skills || []} 
                         onChange={(selectedSkills) => {
                           setJobDetails((prev) => ({
                             ...prev,
-                            optionalSkills: selectedSkills,
+                            other_skills: selectedSkills,
                           }));
                         }}
                         title="Optional Skills"
-                        optionalSkills={jobDetails.optionalSkills || []}
-                        setOptionalSkills={(skills) => setJobDetails((prev) => ({ ...prev, optionalSkills: skills }))}
+                        other_skills={jobDetails.other_skills || []}
+                        setOptionalSkills={(must_skills) => setJobDetails((prev) => ({ ...prev, other_skills: must_skills }))}
                       />
                     )}
                   </div>
@@ -928,8 +930,8 @@ const JobApplicationProviderView = () => {
                 <div className="mt-1 bg-gray-200 p-2 rounded-lg shadow-sm font-outfit">
                   <ReactQuill
                     theme="snow"
-                    value={jobDetails.jobDescription}
-                    onChange={(content) => setJobDetails((prev) => ({ ...prev, jobDescription: content }))}
+                    value={jobDetails.description}
+                    onChange={(content) => setJobDetails((prev) => ({ ...prev, description: content }))}
                     modules={{
                       toolbar: [
                         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -952,6 +954,7 @@ const JobApplicationProviderView = () => {
                     {"Back"}
                   </button>
                   <button
+                    type= "submit"
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
                     onClick={handleSaveClick}
                   >
