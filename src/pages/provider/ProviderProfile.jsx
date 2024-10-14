@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import MainContext from "../../components/MainContext";
 import ProfileAvatar from "../../components/ProfileAvatar";
 import InputBox from "../../components/InputBox";
@@ -11,7 +11,7 @@ import { FaPhoneAlt, FaCheckCircle, FaSave, FaLocationArrow } from "react-icons/
 import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
-import { BiSolidUser ,BiGroup, BiSolidBadgeCheck } from "react-icons/bi";
+import { BiSolidUser ,BiGroup, BiSolidBadgeCheck, BiKey } from "react-icons/bi";
 import { Input } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,13 @@ import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
 import { CiEdit, CiHome, CiUser } from "react-icons/ci";
 import { FaInstagram, FaFacebook, FaTwitter, FaGlobe } from "react-icons/fa";
 import { useJobContext } from '../../contexts/JobContext'
+import { AuthContext } from "../../contexts/AuthContext";
+import Loading from "../Loading";
+import toast from "react-hot-toast";
+import { useGetProviderProfileData } from "../provider/queries/ProviderProfileQuery";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance, getError } from '../../utils/axiosInstance';
+
 
 const { TextArea } = Input;
 
@@ -29,20 +36,39 @@ const ProviderProfile = () => {
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
   const [companyLinkModel, setCompanyLinkModel] = useState(false);
 
+  const { profileData } = useContext(AuthContext);
+
+
+  // console.log("Provider_Details:", profileData);
+  
+  useEffect(() => {
+    if(profileData!==null){
+      setPersonalDetails((prev)=> {
+        return {
+          company_id: profileData?.company_id || "",
+          // companyName: profileData?.company_name || "",
+          email: profileData?.email || "",
+          mobile: profileData?.mobile || "",
+          location: profileData?.location || "",
+        }
+      });
+    }
+  }, [profileData])
+
   const [personalDetails, setPersonalDetails] = useState({
-    companyName: "Google",
-    fullName: "Ujwal Gowda V",
-    email: "ujwalgowda8792@gmail.com",
-    mobile: "7483268624",
-    location: "Bangalore",
+    // companyName: profileData?.company_name || "",
+    email: profileData?.email || "",
+    mobile: profileData?.mobile || "",
+    location: profileData?.location || "",
   });
+
+  const [providerProfileImg, setProviderProfileImg] = useState(profileData?.img?.url);
+
 
   const { links, summary, updateLinks, updateSummary } = useJobContext();
 
   const handlePersonalDetails = (val) => {
-    setPersonalDetails((prev) => {
-      return { ...prev, ...val };
-    });
+    providerProfilePersonalDetailsUpdateMutation.mutate(val);
   };
 
   const handleSummaryChange = (newSummary) => {
@@ -52,6 +78,93 @@ const ProviderProfile = () => {
   const handleCompanyLinkChange = (newLinks) => {
     updateLinks(newLinks);
   };
+
+   const freezeBody = () => {
+    document.body.classList.add("no-scroll");
+  };
+
+  const freeBody = () => {
+    document.body.classList.remove("no-scroll");
+  };
+
+  const queryClient = useQueryClient()
+
+  const {data,isLoading:profileDataLoading,isFetching} = useGetProviderProfileData();
+
+
+  console.log(profileDataLoading,isFetching);
+
+
+  const updateProviderProfile = async (val) => {
+    // console.log("Values:", val);
+    
+    const data ={"location":val.location,"email":val.email,"mobile":val.mobile}
+    // console.log("Data_Update:", data);
+
+    const res = await axiosInstance.put("/provider/update", data);
+    // console.log("Response_Data", res.data);
+     
+    return res.data;
+  };
+
+  const providerProfilePersonalDetailsUpdateMutation = useMutation({
+    mutationKey: ["provider_profile_update"],
+    mutationFn: updateProviderProfile,
+    onSuccess: (val, variables) => {
+      toast.success("Profile Updated");
+      setpersonalDetailsModelOpen(false);
+      freeBody();
+      
+      setPersonalDetails((prev) => {
+        return {
+          ...prev,
+          ...variables
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
+    },
+    onError: (error) => {
+      const { message } = getError(error);
+      console.log(error);
+      if (message) {
+        toast.error(message);
+      } else {
+        toast.error("Something Went Wrong");
+      }
+    },
+  });
+
+
+  const uploadProfilePhoto = async(url)=>{
+    const data = {"img":url}
+    const res = await axiosInstance.put("/provider/update",data);
+    return res.data;  
+  }
+
+  const providerProfilePhotoUploadMutation = useMutation({
+    mutationKey:["provider_upload_profile"],
+    mutationFn:uploadProfilePhoto,
+    onSuccess:(val,variables)=>{
+       toast.success("Profile Photo Updated Sucessfully");
+       queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
+      //  console.log(val , variables)
+       setProviderProfileImg(variables);
+    },
+    onError:(error)=>{
+      const {message}= getError(error)
+      if(message)
+      {
+        toast.error(message)
+      }else{
+        toast.error("Something Went Wrong")
+      }
+    }
+  })
+
+  if(profileDataLoading || isFetching)
+  {
+    return <Loading/>
+  }
 
   return (
     <MainContext>
@@ -63,7 +176,7 @@ const ProviderProfile = () => {
             <CustomBreadCrumbs
               items={[
                 {
-                  path: "/provider/main",
+                  path: "/provider",
                   icon: <CiHome />,
                   title: "Home",
                 },
@@ -78,12 +191,12 @@ const ProviderProfile = () => {
           <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 relative top-0 pt-2   h-fit mx-auto">
 
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
-              <ProfileAvatar />
+              <ProfileAvatar url={providerProfileImg} onChange={(val)=>providerProfilePhotoUploadMutation.mutate(val)} />
             </div>
 
             {/* Profile Application Deatils */}
 
-            <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
+            <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-5 rounded-xl relative">
               <MdEdit
                 className="absolute top-2 right-2  cursor-pointer" 
                 onClick={() => { 
@@ -91,27 +204,28 @@ const ProviderProfile = () => {
                   freezeBody();
                 }}
               />
-              <h1 className="flex justify-start text-2xl font-bold items-center gap-1">
+              <h1 className="flex justify-start text-3xl font-bold items-center gap-1">
                 <BiSolidBadgeCheck className="text-orange-600" />
-                {personalDetails.companyName}
+                {personalDetails.companyName || "Company Name"}
               </h1>
+              <hr className="m-2" />
               <h1 className="flex justify-start items-center gap-1">
-                <BiSolidUser className="text-orange-600" />
-                {personalDetails.fullName}
+                <BiKey className="text-orange-600" />
+                {personalDetails.company_id || "Company ID"}
               </h1>
               <h1 className="flex justify-start items-center gap-1">
                 <MdEmail className="text-orange-600" />
-                {personalDetails.email}
+                {personalDetails.email || "Email"}
               </h1>
               <h1 className="flex justify-start items-center gap-1">
                 {" "}
                 <FaPhoneAlt className="text-orange-600" />{" "}
-                {personalDetails.mobile}
+                {personalDetails.mobile || "Mobile"}
               </h1>
               <h1 className="flex justify-start items-center gap-1">
                 {" "}
                 <FaLocationArrow className="text-orange-600" />{" "}
-                {personalDetails.location}
+                {personalDetails.location || "Location"}
               </h1>
             </div>
           </div>
@@ -122,7 +236,7 @@ const ProviderProfile = () => {
             <DeatilsBadge
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Posted"
-              val={10}
+              val={profileData?.job_details?.jobs?.length || 0}
             />
             <DeatilsBadge
               icon={<BiGroup className=" text-orange-600" />}
@@ -139,7 +253,10 @@ const ProviderProfile = () => {
                   <CompanyLinksField
                     title="Company Link"
                     icon={Object.values(links).every((link) => link.trim() === "") ? "Add" : "Edit"}
-                    editOnClick={() => setCompanyLinkModel(true)}
+                    editOnClick={() => {
+                      setCompanyLinkModel(true);
+                      freezeBody();
+                    }}
                   >
                     <div className="flex flex-wrap gap-1 w-full pb-2">
                       {/* If no links are added */}
@@ -174,7 +291,10 @@ const ProviderProfile = () => {
                     <CompanyInfoField
                     title="Company Summary"
                     icon={summary === "" ? "Add" : "Edit"}
-                    editOnClick={() => setSummaryModelOpen(true)}
+                    editOnClick={() =>{
+                      setSummaryModelOpen(true);
+                      freezeBody();
+                    }}
                     >
                     <div className="flex flex-wrap gap-1 w-full pb-2 ">
                         {!summary ? (
@@ -200,7 +320,10 @@ const ProviderProfile = () => {
             <AnimateEnterExit transition={{ duration: 0.2 }}>
               <ProfilePersonalDetailsModal
                 open={personalDetailsModelOpen}
-                onClose={() => setpersonalDetailsModelOpen(false)}
+                onClose={() => {
+                  setpersonalDetailsModelOpen(false);
+                  freeBody();
+                }}
                 value={personalDetails}
                 onChange={handlePersonalDetails}
               />
@@ -211,7 +334,10 @@ const ProviderProfile = () => {
                 <AnimateEnterExit>
                 <CompanySummaryModel
                     open={summaryModelOpen}
-                    onClose={() => setSummaryModelOpen(false)}
+                    onClose={() => {
+                      setSummaryModelOpen(false);
+                      freeBody();
+                    }}
                     value={summary}
                     onSummaryChange={handleSummaryChange}
                 />
@@ -222,7 +348,10 @@ const ProviderProfile = () => {
               <AnimateEnterExit>
                 <CompanyLinkModel
                   open={companyLinkModel}
-                  onClose={() => setCompanyLinkModel(false)}
+                  onClose={() => {
+                    setCompanyLinkModel(false);
+                    freeBody();
+                  }}
                   value={links}
                   onLinkChange={handleCompanyLinkChange}
                 />
@@ -324,9 +453,11 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
     onClose = () => {},
     onChange = () => {},
     value = {
-      fullName: null,
       email: null,
       mobile: null,
+      location: null,
+      companyName: null,
+      company_id: null,
     },
   }) => {
     return (
@@ -357,21 +488,6 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
           >
             {({ setFieldValue, resetForm, values }) => (
               <Form>
-                {/* Full Name with Icon */}
-                <Field name="fullName">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      icon={<MdPerson />} // Icon for full name
-                      placeholder="Full Name"
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e); // Formik's handleChange
-                      }}
-                    />
-                  )}
-                </Field>
-  
                 {/* Email with Icon */}
                 <Field name="email">
                   {({ field }) => (

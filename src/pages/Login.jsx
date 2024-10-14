@@ -29,6 +29,7 @@ function Login() {
       });
 
       if (response.status === 200) {
+        console.log("Role:", role);
         setUserRole(role);
         {
           /* Redirect based on role */
@@ -80,7 +81,8 @@ function Login() {
     mutationFn: loginJobProvider,
     onSuccess: (response) => {
       alert(response);
-      localStorage.setItem("authToken", response)
+      localStorage.setItem("authToken", response);
+      navigate('/select-role')
     },
     onError: (error) => {
       const { message } = error.response.data;
