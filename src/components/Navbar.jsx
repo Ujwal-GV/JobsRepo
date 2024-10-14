@@ -6,8 +6,13 @@ import { Drawer } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 const Navbar = () => {
-  const menuItem = [{title:"Home",nav:"/user"}, {title:"News",nav:"/user/news"}, {title:"Profile",nav:"/user/profile"}];
+  const menuItem = [
+    { title: "Home", nav: "/user" },
+    { title: "News", nav: "/user/news" },
+    { title: "Profile", nav: "/user/profile" },
+  ];
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [open, setOpen] = useState(false); //for drawer
 
@@ -21,6 +26,24 @@ const Navbar = () => {
     setOpen(false);
   };
 
+
+  
+  const getProfileData = async()=>{
+    const res = await axiosInstance.get("/user/profile");
+    if(res.data)
+    {
+      console.log("user logged in")
+    }
+    return res.data
+  }
+
+  const {data:profileData,isLoading:profileDataLoading,isError,error} = useQuery({
+    queryKey:["profile"],
+    queryFn:getProfileData,
+    staleTime:Infinity,
+    gcTime:Infinity,
+  })
+
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div className="center gap-1 ">
@@ -29,21 +52,27 @@ const Navbar = () => {
       </div>
 
       <div className="justify-center items-center gap-1 hidden md:flex ">
-        {menuItem.map((d, idx) => (
-          d.title !== "Profile" && <div
-          key={idx}
-          className="p-1 cursor-pointer relative flex center "
-          onClick={() => {setSelectedMenu(idx);navigate(d.nav)}}
-        >
-          {d.title}
-          {selectedMenu === idx && (
-            <motion.div
-              layoutId="underline_nav"
-              className={"absolute -bottom-1 h-1 w-full bg-orange-600  "}
-            />
-          )}
-        </div>
-        ))}
+        {menuItem.map(
+          (d, idx) =>
+            d.title !== "Profile" && (
+              <div
+                key={idx}
+                className="p-1 cursor-pointer relative flex center "
+                onClick={() => {
+                  setSelectedMenu(idx);
+                  navigate(d.nav);
+                }}
+              >
+                {d.title}
+                {selectedMenu === idx && (
+                  <motion.div
+                    layoutId="underline_nav"
+                    className={"absolute -bottom-1 h-1 w-full bg-orange-600  "}
+                  />
+                )}
+              </div>
+            )
+        )}
       </div>
       <div className="hidden md:flex gap-2 items-center justify-center font-outfit">
         {!localStorage.getItem("authToken") ? (
@@ -60,16 +89,15 @@ const Navbar = () => {
             </a>
           </>
         ) : (
-          <div
-            className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md">
+          <div className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md" onClick={()=>navigate("/user/profile")}>
             <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
             Profile
           </div>
         )}
       </div>
-      
+
       <div className="flex md:hidden">
-           <FaBars className="w-6 h-6" onClick={()=>showDrawer()}/>
+        <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
       <Drawer
         title="Menu"
@@ -84,6 +112,7 @@ const Navbar = () => {
           menuItem={menuItem}
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
+          onClick={onClose}
         />
       </Drawer>
     </div>
@@ -96,8 +125,8 @@ const MobileNavBar = ({
   menuItem = [],
   selectedMenu = 0,
   setSelectedMenu = () => {},
+  onClick=()=>{}
 }) => {
-
   const navigate = useNavigate();
 
 
@@ -108,16 +137,24 @@ const MobileNavBar = ({
           <div
             key={idx}
             className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
-            onClick={() => {setSelectedMenu(idx);setTimeout(()=>{navigate(d.nav)},500)}}
+            onClick={() => {
+              setSelectedMenu(idx);
+              setTimeout(() => {
+                navigate(d.nav);
+              }, 500);
+              onClick()
+            }}
           >
             {d.title}
             {selectedMenu === idx && (
               <motion.div
                 layoutId="underline_mobile_nav"
-                className={"absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "}
+                className={
+                  "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                }
               >
                 <RiArrowLeftSFill className="w-5 h-5" />
-                </motion.div>
+              </motion.div>
             )}
           </div>
         );
@@ -126,6 +163,3 @@ const MobileNavBar = ({
   );
 };
 
-const Demo = () => {
-  return;
-};

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../components/MainContext";
 import ProfileAvatar from "../../components/ProfileAvatar";
 import InputBox from "../../components/InputBox";
 import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import { FaArrowLeft} from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
 import { AutoComplete, DatePicker, message, Select, Spin } from "antd";
 import axios from "axios";
@@ -23,15 +23,42 @@ import { AnimatePresence, motion } from "framer-motion";
 import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
 import CustomAutoComplete from "../../components/CustomAutoComplete";
 import { HiBadgeCheck } from "react-icons/hi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance, getError } from "../../utils/axiosInstance";
+import toast from "react-hot-toast";
+import AdvanceProfileAvathar from "../../components/AdvanceProfileAvathar";
+import { AuthContext } from "../../contexts/AuthContext";
+import Loading from "../Loading";
+import { useGetProfileData } from "./queries/ProfileQuery";
 
 const { TextArea } = Input;
 
 const UserProfile = () => {
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [educationModalOpen, setEducationModalOpen] = useState(false);
-  const [personalDetailsModalOpen, setPersonalDetailsModalOpen] = useState(false);
+  const [personalDetailsModalOpen, setPersonalDetailsModalOpen] =
+    useState(false);
   const [intershipModalOpen, setInternShipModalOpen] = useState(false);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+
+
+  //Auth Context
+
+  const {profileData } = useContext(AuthContext)
+
+  console.log(profileData)
+
+  useEffect(()=>{
+      if(profileData!==null)
+      {
+       setPersonalDetails((prev)=> {return {
+        fullName: profileData?.name || "",
+        email: profileData?.email || "",
+        mobile: profileData?.mobile || "",
+        gender: profileData?.profile_details?.gender || "",
+      }})
+      }
+  },[profileData])
 
   const [profileSkills, setProfileSkills] = useState([]);
 
@@ -43,11 +70,13 @@ const UserProfile = () => {
   });
 
   const [personalDetails, setPersonalDetails] = useState({
-    fullName: "shivuroopesh",
-    email: "shivuroopesh6362@gmail.com",
-    mobile: "6362379895",
-    gender: "Male",
+    fullName: profileData?.name || "",
+    email: profileData?.email || "",
+    mobile: profileData?.mobile || "",
+    gender: profileData?.profile_details?.gender || "",
   });
+
+  const [profileImg ,setProfileImg] = useState(profileData?.profile_details?.profileImg)
 
   const [listOfIntership, setListOfIntership] = useState({});
   const [intershipDetails, setIntershipDetails] = useState({});
@@ -65,9 +94,7 @@ const UserProfile = () => {
   };
 
   const handlePersonalDetails = (val) => {
-    setPersonalDetails((prev) => {
-      return { ...prev, ...val };
-    });
+    profilePersonalDetailsUpdateMutation.mutate(val);
   };
 
   const handleIntershipDetails = (val) => {
@@ -103,6 +130,83 @@ const UserProfile = () => {
     document.body.classList.remove("no-scroll");
   };
 
+  const queryClient = useQueryClient()
+
+  const {data,isLoading:profileDataLoading,isError,error,isFetching} = useGetProfileData()
+
+
+  console.log(profileDataLoading,isFetching)
+
+
+  const updateProfile = async (val) => {
+    const data ={"name":val.fullName,"profile_details.gender":val.gender,"email":val.email,"mobile":val.mobile}
+    const res = await axiosInstance.put("/user/update", data);
+    return res.data;
+  };
+
+  const profilePersonalDetailsUpdateMutation = useMutation({
+    mutationKey: ["profile_update"],
+    mutationFn: updateProfile,
+    onSuccess: (val, variables) => {
+      toast.success("Profile Updated");
+      setPersonalDetailsModalOpen(false);
+      freeBody();
+      setPersonalDetails((prev) => {
+        return {
+          ...prev,
+          ...variables
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (error) => {
+      const { message } = getError(error);
+      console.log(error);
+      if (message) {
+        toast.error(message);
+      } else {
+        toast.error("Something Went Wrong");
+      }
+    },
+  });
+
+
+  const uploadProfilePhoto = async(url)=>{
+    const data = {"profile_details.profileImg":url}
+    const res = await axiosInstance.put("/user/update",data);
+    return res.data
+     
+  }
+
+ 
+
+  const profilePhotoUploadMutation = useMutation({
+    mutationKey:["upload_profile"],
+    mutationFn:uploadProfilePhoto,
+    onSuccess:(val,variables)=>{
+       toast.success("Profile Photo Updated Sucessfully");
+       queryClient.invalidateQueries({ queryKey: ["profile"] });
+       console.log(val , variables)
+       setProfileImg(variables)
+    },
+    onError:(error)=>{
+      const {message}= getError(error)
+      if(message)
+      {
+        toast.error(message)
+      }else{
+        toast.error("Something Went Wrong")
+      }
+    }
+
+  })
+
+  if(profileDataLoading)
+  {
+    return <Loading/>
+  }
+
+
   return (
     <MainContext>
       <div className="w-full h-screen bg-slate-50 ">
@@ -125,7 +229,7 @@ const UserProfile = () => {
           {/* Avatar and PersonalDetails */}
           <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2  h-fit mx-auto">
             <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
-              <ProfileAvatar />
+              <ProfileAvatar url={profileImg} onChange={(val)=>profilePhotoUploadMutation.mutate(val)} />
             </div>
 
             {/* Profile Application Deatils */}
@@ -144,9 +248,8 @@ const UserProfile = () => {
                 {personalDetails.email}
               </h1>
               <h1 className="flex justify-start items-center gap-1">
-                {" "}
-                <FaPhoneAlt className="text-orange-600" />{" "}
-                {personalDetails.mobile}
+                <FaPhoneAlt className="text-orange-600" />
+                {personalDetails.mobile || "Mobile"}
               </h1>
               <h1 className="flex justify-start items-center gap-1">
                 {personalDetails.gender.toLowerCase() === "male" && (
@@ -169,17 +272,17 @@ const UserProfile = () => {
             <DeatilsBadge
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Applied"
-              val={100}
+              val={profileData?.application_applied_info?.jobs?.length || 0}
             />
             <DeatilsBadge
               icon={<FaSave className=" text-orange-600" />}
               title="Saved"
-              val={10}
+              val={profileData?.saved_info?.jobs?.length}
             />
             <DeatilsBadge
               icon={<AiFillProject className="text-green-600 rotate-180" />}
               title="Projects Applied"
-              val={100}
+              val={profileData?.application_applied_info?.projects?.length || 0}
             />
           </div>
           <div className="w-full  h-80 max-w-[90%] md:w-full mx-auto mt-4 flex flex-col lg:flex-row gap-2">
@@ -285,9 +388,7 @@ const UserProfile = () => {
                             key={idx}
                           >
                             <KeyHighlightsListItem
-                              icon={
-                                <HiBadgeCheck className="text-green-700" />
-                              }
+                              icon={<HiBadgeCheck className="text-green-700" />}
                             />
                             <InternShipCard
                               key={idata.company}
@@ -556,11 +657,7 @@ const InternShipCard = ({
   onEditCLick = () => {},
 }) => {
   return (
-    <div
-      className={
-        "flex flex-col gap-0 w-full  bg-white rounded-lg mb-2  "
-      }
-    >
+    <div className={"flex flex-col gap-0 w-full  bg-white rounded-lg mb-2  "}>
       <h1 className="mb-1 text-[1.1rem] flex justify-start items-center gap-2">
         {profileIntershipDetails.company}{" "}
         <CiEdit
@@ -703,7 +800,7 @@ const ProfileSkillModal = ({
           <AutoComplete
             onChange={(value) => {
               if (value.trim().length === 0) {
-                setSearchValue("")
+                setSearchValue("");
               }
             }}
             className="w-full mt-7 md:mt-10 h-10 focus:shadow-none"
@@ -748,7 +845,7 @@ const ProfileEducationModal = ({
     college: null,
     percentage: null,
     passedYear: null,
-    specification:null
+    specification: null,
   },
 }) => {
   const [data, setData] = useState({ ...value });
@@ -758,9 +855,12 @@ const ProfileEducationModal = ({
   //Fertched Qualification data
   const [fetchedData, setFetchedData] = useState(null);
 
-  const [selectedQualification, setSelectQualification] = useState(data.qualification);
-  const [selectedSpecification, setSelectedSpecification] =
-    useState(data.specification);
+  const [selectedQualification, setSelectQualification] = useState(
+    data.qualification
+  );
+  const [selectedSpecification, setSelectedSpecification] = useState(
+    data.specification
+  );
 
   const currentYear = dayjs().year();
 
@@ -828,11 +928,10 @@ const ProfileEducationModal = ({
             if (val) {
               setSelectQualification(val);
               setSelectedSpecification("");
-              
             }
             setData((prev) => {
               return { ...prev, qualification: val };
-            })
+            });
           }}
         />
 
@@ -843,17 +942,20 @@ const ProfileEducationModal = ({
           options={
             !loading &&
             (selectedQualification
-              ? (fetchedData!== null && fetchedData[`${selectedQualification}`]?.map((d) => {
-                return { value: d, label: d };
-              }))
+              ? fetchedData !== null &&
+                fetchedData[`${selectedQualification}`]?.map((d) => {
+                  return { value: d, label: d };
+                })
               : [])
           }
-          onChange={(va) => {setSelectedSpecification(va); setData((prev) => {
-            return { ...prev, specification: va };
-          })}}
+          onChange={(va) => {
+            setSelectedSpecification(va);
+            setData((prev) => {
+              return { ...prev, specification: va };
+            });
+          }}
         />
 
-        
         <InputBox
           key={"college"}
           placeholder="Institude Name /College"
@@ -944,8 +1046,6 @@ const ProfilePersonalDetailsModal = ({
           enableReinitialize={true} // Ensure form resets when modal opens again with new values
           onSubmit={(data, { resetForm }) => {
             onChange(data);
-            onClose();
-            // alert(JSON.stringify(data))
             resetForm();
           }}
         >
@@ -955,7 +1055,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="fullName">
                 {({ field }) => (
                   <InputBox
-                  animate={false}
+                    animate={false}
                     {...field}
                     icon={<MdPerson />} // Icon for full name
                     placeholder="Full Name"
@@ -971,7 +1071,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="email">
                 {({ field }) => (
                   <InputBox
-                  animate={false}
+                    animate={false}
                     {...field}
                     icon={<MdEmail />} // Icon for email
                     placeholder="Email"
@@ -986,7 +1086,7 @@ const ProfilePersonalDetailsModal = ({
               <Field name="mobile">
                 {({ field }) => (
                   <InputBox
-                   animate={false}
+                    animate={false}
                     {...field}
                     icon={<FaPhoneAlt />} // Icon for mobile
                     placeholder="Enter Mobile"
@@ -1090,7 +1190,7 @@ const ProfileIntershipModal = ({
               <Field name="company">
                 {({ field }) => (
                   <InputBox
-                   animate={false}
+                    animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Company Name"
@@ -1103,7 +1203,7 @@ const ProfileIntershipModal = ({
               <Field name="project">
                 {({ field }) => (
                   <InputBox
-                  animate={false}
+                    animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Project Name"
@@ -1118,7 +1218,7 @@ const ProfileIntershipModal = ({
               <Field name="description">
                 {({ field }) => (
                   <InputBox
-                  animate={false}
+                    animate={false}
                     {...field}
                     value={field.value}
                     placeholder="Description about project"

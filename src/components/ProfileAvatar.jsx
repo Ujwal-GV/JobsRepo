@@ -3,6 +3,8 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
 import axios from "axios";
 import { MdDelete } from "react-icons/md";
+import { axiosInstance } from "../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
@@ -22,24 +24,19 @@ const beforeUpload = (file) => {
   return isJpgOrPng && isLt2M;
 };
 
-const ProfileAvatar = () => {
+const ProfileAvatar = ({ url = "" ,onChange=()=>{} }) => {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
-  const [uploadFileData,setUploadFileData] = useState(null);
+  const [imageUrl, setImageUrl] = useState(url);
 
   const handleCustomRequest = async (options) => {
     const { file, onSuccess, onError } = options;
     const formData = new FormData();
     formData.append("image", file);
-
     try {
-      const res = await axios.post(
-        "http://localhost:5001/uploader/upload",
-        formData,
-      );
+      const res = await axiosInstance.post("/uploader/image", formData);
       onSuccess(res.data);
-     setUploadFileData(res.data);
-      getBase64(file, (url) => setImageUrl(url));
+      setImageUrl(res.data.url)
+      onChange(res.data.url)
       setLoading(false);
     } catch (err) {
       onError(err);
@@ -48,26 +45,34 @@ const ProfileAvatar = () => {
     }
   };
 
+
   const ProfileImgDeleteHandler = async () => {
-    const {public_id} = uploadFileData;
-    setLoading(true)
-    try {
-        const res= await axios.delete("http://localhost:5001/uploader/delete",{data:{"id":public_id}});
-        if(res.success)
-        {
-            alert("done");
-            setImageUrl(null)
-        }else{
-            message.error("Failed to delete");
+    const  public_id  = extractProfilePath(imageUrl);
+    setLoading(true);
+    if(public_id)
+    {
+      try {
+        const res = await axiosInstance.delete("/uploader/image", {
+          data: { id: public_id },
+        });
+        if (res.status) {
+          setImageUrl("");
+          onChange("")
+        } else {
+          message.error("Failed to delete");
         }
-    } catch (error) {
+      } catch (error) {
         message.error("Something Went Wrong");
+      } finally {
+        setLoading(false);
+      }
+    }else{
+      setImageUrl("")
+      onChange("")
     }
-    finally{
-        setLoading(false)
-    }
-    
+    setLoading(false)
   };
+
 
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
@@ -76,12 +81,28 @@ const ProfileAvatar = () => {
     }
   };
 
+
   const uploadButton = (
     <div>
       {loading && !imageUrl ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>{loading ? "Uploading profile" :"Upload Profile photo"}</div>
+      <div style={{ marginTop: 8 }}>
+        {loading ? "Uploading profile" : "Upload Profile photo"}
+      </div>
     </div>
   );
+
+  function extractProfilePath(url) {
+    const parts = url.split("/"); 
+    const profilesIndex = parts.indexOf("profiles"); 
+    
+    if (profilesIndex !== -1 && parts[profilesIndex + 1]) {
+      // Remove the file extension (if present)
+      const profileId = parts[profilesIndex + 1].split(".")[0];
+      return `profiles/${profileId}`; // Return the path without the extension
+    }
+    
+    return null; 
+  }
 
   return (
     <>
@@ -98,11 +119,9 @@ const ProfileAvatar = () => {
       >
         {imageUrl ? (
           <div className="w-full h-full relative flex center">
-            {
-                loading && <LoadingOutlined  className="absolute text-3xl"/>
-            }
+            {loading && <LoadingOutlined className="absolute text-3xl" />}
             <img
-              src={imageUrl}
+              src={imageUrl || ""}
               alt="avatar"
               className="w-full h-full rounded-full object-cover"
             />
@@ -112,7 +131,13 @@ const ProfileAvatar = () => {
         )}
       </Upload>
       {imageUrl && (
-          <MdDelete  onClick={ProfileImgDeleteHandler} className={"absolute bottom-5 right-5 bg-orange-600 p-1 text-white rounded-full  text-2xl " + (loading ? "cursor-not-allowed" :"cursor-pointer")} />
+        <MdDelete
+          onClick={ProfileImgDeleteHandler}
+          className={
+            "absolute bottom-5 right-5 bg-orange-600 p-1 text-white rounded-full  text-2xl " +
+            (loading ? "cursor-not-allowed" : "cursor-pointer")
+          }
+        />
       )}
     </>
   );

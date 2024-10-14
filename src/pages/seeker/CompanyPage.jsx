@@ -6,7 +6,7 @@ import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../../components/JobCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "../Loading";
 import { HiPlus } from "react-icons/hi";
@@ -46,22 +46,27 @@ const CompanyPage = () => {
   const PostedSections = [" Job Posts", "Freelance Post"];
   const [posttype, setPostType] = useState(0);
   const [following, setFollowing] = useState(false);
+  const navigate = useNavigate()
+
+
+  const queryClient = useQueryClient();
+
 
   const fetchCompanyData = async () => {
     const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
     const { followers } = res.data.accountData;
+    const {user_id} = queryClient.getQueryData(["profile"]);
     if (followers) {
-      if (followers.find((id) => id === "USER-9e9c26a7")) {
+      if (followers.find((id) => id === user_id)) {
         setFollowing(true);
       }
     }
-    console.log(res.data.accountData);
     return res.data;
   };
 
   const { data, isLoading: companyDataLoading } = useQuery({
     queryKey: ["companyData", companyId],
-    queryFn: async () => await fetchCompanyData(),
+    queryFn: fetchCompanyData,
     staleTime: 20000,
     cacheTime: 0,
     onError: () => {
@@ -100,10 +105,16 @@ const CompanyPage = () => {
   // };
 
   const handleFollowBtnClick = () => {
-    if (!following) {
-      followMutation.mutate(companyId);
-    } else {
-      unfollowMutation.mutate(companyId);
+    const {user_id} = queryClient.getQueryData(["profile"])
+    if(user_id)
+    {
+      if (!following) {
+        followMutation.mutate(companyId);
+      } else {
+        unfollowMutation.mutate(companyId);
+      }
+    }else{
+      navigate("/login")
     }
   };
 
@@ -129,7 +140,12 @@ const CompanyPage = () => {
     },
     onError: (error) => {
       const { message } = getError(error); // Error handling function
-      toast.error(message);
+      if(message)
+      {
+        toast.error(message);
+      }else{
+        toast.error("Something Went Wrong");
+      }
     },
   });
 
@@ -140,8 +156,13 @@ const CompanyPage = () => {
       setFollowing(false);
     },
     onError: (error) => {
-      const { message } = getError(error);
-      toast.error(message);
+      const { message } = getError(error); // Error handling function
+      if(message)
+      {
+        toast.error(message);
+      }else{
+        toast.error("Something Went Wrong");
+      }
     },
   });
 

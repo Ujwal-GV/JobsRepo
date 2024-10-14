@@ -1,9 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { loginValidationSchema } from "../formikYup/ValidationSchema";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import InputBox from "../components/InputBox";
 import RoleChecker from "../components/RoleChecker";
@@ -66,7 +66,8 @@ function Login() {
     onSuccess: (response) => {
       alert(response);
       localStorage.setItem("authToken", response);
-      window.location.replace("/user")
+      
+      navigate(sessionStorage.getItem("location") || "/user" , {replace:true})
     },
     onError: (error) => {
       const { message } = error.response.data;
@@ -86,6 +87,12 @@ function Login() {
       toast.error(message);
     },
   });
+
+  const location = useLocation()
+
+  useEffect(()=>{
+    console.log(location.pathname)
+  },[])
 
   return (
     <div className="w-full h-screen max-w-[1600px] flex items-center justify-center font-outfit">
