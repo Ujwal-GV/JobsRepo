@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../../../utils/axiosInstance";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 
 export const useGetProfileData = ()=>{
-
     const {userRole , setProfileData} = useContext(AuthContext)
 
+    
     const getProfileData = async()=>{
         const res = await axiosInstance.get("/user/profile");
         if(res.data)

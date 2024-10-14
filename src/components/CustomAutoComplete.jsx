@@ -12,6 +12,7 @@ const CustomAutoComplete
   customClass = '',
   animate = false,
   icon,
+  loading
 }) => {
   const [focused, setFocus] = useState(false);
   
@@ -30,6 +31,7 @@ const CustomAutoComplete
       {icon ? icon : <></>}
 
       <Select
+        loading={loading}
         allowClear
         onClear={()=>onChange("")}
         className={`w-full custom-select  h-11`} // Add the custom class here

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
 import axios from "axios";
@@ -27,6 +27,12 @@ const beforeUpload = (file) => {
 const ProfileAvatar = ({ url = "" ,onChange=()=>{} }) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(url);
+
+ 
+  useEffect(()=>{
+    setImageUrl(url)
+  },[url])
+   
 
   const handleCustomRequest = async (options) => {
     const { file, onSuccess, onError } = options;

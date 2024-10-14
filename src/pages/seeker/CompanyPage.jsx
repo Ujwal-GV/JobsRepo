@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../components/MainContext";
 import { jobData } from "../../../assets/dummyDatas/Data";
 import { CiSearch } from "react-icons/ci";
@@ -16,6 +16,7 @@ import { FreelanePostContainer, JobPostContainer } from "./CompanyAllPosts";
 import { axiosInstance, getError } from "../../utils/axiosInstance";
 import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export const VerticalBar = ({ className }) => {
   return <div className={"w-0 h-5 border-r border-black " + className}></div>;
@@ -42,6 +43,11 @@ const JobsPostedByCompany = ({ jobsPostedByCompany = [] }) =>
   );
 
 const CompanyPage = () => {
+
+  const {profileData}  = useContext(AuthContext)
+
+  console.log(profileData)
+
   const { id: companyId } = useParams();
   const PostedSections = [" Job Posts", "Freelance Post"];
   const [posttype, setPostType] = useState(0);
@@ -52,15 +58,20 @@ const CompanyPage = () => {
   const queryClient = useQueryClient();
 
 
+  useEffect(()=>{
+      if(profileData!=null && profileData)
+      {
+        if(profileData?.follwing?.find((id)=>id === companyId))
+        {
+          setFollowing(true)
+        }
+      }
+  },[profileData])
+
+
   const fetchCompanyData = async () => {
     const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
-    const { followers } = res.data.accountData;
-    const {user_id} = queryClient.getQueryData(["profile"]);
-    if (followers) {
-      if (followers.find((id) => id === user_id)) {
-        setFollowing(true);
-      }
-    }
+    console.log(res.data)
     return res.data;
   };
 
@@ -105,8 +116,8 @@ const CompanyPage = () => {
   // };
 
   const handleFollowBtnClick = () => {
-    const {user_id} = queryClient.getQueryData(["profile"])
-    if(user_id)
+    
+    if(profileData !==null && profileData)
     {
       if (!following) {
         followMutation.mutate(companyId);
@@ -180,7 +191,8 @@ const CompanyPage = () => {
     followers,
   } = data?.accountData || {};
 
-
+ if(!companyDataLoading && data?.accountData)
+ {
   return (
     <MainContext>
       {/* Wrapper for the entire content */}
@@ -206,8 +218,8 @@ const CompanyPage = () => {
                 </h1>
                 <h3 className="font-light mt-7">
                   Website :
-                  <a className="text-blue-600 cursor-pointer">
-                    {company_links[0].url}
+                  <a className="text-blue-600 cursor-pointer" href={company_links[0]?.url} target="_blank">
+                    {company_links?.length>0 && company_links[0]?.url}
                   </a>
                 </h3>
                 <div className="flex gap-2 mt-3">
@@ -310,6 +322,8 @@ const CompanyPage = () => {
       </div>
     </MainContext>
   );
+ }
+  
 };
 
 export default CompanyPage;
