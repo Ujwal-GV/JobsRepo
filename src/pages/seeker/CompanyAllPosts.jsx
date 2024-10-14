@@ -70,7 +70,7 @@ const PostCard = ({ data, className }) => {
       </div>
       <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
         <span className="flex center">
-          <CiLocationOn /> {location.slice(0,2).join(" , ")}
+          <CiLocationOn /> {location?.slice(0,2).join(" , ")}
         </span>
         <VerticalBar className={"!border-slate-500 h-3 md:h-5"} />
         <span className="flex center">
@@ -182,7 +182,6 @@ export const FreelanePostContainer = ({ cardClassname }) => {
     if (res.status !== 200) {
       throw new Error("Failed to fetch jobs data"); 
     }
-    console.log(res.data);
     setTotalDatas(res.data.length);
     return res.data;
   };

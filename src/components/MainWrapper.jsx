@@ -1,13 +1,23 @@
 import React, { useContext, useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
-import { AuthContext } from '../contexts/AuthContext'
+import { useGetProfileData } from '../pages/seeker/queries/ProfileQuery'
 
 const MainWrapper = () => {
 
-  const {userRole} = useContext(AuthContext)
+     useGetProfileData()
 
-  useEffect(()=>{},[userRole])
+
+     const location = useLocation();
+
+
+     useEffect(()=>{
+         sessionStorage.setItem("location" ,location.pathname)
+     },[location])
+
+
+
+
 
   return (
     <div className='w-full relative max-w-[1800px] mx-auto'>
@@ -18,3 +28,4 @@ const MainWrapper = () => {
 }
 
 export default MainWrapper
+

@@ -1,6 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import MainContext from "../components/MainContext";
 import SeachInput from "../components/SeachInput";
 import { FaArrowRight } from "react-icons/fa";
@@ -18,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
+import { axiosInstance, getError } from "../utils/axiosInstance";
 
 const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   return (
@@ -41,45 +41,46 @@ const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
 };
 
 function MainPage() {
-
-
   const navigate = useNavigate();
 
   const fetchJobs = async () => {
-    const res = await axios.get("http://localhost:8087/jobs/?limit=10");
+    const res = await axios.get("http://localhost:8087/jobs?limit=10");
     return res.data.pageData;
   };
 
   const fetchCompanies = async () => {
-    const res = await axios.get("http://localhost:8087/provider/allcompany?limit=10");
+    const res = await axios.get(
+      "http://localhost:8087/provider/allcompany?limit=10"
+    );
     return res.data;
   };
 
+
+
+
   const { data: jobsData, isLoading: jobsDataLoading } = useQuery({
-    queryKey: ['jobsData'], 
-    queryFn: fetchJobs,      
-    staleTime: 300000,  
-    refetchOnWindowFocus: false,  
-  refetchOnMount: false, 
-    cacheTime: 300000, 
+    queryKey: ["jobsData"],
+    queryFn: fetchJobs,
+    staleTime: 300000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: 300000,
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
-    }
+    },
   });
 
   const { data: companiesData, isLoading: companyDataLoading } = useQuery({
-    queryKey: ['companyData'],
-    queryFn: fetchCompanies,      
+    queryKey: ["companyData"],
+    queryFn: fetchCompanies,
     staleTime: 300000,
-    cacheTime:300000, 
-    refetchOnWindowFocus: false,  
-    refetchOnMount: false,       
+    cacheTime: 300000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
-    }
+    },
   });
-
-
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
@@ -111,20 +112,23 @@ function MainPage() {
           onViewClick={() => navigate("find-jobs")}
         >
           <AdvancedSwiper key={"jobs"}>
-            {jobsDataLoading
-              ? [1,2,3,4,5,6,7,8,9,0].map((d) => (
-                  <SwiperSlide key={d}>
-                    <JobCardSkeleton id={d} />
-                  </SwiperSlide>
-                ))
-              : jobsData.map((item) => (
-                  <SwiperSlide key={item.id}>
-                    <JobCard key={item.id} data={item} />
-                  </SwiperSlide>
-                ))}
+            {jobsDataLoading ? (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
+                <SwiperSlide key={d}>
+                  <JobCardSkeleton id={d} />
+                </SwiperSlide>
+              ))
+            ) : jobsData && jobsData?.length > 0 ? (
+              jobsData?.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <JobCard key={item.id} data={item} />
+                </SwiperSlide>
+              ))
+            ) : (
+              <h1>No Post Found</h1>
+            )}
           </AdvancedSwiper>
         </SwiperWrapper>
-
         {/* Company Slider */}
 
         <SwiperWrapper
@@ -133,24 +137,21 @@ function MainPage() {
           onViewClick={() => alert("comapny  List")}
         >
           <AdvancedSwiper>
-            {
-               
-               companyDataLoading ? 
-               
-               [1,2,3,4,5,6,7,8,9,0].map((data) => (
+            {companyDataLoading ? (
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((data) => (
                 <SwiperSlide key={data}>
-                  <CompanyCardSkeleton  id={data} />
+                  <CompanyCardSkeleton id={data} />
                 </SwiperSlide>
               ))
-               : 
-
-              ( companiesData.map((data) => (
+            ) : companiesData && companiesData?.length > 0 ? (
+              companiesData?.map((data) => (
                 <SwiperSlide key={data.id}>
                   <CompanyCard data={data} />
                 </SwiperSlide>
-              )))
-
-            }
+              ))
+            ) : (
+              <h1>No Post Found</h1>
+            )}
           </AdvancedSwiper>
         </SwiperWrapper>
 
