@@ -26,24 +26,6 @@ const Navbar = () => {
     setOpen(false);
   };
 
-
-  
-  const getProfileData = async()=>{
-    const res = await axiosInstance.get("/user/profile");
-    if(res.data)
-    {
-      console.log("user logged in")
-    }
-    return res.data
-  }
-
-  const {data:profileData,isLoading:profileDataLoading,isError,error} = useQuery({
-    queryKey:["profile"],
-    queryFn:getProfileData,
-    staleTime:Infinity,
-    gcTime:Infinity,
-  })
-
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div className="center gap-1 ">
