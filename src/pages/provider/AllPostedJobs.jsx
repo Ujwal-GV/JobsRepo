@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useJobContext } from '../../contexts/JobContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaEye } from 'react-icons/fa6';
 import MainContext from "../../components/MainContext";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
@@ -8,30 +7,89 @@ import { JobCardSkeleton } from '../../components/JobCard';
 import { useQuery } from "@tanstack/react-query";
 import axios from 'axios';
 import { Pagination } from "antd";
+import Loading from '../Loading';
+import toast from 'react-hot-toast';
+import { axiosInstance, getError } from "../../utils/axiosInstance";
+import { AuthContext } from '../../contexts/AuthContext';
+import { IoIosBriefcase } from 'react-icons/io';
 
 const AllPostedJobs = () => {
-  const { jobs } = useJobContext();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const job = state?.job;
+
+  const { id: jobApplicationId } = useParams();
+  const {profileData} = useContext(AuthContext);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const limit = 3;  // Number of applicants per page
 
-  const fetchApplicants = async (job_id, page, limit) => {
+  useEffect(()=>{
+      if(profileData?.application_applied_info?.jobs?.find((id)=>id.jobId === jobApplicationId)) {
+        setApplied(true)
+      }
+      if(profileData?.saved_ids?.jobs?.find((id)=>id === jobApplicationId)) {
+        setSaved(true)
+      }
+  },[profileData])
+
+  const fetchJobDetails = async (jobId, page, limit) => {
+    const res = await axiosInstance.get(`/jobs/${jobId}`, {
+      params: {
+        applied_details: true,
+        page,
+        limit,
+      }
+    });
+    console.log("Job Response:", res.data);
+    return res.data;
+  };
+
+  // Using useQuery to fetch jobs
+  const {
+    data: jobApplicationData,
+    isLoading,
+    isError,
+    error,
+    isFetching
+  } = useQuery({
+    queryKey: ["jobApplication", jobApplicationId],
+    queryFn: () => fetchJobDetails(jobApplicationId),
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  const [saved, setSaved] = useState(false);
+  const [applied, setApplied] = useState(false);
+
+  // Using useQuery to fetch applicants
+  const { 
+    isLoading: jobsDataLoading, 
+    data: applicantsData, 
+    error: applicantsError 
+  } = useQuery({
+    queryKey: ['applicants', jobApplicationId, currentPage],
+    queryFn: () => fetchApplicants(jobApplicationId, currentPage, limit),
+    staleTime: 300000,
+    cacheTime: 300000,
+    onError: () => {
+      toast.error("Something went wrong while fetching applicants");
+    },
+  });
+
+
+  // Fetch applicants
+  const fetchApplicants = async (jobId, page, limit) => {
     try {
-      const response = await axios.get(`http://localhost:8087/jobs/${job_id}`, {
+      const response = await axiosInstance.get(`/jobs/${jobId}`, {
         params: {
           applied_details: true,
-          page, // Send current page
-          limit, // Send limit (3 per page)
+          page,
+          limit,
         }
       });
 
       if (response.data) {
+        console.log("Applicants_Response:", response.data.job);
         return response.data;
       } else {
         throw new Error("No applicants found");
@@ -41,23 +99,12 @@ const AllPostedJobs = () => {
     }
   };
 
-  // Using useQuery to fetch applicants
-  const { isLoading: jobsDataLoading, data: applicantsData, error: applicantsError } = useQuery({
-    queryKey: ['applicants', "APP-1", currentPage], // Include page in query key
-    queryFn: () => fetchApplicants("APP-1", currentPage, limit),
-    staleTime: 300000, // Data will remain fresh for 5 minutes
-    cacheTime: 300000, // Cache the data for 5 minutes
-    onError: () => {
-      setError("Something went wrong while fetching applicants");
-    },
-  });
-
   const handleViewClick = (applicant) => {
     navigate(`/provider/view-candidate/${applicant.user_id}`, { state: { applicant } });
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page); // Set the current page when pagination is changed
+    setCurrentPage(page);
   };
 
   useEffect(() => {
@@ -67,120 +114,166 @@ const AllPostedJobs = () => {
     }
   }, [applicantsData]);
 
+  if (isLoading || isFetching) {
+    return <Loading />;
+  }
+  if (isError) {
+    console.log(error);
+    
+    // toast.error(error.response.data.message);
+  }
+
+  const {
+    title: jobTitle,
+    package: salary,
+    job_id,
+    experience,
+    vacancy,
+    description: job_description,
+    qualification,
+    type,
+    must_skills,
+    other_skills,
+    specification,
+    location,
+    job_role,
+    postedBy,
+  } = jobApplicationData?.job || {};
+
+  const {
+    company_name,
+    img,
+  } = jobApplicationData?.company || {};
+
   return (
     <div className="w-full lg:w-full flex flex-col lg:flex-row gap-10 min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 font-outfit">
-      {/* Left Side: Jobs List with Scroll */}
-      <div className="w-full lg:w-1/2 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll relative">
-        {job ? (
+      {/* Left Side: Job Details */}
+      <div className="w-full lg:w-1/2 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll relative bg-gray-50">
+        {jobApplicationData ? (
           <MainContext>
-          {/* Job Details */}
-          <h1 className="text-xl font-semibold mb-5">Job Details</h1>
-          <div className="w-full flex flex-col gap-3">
-            {/* Company and Job Details */}
-            <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
-              <img 
-                src="/Logo.png" 
-                alt="Company Logo" 
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-15 right-8" 
-              />
-              <h1 className="text-xl md:text-2xl font-bold">{job.title}</h1>
-              <h2 className="text-xl md:text-2xl font-semibold">{job.companyName}</h2>
-              <h3 className="mt-5">Posted by: {job.postedBy}</h3>
-              <p className="mt-3">Experience: {job.experience}</p>
-              <p>Vacancies: {job.vacancy || "Not mentioned"}</p>
+            <h1 className="text-2xl font-bold mb-5 text-gray-800">Job Details</h1>
+            <div className="w-full flex flex-col gap-6">
+
+              {/* Company and Job Info */}
+              <div className="w-full rounded-xl h-fit bg-white p-6 shadow-lg font-outfit relative">
+                <img 
+                  src={img?.url} 
+                  alt={company_name} 
+                  className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
+                />
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-1">{jobTitle}</h1>
+                <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-3">{company_name}</h2>
+                <h3 className="text-sm md:text-base text-gray-600">Job-Id: {job_id}</h3>
+                <h3 className="text-sm md:text-base text-gray-600 mt-1">Posted by: {postedBy}</h3>
+                {experience && (
+                  <p className="text-sm md:text-base text-gray-600 mt-2">Experience: {experience?.min} - {experience?.max} years</p>
+                )}
+                <p className="text-sm md:text-base text-gray-600 mt-2">Vacancies: {vacancy || "Not mentioned"}</p>
+              </div>
+
+              {/* Qualifications Section */}
+              <div className="w-full rounded-xl bg-white p-6 shadow-lg font-outfit">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Qualifications</h1>
+                {qualification && qualification.length > 0 ? (
+                  qualification.map((qualification, index) => (
+                    <div key={index} className="mb-2">
+                      <KeyHighlightsListItem value={qualification} />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No qualifications listed</p>
+                )}
+              </div>
+
+              {/* Specializations Section */}
+              <div className="w-full rounded-xl bg-white p-6 shadow-lg font-outfit">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Specializations</h1>
+                {specification && specification.length > 0 ? (
+                  specification.map((specification, index) => (
+                    <div key={index} className="mb-2">
+                      <KeyHighlightsListItem value={specification} />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No Specializations listed</p>
+                )}
+              </div>
+
+              {/* Required Skills Section */}
+              <div className="w-full rounded-xl bg-white p-6 shadow-lg font-outfit">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Required Skills</h1>
+                {must_skills && must_skills.length > 0 ? (
+                  must_skills.map((mustSkill, index) => (
+                    <div key={index} className="mb-2">
+                      <KeyHighlightsListItem value={mustSkill} />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No Skills listed</p>
+                )}
+              </div>
+
+              {/* Other Skills Section */}
+              <div className="w-full rounded-xl bg-white p-6 shadow-lg font-outfit">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Other Skills</h1>
+                {other_skills && other_skills.length > 0 ? (
+                  other_skills.map((otherSkill, index) => (
+                    <div key={index} className="mb-2">
+                      <KeyHighlightsListItem value={otherSkill} />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No Skills listed</p>
+                )}
+              </div>
+
+              {/* More Details */}
+              <div className="w-full rounded-xl bg-white p-6 shadow-lg font-outfit">
+                <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">More Details</h1>
+                <ul className="text-sm md:text-base text-gray-600">
+                  <li className="mb-4">
+                    {location?.length > 0 && (
+                      <KeyHighlightsListItem
+                        className="flex-row mb-2"
+                        key={"location"}
+                        title="Location"
+                        value={location?.join(", ")}
+                      />
+                    )}
+                  </li>
+                  <li className="mb-4">
+                    <KeyHighlightsListItem title="Role" value={job_role || "Not specified"} />
+                  </li>
+                  <li className="mb-4">
+                    <KeyHighlightsListItem title="Employment Type" value={type} />
+                  </li>
+                  <li className="mb-4">
+                    <KeyHighlightsListItem
+                      title='Salary'
+                      value={!salary?.disclosed ? "Not Disclosed" : `${salary?.min} - ${salary?.max}`}
+                    />
+                  </li>
+                </ul>
+              </div>
+
+              {/* Job Description */}
+              <div className="bg-white p-6 rounded-xl shadow-lg">
+                <strong className="text-lg font-semibold">Job Description:</strong>
+                <div dangerouslySetInnerHTML={{ __html: job_description }} className="mt-2 text-justify text-gray-700" />
+              </div>
             </div>
-
-            {/* Qualifications */}
-            <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">Qualifications</h1>
-              {job.qualification && job.qualification.length > 0 ? (
-                job.qualification.map((qualification, index) => (
-                  <div key={index} className="mb-3">
-                    <KeyHighlightsListItem value={qualification.value} />
-                  </div>
-                ))
-              ) : (
-                <p className="ml-5">No qualifications listed</p>
-              )}
-
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">Specializations</h1>
-              {job.specification && job.specification.length > 0 ? (
-                job.specification.map((specification, index) => (
-                  <div key={index} className="mb-3">
-                    <KeyHighlightsListItem value={specification.value} />
-                  </div>
-                ))
-              ) : (
-                <p className="ml-5">No specializations listed</p>
-              )}
-            </div>
-
-            {/* Skills */}
-            <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">Required Skills</h1>
-              {job.must_skills && job.must_skills.length > 0 ? (
-                job.must_skills.map((mustSkill, index) => (
-                  <div key={index} className="mb-3">
-                    <KeyHighlightsListItem value={mustSkill.value} />
-                  </div>
-                ))
-              ) : (
-                <p className="ml-5">No Skills listed</p>
-              )}
-
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">Other Skills</h1>
-              {job.other_skills && job.other_skills.length > 0 ? (
-                job.other_skills.map((otherSkills, index) => (
-                  <div key={index} className="mb-3">
-                    <KeyHighlightsListItem value={otherSkills.value} />
-                  </div>
-                ))
-              ) : (
-                <p className="ml-5">No Skills listed</p>
-              )}
-            </div>
-
-            {/* More Details */}
-            <div className="w-full rounded-xl mt-4 h-fit bg-white p-4 md:p-5 font-outfit">
-              <h1 className="text-xl md:text-2xl font-semibold mb-4">More Details</h1>
-              <ul className="mt-3">
-                <li className="mb-4">
-                  <KeyHighlightsListItem title="Location" value={job.location || "Not disclosed"} />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem title="Department" value={job.department || "Not specified"} />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem title="Role" value={job.job_role || "Not specified"} />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem title="Employment Type" value={job.type} />
-                </li>
-                <li className="mb-4">
-                  <KeyHighlightsListItem title="Package" value={`${job.salary}` ? `${job.salary} ${job.currency || 'INR'}` : "Not Disclosed"} />
-                </li>
-              </ul>
-            </div>
-
-            {/* Job Description */}
-            <div className="bg-white p-4 rounded-lg mt-4">
-              <strong>Job Description:</strong>
-              <div dangerouslySetInnerHTML={{ __html: job.description }} className="mt-2 text-justify" />
-            </div>
-          </div>
-        </MainContext>
+          </MainContext>
         ) : (
           <div className="w-full flex flex-col gap-3">
             <h1 className="text-xl font-semibold mb-5">Job Details</h1>
-            <p className='mx-auto'>No jobs found</p> 
+            <p className='mx-auto text-gray-600'>No job found</p> 
           </div>
         )}
       </div>
 
       {/* Right Side: Applicants View */}
       <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem]">
-        <h1 className="text-xl font-semibold mb-5">Applicants</h1>
-
+        {/* <h1 className="text-xl font-semibold mb-5">Applicants</h1> */}
         {jobsDataLoading ? (
           [1, 2, 3].map((d) => (
             <div key={d} className="flex-1 bg-white mb-2 w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md gap-2">
@@ -189,7 +282,7 @@ const AllPostedJobs = () => {
           ))
         ) : (
           <div className="grid h-auto grid-cols-1 gap-2 text-sm">
-          {applicants && applicants.length > 0 ? (
+            {applicants && applicants.length > 0 ? (
               applicants.map((applicant) => (
                 <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-md relative">
                   <h2 className="font-semibold">{applicant.name}</h2>
@@ -203,7 +296,7 @@ const AllPostedJobs = () => {
                   <p>Qualification: {applicant.profile_details.qualification || "Not mentioned"}</p>
                   <div className="mt-2 mb-2">
                     <h4 className="font-semibold">Skills:</h4>
-                    {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
+                    {applicant.profile_details.skills && applicant.profile_details.skills .length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {applicant.profile_details.skills.map((skill, index) => (
                           <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm">
@@ -227,7 +320,7 @@ const AllPostedJobs = () => {
               ))
             ) : (
               <div className="w-full flex flex-col gap-3">
-                <h1 className="text-xl font-semibold mb-5">Job Details</h1>
+                <h1 className="text-xl font-semibold mb-5">Applicants</h1>
                 <p className='mx-auto'>No applicants found</p> 
               </div>
             )}

@@ -13,6 +13,8 @@ import Select from "react-select";
 import { AutoComplete, Spin, message } from "antd";
 import axios from "axios";
 import { IoMdClose } from "react-icons/io";
+import toast from "react-hot-toast";
+
 import { axiosInstance } from '../../utils/axiosInstance';
 
 const VerticalBar = () => {
@@ -35,20 +37,24 @@ const Tag = ({ close = false, onClick = () => {}, val, className = "" }) => {
 };
 
 const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChecked, setOptionalSkills, title="" }) => {
-  const [selectSkills, setSelectSkills] = useState(defaultSkills);
+  const [selectSkills, setSelectSkills] = useState(defaultSkills.map(skill => skill.value));
   const [options, setChoices] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [fetchedSkills, setFetchedSkills] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetchAllSkills();
+  }, []);
 
   const fetchAllSkills = async () => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:8087/skills/");
       if (res.data) {
-        setChoices(res.data);
-        setFetchedSkills(res.data);
+        const skills = res.data.map(skill => ({ label: skill.value, value: skill.value }));
+        setChoices(skills);
+        setFetchedSkills(skills);
       } else {
         message.error("Something Went Wrong");
       }
@@ -58,10 +64,6 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchAllSkills();
-  }, []);
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -90,9 +92,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
   };
 
   const handleDelete = (label) => {
-    const skillsAfterDelete = selectSkills.filter(
-      (skill) => skill.label.toLowerCase() !== label.toLowerCase()
-    );
+    const skillsAfterDelete = selectSkills.filter(skill => skill !== label);
     setSelectSkills(skillsAfterDelete);
     onChange(skillsAfterDelete);
 
@@ -102,32 +102,20 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
   };
 
   const handleSelect = (value) => {
-    const alreadySelected = selectSkills.some((skill) => skill.value === value);
+    const alreadySelected = selectSkills.includes(value);
 
     if (alreadySelected) {
       message.error("Skill already selected");
       return;
     }
 
-    const selectedSkill = fetchedSkills.find((skill) => skill.value === value);
-    const newSkill = selectedSkill || { label: value, value };
-
-    setSelectSkills([...selectSkills, newSkill]);
+    setSelectSkills([...selectSkills, value]);
     setSearchValue("");
     setChoices(fetchedSkills);
-    onChange([...selectSkills, newSkill]);
+    onChange([...selectSkills, value]);
 
     if (isOptionalChecked) {
-      setOptionalSkills((prev) => [...prev, newSkill]);
-    }
-  };
-
-  const handleOptionalChange = (e) => {
-    setIsOptionalChecked(e.target.checked);
-    if (e.target.checked) {
-      setOptionalSkills(selectSkills); // Copy required skills to optional skills
-    } else {
-      setOptionalSkills([]); // Reset optional skills if unchecked
+      setOptionalSkills((prev) => [...prev, value]);
     }
   };
 
@@ -138,15 +126,15 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
         <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
           {selectSkills.map((data) => (
             <Tag
-              val={data.value}
-              key={data.label}
+              val={data}
+              key={data}
               close={true}
-              onClick={() => handleDelete(data.label)}
+              onClick={() => handleDelete(data)}
             />
           ))}
         </div>
 
-        < AutoComplete
+        <AutoComplete
           allowClear
           onSearch={handleSearch}
           onSelect={handleSelect}
@@ -167,19 +155,14 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
   const [fetchedQualifications, setFetchedQualifications] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const fetchAllQualifications = async () => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:8087/qualifications/");
-      // console.log(res.data);
       if (res.data) {
-        const fetchedOptions = Object.keys(res.data).map((key) => ({
-          label: key,
-          value: key,
-        }));
-        setChoices(fetchedOptions);
-        setFetchedQualifications(fetchedOptions);
+        const qualifications = Object.keys(res.data).map(key => ({ label: key, value: key }));
+        setChoices(qualifications);
+        setFetchedQualifications(qualifications);
       } else {
         message.error("Something Went Wrong");
       }
@@ -221,28 +204,23 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
   };
 
   const handleDelete = (label) => {
-    const qualificationsAfterDelete = selectQualifications.filter(
-      (qualification) => qualification.label.toLowerCase() !== label.toLowerCase()
-    );
+    const qualificationsAfterDelete = selectQualifications.filter(qualification => qualification !== label);
     setSelectQualifications(qualificationsAfterDelete);
     onChange(qualificationsAfterDelete);
   };
 
   const handleSelect = (value) => {
-    const alreadySelected = selectQualifications.some((qualification) => qualification.value === value);
+    const alreadySelected = selectQualifications.includes(value);
 
     if (alreadySelected) {
       message.error("Qualification already selected");
       return;
     }
 
-    const selectedQualification = fetchedQualifications.find((qualification) => qualification.value === value);
-    const newQualification = selectedQualification || { label: value, value };
-
-    setSelectQualifications([...selectQualifications, newQualification]);
+    setSelectQualifications([...selectQualifications, value]);
     setSearchValue("");
     setChoices(fetchedQualifications);
-    onChange([...selectQualifications, newQualification]);
+    onChange([...selectQualifications, value]);
   };
 
   return (
@@ -252,10 +230,10 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
         <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
           {selectQualifications.map((data) => (
             <Tag
-              val={data.value}
-              key={data.label}
+              val={data}
+              key={data}
               close={true}
-              onClick={() => handleDelete(data.label)}
+              onClick={() => handleDelete(data)}
             />
           ))}
         </div>
@@ -267,7 +245,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
           options={options}
           placeholder="Search for qualification"
           value={searchValue}
-          className="w-[12rem] mt-7 md:mt-5 h-10 bg-black focus:shadow-none border rounded-md"
+          className="w-[12rem] mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
         />
       </Spin>
     </div>
@@ -289,19 +267,10 @@ const SpecializationSelector = ({
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:8087/qualifications/");
-      // console.log(res.data);
-      
       if (res.data) {
-        const allValues = Object.values(res.data).flat();4
-
-        const uniqueValues = Array.from(new Set(allValues));
-        
-        const fetchedOptions = uniqueValues.map((specialization) => ({
-          label: specialization,
-          value: specialization,
-        }));
-
-        // console.log("Allvalues", fetchedOptions);
+        const specializations = Object.values(res.data).flat();
+        const uniqueSpecializations = Array.from(new Set(specializations));
+        const fetchedOptions = uniqueSpecializations.map(specialization => ({ label: specialization, value: specialization }));
         setChoices(fetchedOptions);
         setFetchedSpecializations(fetchedOptions);
       } else {
@@ -345,32 +314,23 @@ const SpecializationSelector = ({
   };
 
   const handleDelete = (label) => {
-    const specializationsAfterDelete = selectSpecializations.filter(
-      (specialization) => specialization.label.toLowerCase() !== label.toLowerCase()
-    );
+    const specializationsAfterDelete = selectSpecializations.filter(specialization => specialization !== label);
     setSelectSpecializations(specializationsAfterDelete);
     onChange(specializationsAfterDelete);
   };
 
   const handleSelect = (value) => {
-    const alreadySelected = selectSpecializations.some(
-      (specialization) => specialization.value === value
-    );
+    const alreadySelected = selectSpecializations.includes(value);
 
     if (alreadySelected) {
       message.error("Specialization already selected");
       return;
     }
 
-    const selectedSpecialization = fetchedSpecializations.find(
-      (specialization) => specialization.value === value
-    );
-    const newSpecialization = selectedSpecialization || { label: value, value };
-
-    setSelectSpecializations([...selectSpecializations, newSpecialization]);
+    setSelectSpecializations([...selectSpecializations, value]);
     setSearchValue("");
     setChoices(fetchedSpecializations);
-    onChange([...selectSpecializations, newSpecialization]);
+    onChange([...selectSpecializations, value]);
   };
 
   return (
@@ -380,10 +340,10 @@ const SpecializationSelector = ({
         <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
           {selectSpecializations.map((data) => (
             <Tag
-              val={data.value}
-              key={data.label}
+              val={data}
+              key={data}
               close={true}
-              onClick={() => handleDelete(data.label)}
+              onClick={() => handleDelete(data)}
             />
           ))}
         </div>
@@ -395,7 +355,91 @@ const SpecializationSelector = ({
           options={options}
           placeholder="Search for specialization"
           value={searchValue}
-          className="w-[12rem] bg-black mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
+          className="w-[12rem] mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
+        />
+      </Spin>
+    </div>
+  );
+};
+
+const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = "" }) => {
+  const [selectLocations, setSelectLocations] = useState(defaultLocations);
+  const [options, setChoices] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [fetchedLocations, setFetchedLocations] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAllLocations();
+  }, []);
+
+  const fetchAllLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:8087/qualifications/locations/');
+      const locations = response.data;
+      setFetchedLocations(locations);
+      setChoices(locations);
+    } catch (error) {
+      message.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    const filteredOptions = fetchedLocations.filter((location) =>
+      location.toLowerCase().includes(value.toLowerCase())
+    );
+    setChoices(filteredOptions);
+  };
+
+  const handleDelete = (label) => {
+    const locationsAfterDelete = selectLocations.filter(location => location !== label);
+    setSelectLocations(locationsAfterDelete);
+    onChange(locationsAfterDelete);
+  };
+
+  const handleSelect = (value) => {
+    const alreadySelected = selectLocations.includes(value);
+
+    if (alreadySelected) {
+      message.error("Location already selected");
+      return;
+    }
+
+    setSelectLocations([...selectLocations, value]);
+    setSearchValue("");
+    setFetchedLocations(fetchedLocations);
+    onChange([...selectLocations, value]);
+  };
+
+  return (
+    <div className="flex flex-row">
+      <Spin spinning={loading}>
+        <KeyHighlightsListItem key={"1"} title={title} value={null} />
+        <div className="flex flex-wrap gap-1 w-full mt-2 items-start">
+          {selectLocations.map((data) => (
+            <Tag
+              key={data}
+              val={data}
+              close={true}
+              onClose={() => handleDelete(data)}
+            >
+              {data}
+            </Tag>
+          ))}
+        </div>
+
+        <AutoComplete
+          allowClear
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          options={options.map(option => ({ value: option }))}
+          placeholder="Search for a location"
+          value={searchValue}
+          className="w-[12rem] mt-7 md:mt-5 h-10 focus:shadow-none border rounded-md"
         />
       </Spin>
     </div>
@@ -416,7 +460,6 @@ const JobApplicationProviderView = () => {
     postedBy: "",
     location: "",
     description: "",
-    experience: "",
     department: "",
     job_role: "",
     salaryMin: "",
@@ -499,9 +542,42 @@ const JobApplicationProviderView = () => {
     }
   };
 
-  // Define the mutation function
-  const submitJobApplication = async (jobDetails) => {
-    const response = await axiosInstance.post('/jobs/create', jobDetails);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.description) {
+      message.error("Please enter all details");
+      return;
+    }
+
+    const jobData = {
+      title: jobDetails.title,
+      description: jobDetails.description,
+      vacancy: Number(jobDetails.vacancy),
+      salary: {
+        min: Number(jobDetails.salaryMin),
+        max: Number(jobDetails.salaryMax),
+        disclosed: true,
+      },
+      location: jobDetails.location,
+      experience: {
+        min: Number(jobDetails.experienceMin),
+        max: Number(jobDetails.experienceMax),
+      },
+      specification: jobDetails.specification,
+      qualification: jobDetails.qualification,
+      must_skills: jobDetails.must_skills,
+      other_skills: jobDetails.other_skills,
+      postedBy: jobDetails.postedBy,
+      job_role: jobDetails.job_role,
+      type: jobDetails.type,
+    };
+
+    mutation.mutate(jobData);
+  };
+
+  const submitJobApplication = async (jobData) => {
+    const response = await axiosInstance.post('/jobs/create', jobData);
     console.log("RESPONSE:", response.data);
     return response.data;
   };
@@ -509,75 +585,20 @@ const JobApplicationProviderView = () => {
   const mutation = useMutation({
     mutationFn: submitJobApplication,
     onSuccess: (data) => {
-      console.log(data);
-      window.replace('/provider/main');
-      console.log('Job posted successfully:', data);
+      console.log("Data:", data);
+      toast.success('Job posted successfully!');
+      navigate('/provider', { replace: true });
     },
     onError: (error) => {
       const { message } = error.response.data;
-      console.log(message);
+      console.error(message);
       toast.error(message);
     },
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (jobDetails.title && jobDetails.companyName  && jobDetails.description) {
-      const newJob = {
-        ...jobDetails,
-        currency: currency ? currency.value : 'INR',
-      };
-      setJobs((prevJobs) => [...prevJobs, newJob]);
-      console.log("New Jobs added:" , newJob);
- 
-    setJobDetails({
-      title: "",
-      companyName: "Google",
-      vacancy: "",
-      postedBy: "",
-      location: "",
-      description: "",
-      experience: "",
-      department: "",
-      job_role: "",
-      salaryMin: "",
-      salaryMax: "",
-      experienceMin: "",
-      experienceMax: "",
-      type: "",
-      specification: [],
-      qualification: [],
-      must_skills: [],
-      other_skills: [],
-    });
-
-    mutation.mutate({
-      title: jobDetails.title,
-      description: jobDetails.description,
-      vacancy: jobDetails.vacancy,
-      experience: {
-        min: jobDetails.experienceMin,
-        max: jobDetails.experienceMax,
-      },
-      package: {
-        min: jobDetails.salaryMin,
-        max: jobDetails.salaryMax,
-      },
-      location: jobDetails.location,
-      qualification: jobDetails.qualification,
-      specification: jobDetails.specification,
-      must_skills: jobDetails.must_skills,
-      other_skills: jobDetails.other_skills,
-      type: jobDetails.type,
-      postedBy: jobDetails.postedBy,
-      job_role: jobDetails.job_role,
-    });
-  }
-};
-    
-    const handleViewClick = (job) => {
-      navigate(`/provider/post-job/${job.id}`, { state: { job } }); // Set selected job to display the details
-    };
+  const handleViewClick = (job) => {
+    navigate(`/provider/post-job/${job.id}`, { state: { job } }); // Set selected job to display the details
+  };
 
   return (
     <MainContext>
@@ -746,38 +767,17 @@ const JobApplicationProviderView = () => {
               <ul className="mt-3">
 
                 {/* Location */}
-                <li className="flex flex-col md:flex flex-col items-start mb-4">
-                  <KeyHighlightsListItem
-                    key={"1"}
-                    title="Location"
-                    value={null}
-                  />
-                  <div className="lg:w-[12rem] flex flex-col lg:flex-col gap-4 md:gap-2 mt-5">
-                    <Select
-                      value={jobDetails.location ? { label: jobDetails.location, value: jobDetails.location } : null}
-                      onChange={(selectedOption) => {
+                <li className="flex flex-col md:flex-row mb-4">
+                  <div className="flex flex-col w-auto md:ml-4 mt-2 w-full md:w-auto">
+                    <LocationSelector
+                      defaultLocations={jobDetails.location || []}
+                      onChange={(selectedLocations) => {
                         setJobDetails((prev) => ({
                           ...prev,
-                          location: selectedOption ? selectedOption.value : ""
+                          location: selectedLocations,
                         }));
                       }}
-                      options={locationsList}
-                      placeholder="Enter Location"
-                      isClearable
-                      onInputChange={(inputValue) => {
-                        if (inputValue && !locationsList.find(loc => loc.value === inputValue)) {
-                          setLocationsList([...locationsList, { label: inputValue, value: inputValue }]);
-                        }
-                      }}
-                      noOptionsMessage={() => "Type to add a new location"}
-                      className="sm:w-[12rem] lg:w-[12rem] md:w-[12rem] xsm:w-[12rem] h-10 bg-black text-black focus:shadow-none border rounded-md cursor-pointer"
-                      styles={{
-                        placeholder: (provided) => ({
-                          ...provided,
-                          fontSize: '0.9rem',
-                          color: 'black',
-                        }),
-                      }}
+                      title="Location"
                     />
                   </div>
                 </li>
