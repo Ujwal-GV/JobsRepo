@@ -99,8 +99,8 @@ const AllPostedJobs = () => {
     }
   };
 
-  const handleViewClick = (applicant) => {
-    navigate(`/provider/view-candidate/${applicant.user_id}`, { state: { applicant } });
+  const handleViewClick = (userId) => {
+    navigate(`/provider/view-candidate/${userId}`);
   };
 
   const handlePageChange = (page) => {
@@ -272,63 +272,71 @@ const AllPostedJobs = () => {
       </div>
 
       {/* Right Side: Applicants View */}
-      <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem]">
-        {/* <h1 className="text-xl font-semibold mb-5">Applicants</h1> */}
+      <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll">
+        <h1 className="text-xl font-semibold mb-5 text-gray-700">Applicants</h1>
         {jobsDataLoading ? (
           [1, 2, 3].map((d) => (
-            <div key={d} className="flex-1 bg-white mb-2 w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md gap-2">
+            <div
+              key={d}
+              className="flex-1 bg-gray-200 mb-2 w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-lg gap-2"
+            >
               <JobCardSkeleton id={d} />
             </div>
           ))
         ) : (
-          <div className="grid h-auto grid-cols-1 gap-2 text-sm">
+          <div className="grid h-auto grid-cols-1 gap-4 text-sm">
             {applicants && applicants.length > 0 ? (
               applicants.map((applicant) => (
-                <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-md relative">
-                  <h2 className="font-semibold">{applicant.name}</h2>
-                  <div className="w-[60px] h-[60px] flex center absolute right-4 top-4 rounded-lg bg-gray-200">
-                    <img 
+                <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
+                  <h2 className="font-semibold text-lg text-gray-800">{applicant.name}</h2>
+                  <div className="w-[60px] h-[60px] absolute right-4 top-4 rounded-full bg-gray-200 overflow-hidden shadow-md">
+                    <img
                       src={applicant.profile_details.profileImg}
-                      alt="Profile Image" 
-                      className="w-full h-full rounded-lg object-fill"
+                      alt="Profile"
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                  <p>Qualification: {applicant.profile_details.qualification || "Not mentioned"}</p>
-                  <div className="mt-2 mb-2">
-                    <h4 className="font-semibold">Skills:</h4>
-                    {applicant.profile_details.skills && applicant.profile_details.skills .length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
+                  <p className="text-gray-600 mt-1">Qualification: {applicant.profile_details.qualification || "Not mentioned"}</p>
+                  <div className="mt-3 mb-2">
+                    <h4 className="font-semibold text-gray-700">Skills:</h4>
+                    {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 mt-1">
                         {applicant.profile_details.skills.map((skill, index) => (
-                          <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm">
+                          <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm shadow-sm">
                             {skill}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">No skills added</p>
+                      <p className="text-sm text-gray-500">No skills added</p>
                     )}
                   </div>
-                  <hr className='mt-2 mb-2' />
-                  
+                  <hr className="mt-3 mb-3 border-gray-200" />
                   <button
-                    className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700"
-                    onClick={() => handleViewClick(applicant)}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-700 transition-colors duration-200 ease-in-out shadow-md"
+                    onClick={() => handleViewClick(applicant.user_id)}
                   >
                     <FaEye className="mr-2" /> View Profile
                   </button>
                 </div>
               ))
             ) : (
-              <div className="w-full flex flex-col gap-3">
-                <h1 className="text-xl font-semibold mb-5">Applicants</h1>
-                <p className='mx-auto'>No applicants found</p> 
+              <div className="w-full flex flex-col gap-3 items-center">
+                <p className="text-lg text-gray-500">No applicants found</p>
               </div>
             )}
           </div>
         )}
+
         {/* Pagination */}
-        <div className='mt-4 center'>
-          <Pagination total={20} pageSize={limit} current={currentPage} onChange={handlePageChange} />
+        <div className="mt-4 flex justify-center">
+          <Pagination
+            total={20}
+            pageSize={limit}
+            current={currentPage}
+            onChange={handlePageChange}
+            className="pagination"
+          />
         </div>
       </div>
     </div>
