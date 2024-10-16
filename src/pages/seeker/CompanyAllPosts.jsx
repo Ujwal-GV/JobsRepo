@@ -7,10 +7,12 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { axiosInstance } from "../../utils/axiosInstance";
+import ReadMore from "../../components/ReadMore";
 
 export const CustomSkeleton = ({ width = "100%", height = "100%" }) => (
-  <Skeleton width={width} height={height} duration={1} />
+  <Skeleton width={width} height={height} duration={1}  className="rounded-lg"/>
 );
 
 export const NoPostFound = ({ title }) => {
@@ -47,43 +49,100 @@ const PostCardSkeleton = ({ className }) => {
 };
 
 const PostCard = ({ data, className }) => {
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const { title, location, skills, package:salary,description, experience ,job_id  } = data;
+  const {
+    title,
+    location,
+    must_skills,
+    other_skills,
+    package: salary,
+    description,
+    experience,
+    job_id,
+  } = data;
   return (
     <div
       className={
         "mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-300 mb-2 cursor-pointer primary-shadow-hover " +
         className
       }
-      onClick={()=>navigate(`/user/job-post/${job_id}`)}
+      onClick={() => navigate(`/user/job-post/${job_id}`)}
     >
       <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
         {title}
       </h1>
       <div className="w-full flex justify-start items-start gap-2 my-3">
-        <span className="w-fit"> Skills : </span>
+        <span className="w-fit block"> Skills : </span>
         <div className="flex-1 w-full flex text-wrap overflow-hidden text-ellipsis max-h-9 ">
-          {description}
+          {must_skills?.join(" , ") + (other_skills?.length > 0 ? " , "+other_skills.join(" , ")  : "")}
         </div>
       </div>
       <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
         <span className="flex center">
-          <CiLocationOn /> {location?.slice(0,2).join(" , ")}
+          <CiLocationOn /> {location?.slice(0, 2).join(" , ")}
         </span>
         <VerticalBar className={"!border-slate-500 h-3 md:h-5"} />
         <span className="flex center">
-          <LiaRupeeSignSolid /> {!salary.disclosed ? "Not Disclosed" : <>{salary.min} - {salary.max}</> }
+          <LiaRupeeSignSolid />{" "}
+          {!salary.disclosed ? (
+            "Not Disclosed"
+          ) : (
+            <>
+              {salary.min} - {salary.max}
+            </>
+          )}
         </span>
         <VerticalBar className={"!border-slate-500 h-3 md:h-5"} />
-        <span className="flex center">Experience: {experience && <>{experience.min} - {experience.max} yrs</>}</span>
+        <span className="flex center">
+          Experience:{" "}
+          {experience && (
+            <>
+              {experience.min} - {experience.max} yrs
+            </>
+          )}
+        </span>
       </div>
     </div>
   );
 };
 
-export const JobPostContainer = ({ cardClassname ,companyId }) => {
+const ProjectCard = ({ data, className }) => {
+  const navigate = useNavigate();
+
+  const { name, description, cost } = data;
+  return (
+    <div
+      className={
+        "mx-auto w-[95%] md:w-[80%] rounded-lg p-3 md:p-4 h-fit border border-slate-300 mb-2 cursor-pointer primary-shadow-hover " +
+        className
+      }
+      onClick={() => navigate(`/user/job-post/${job_id}`)}
+    >
+      <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
+        {name}
+      </h1>
+      <div className="w-full flex justify-start items-start gap-2 my-3">
+        <div className="flex-1 w-full flex text-wrap overflow-hidden text-ellipsis max-h-9 ">
+          {description && <ReadMore content={description} maxLength={200} />}
+        </div>
+      </div>
+      <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
+        <span className="flex center">
+          {cost?.amount ? (
+            <span className="flex center gap-[1px]">
+              <LiaRupeeSignSolid /> {cost?.amount}
+            </span>
+          ) : (
+            <></>
+          )}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export const JobPostContainer = ({ cardClassname, companyId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalDatas, setTotalDatas] = useState(20); // Set total data state
 
@@ -93,102 +152,13 @@ export const JobPostContainer = ({ cardClassname ,companyId }) => {
     const res = await axios.get(
       `http://localhost:8087/jobs/?provider_details=${companyId}&limit=10&page=${currentPage}`
     );
-
-    if (res.status !== 200) {
-      throw new Error("Failed to fetch jobs data"); // Throw error if response is not OK
-    }
     setTotalDatas(res.data.searchdatas);
     return res.data;
   };
 
   // Using React Query for fetching and caching jobs
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["jobs", currentPage],
-    queryFn: fetchJobs,
-    keepPreviousData: true,
-    staleTime: 300000,
-  });
-
-  // Handle page change
-  const handlePageChange = (val) => {
-    setCurrentPage(val);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-
-  return (
-    <>
-      {isLoading
-        ? [...Array(7)].map((_, index) => (
-            <PostCardSkeleton className={cardClassname} key={index} />
-          )) // Show loading skeletons
-        : data?.pageData?.length >0 ?  data?.pageData?.map((item, index) => (
-          <PostCard className={cardClassname} key={index} data={item} />
-        )) : <NoPostFound/> }
-
-      {
-        data?.length > 10 && <Pagination
-        disabled={isLoading} // Disable pagination if loading
-        defaultCurrent={1}
-        current={currentPage}
-        className="w-fit mx-auto"
-        total={totalDatas}
-        showSizeChanger={false}
-        pageSize={10}
-        onChange={(e) => handlePageChange(e)}
-        prevIcon={
-          <button
-          disabled={isLoading}
-            className={"hidden md:flex "+(totalDatas < 10 &&" !hidden") }
-            style={{ border: "none", background: "none" }}
-          >
-            ← Prev
-          </button>
-        }
-        nextIcon={
-          <button
-          disabled={isLoading }
-            className={"hidden md:flex "+(totalDatas < 10 &&" !hidden")}
-            style={{ border: "none", background: "none" }}
-          >
-            Next →
-          </button>
-        }
-      />
-      }
-    </>
-  );
-};
-
-export const FreelanePostContainer = ({ cardClassname }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalDatas, setTotalDatas] = useState(20);
-  const prevTotal = useRef(totalDatas)
-
-  useEffect(()=>{
-    prevTotal.current = totalDatas
-  },[totalDatas])
-
-  // Fetch Jobs
-  const fetchJobs = async ({ queryKey }) => {
-    const currentPage = queryKey[1]; 
-    const res = await axios.get(
-      `http://localhost:8087/jobs/sample/jobs?page=${currentPage}`
-    );
-
-    if (res.status !== 200) {
-      throw new Error("Failed to fetch jobs data"); 
-    }
-    setTotalDatas(res.data.length);
-    return res.data;
-  };
-
-  // Using React Query for fetching and caching jobs
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["freeLance", currentPage],
+    queryKey: ["jobs", currentPage, companyId],
     queryFn: fetchJobs,
     keepPreviousData: true,
     staleTime: 300000,
@@ -206,46 +176,128 @@ export const FreelanePostContainer = ({ cardClassname }) => {
   return (
     <>
       {isLoading ? (
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i, j) => (
-          <PostCardSkeleton className={cardClassname} key={j} />
-        ))
+        [...Array(5)].map((_, index) => (
+          <PostCardSkeleton className={cardClassname} key={index} />
+        )) // Show loading skeletons
       ) : data?.pageData?.length > 0 ? (
-        data?.pageData?.map((i, j) => (
-          <PostCard key={j} className={cardClassname} data={i} />
+        data?.pageData?.map((item, index) => (
+          <PostCard className={cardClassname} key={index} data={item} />
         ))
       ) : (
         <NoPostFound />
       )}
-         
-      {
-        data?.pageData?.length > 0 && <Pagination
-        disabled={isLoading}
-        defaultCurrent={1}
-        current={currentPage}
-        className="w-fit mx-auto"
-        total={prevTotal.current}
-        showSizeChanger={false}
-        pageSize={10}
-        onChange={(e) => handlePageChange(e)}
-        prevIcon={
-          <button
-            className="hidden md:flex"
-            style={{ border: "none", background: "none" }}
-          >
-            ← Prev
-          </button>
-        }
-        nextIcon={
-          <button
-            className="hidden md:flex"
-            style={{ border: "none", background: "none" }}
-          >
-            Next →
-          </button>
-        }
-      />
-      }
-       
+
+      {data?.length > 10 && (
+        <Pagination
+          disabled={isLoading} // Disable pagination if loading
+          defaultCurrent={1}
+          current={currentPage}
+          className="w-fit mx-auto"
+          total={totalDatas}
+          showSizeChanger={false}
+          pageSize={10}
+          onChange={(e) => handlePageChange(e)}
+          prevIcon={
+            <button
+              disabled={isLoading}
+              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              style={{ border: "none", background: "none" }}
+            >
+              ← Prev
+            </button>
+          }
+          nextIcon={
+            <button
+              disabled={isLoading}
+              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              style={{ border: "none", background: "none" }}
+            >
+              Next →
+            </button>
+          }
+        />
+      )}
+    </>
+  );
+};
+
+export const FreelanePostContainer = ({ cardClassname, companyId }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalDatas, setTotalDatas] = useState(20);
+
+  // Fetch Jobs
+  const fetchJobs = async () => {
+    const res = await axiosInstance.get(
+      `/projects/?providerId=${companyId}&page=1&limit=10`
+    );
+    console.log(res.data);
+    if (res.data) {
+      setTotalDatas(res.data.totalResults);
+    }
+    return res.data.pageData;
+  };
+
+  // Using React Query for fetching and caching jobs
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["freeLance", currentPage, companyId],
+    queryFn: fetchJobs,
+    keepPreviousData: true,
+    staleTime: 300000,
+  });
+
+  console.log(data);
+
+  // Handle page change
+  const handlePageChange = (val) => {
+    setCurrentPage(val);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <>
+      {isLoading ? (
+        [...Array(5)].map((i, j) => (
+          <PostCardSkeleton className={cardClassname} key={j} />
+        ))
+      ) : data?.length > 0 ? (
+        data?.map((i, j) => (
+          <ProjectCard key={j} className={cardClassname} data={i} />
+        ))
+      ) : (
+        <NoPostFound />
+      )}
+
+      {data?.length > 0 && (
+        <Pagination
+          disabled={isLoading}
+          defaultCurrent={1}
+          current={currentPage}
+          className="w-fit mx-auto"
+          total={totalDatas}
+          showSizeChanger={false}
+          pageSize={10}
+          onChange={(e) => handlePageChange(e)}
+          prevIcon={
+            <button
+              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              style={{ border: "none", background: "none" }}
+            >
+              ← Prev
+            </button>
+          }
+          nextIcon={
+            <button
+              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              style={{ border: "none", background: "none" }}
+            >
+              Next →
+            </button>
+          }
+        />
+      )}
     </>
   );
 };

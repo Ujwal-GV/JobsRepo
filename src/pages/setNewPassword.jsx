@@ -5,6 +5,8 @@ import InputBox from '../components/InputBox';
 import { FaKey } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { axiosInstance } from '../utils/axiosInstance';
+import toast from 'react-hot-toast';
 
 function SetNewPassword() {
   const navigate = useNavigate();
@@ -19,18 +21,17 @@ function SetNewPassword() {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/user/reset-password/${token}', {
-        newPassword: values.newPassword,
-        confirmPassword: values.confirmPassword,
+      const response = await axiosInstance.post(`user/reset-password/${token}`, {
+        password: values.newPassword,
       });
 
       if (response.status === 200) {
-        alert('Password successfully reset!');
+        toast.success('Password successfully reset!');
         navigate('/login');
       }
     } catch (error) {
       console.error('Error resetting password:', error.response?.data || error.message);
-      alert('Failed to reset password. Please try again.');
+      toast.error('Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -1,27 +1,52 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import NewBadge from "./badges/NewBadge";
 import { IoLocationOutline, IoBriefcaseOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
+import { useNavigate } from "react-router-dom";
+import CustomBadge from "./badges/CustomBadge";
+import { AuthContext } from "../contexts/AuthContext";
 
 const SearchJobCard = ({ data }) => {
+  const navigate = useNavigate();
+
+  const { profileData } = useContext(AuthContext);
+
+
+  const [userId,setUserId] = useState('');
+
+  useEffect(()=>{
+       if(profileData && profileData!==null)
+       {
+        setUserId(profileData?.user_id)
+       }
+  },[profileData])
+
+
   const {
     title = "",
     location = [],
     postedBy = "",
     package: salary,
     provider_info,
-    experience
+    experience,
+    applied_ids,
   } = data;
   return (
     <div
-      onClick={() => alert(data.job_id)}
-      className="w-full mx-auto md:w-[80%] h-fit flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover"
+      onClick={() => navigate(`/user/job-post/${data.job_id}`)}
+      className="w-full mx-auto md:w-[80%] h-fit flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover "
     >
-      {/* {isNew && (
-        <div className="absolute top-2 right-2">
-          <NewBadge />
-        </div>
-      )} */}
+      {applied_ids && applied_ids?.length > 0 ? (
+        applied_ids?.find((uid) => uid.userId === userId) ? (
+          <div className="absolute top-1 right-1">
+            <CustomBadge bgcolor="#E2F7C5" text_color="green" text="Applied" />
+          </div>
+        ) : (
+          <></>
+        )
+      ) : (
+        <></>
+      )}
       <img
         src={provider_info?.img?.url}
         alt={provider_info?.company_name}
@@ -43,19 +68,31 @@ const SearchJobCard = ({ data }) => {
         <div className="mt-2 flex justify-start items-center  gap-1">
           <IoBriefcaseOutline />
           <span className=" font-extralight text-sm  overflow-hidden text-ellipsis text-nowrap">
-            {!salary?.disclosed ? "Not Disclosed" : <>{salary.min} - {salary.max}</>}
+            {!salary?.disclosed ? (
+              "Not Disclosed"
+            ) : (
+              <>
+                {salary.min} - {salary.max}
+              </>
+            )}
           </span>
         </div>
-        {
-          experience && <div className="mt-2 flex justify-start items-center  gap-1 md:ms-2 md:border-s border-black md:ps-2">
-          <span className="text-sm">Experience</span>
-          <span className=" font-extralight text-sm  overflow-hidden text-ellipsis text-nowrap">
-            {experience && <>{experience?.min} - {experience.max} yrs</>}
-          </span>
-        </div>
-        }
+        {experience && (
+          <div className="mt-2 flex justify-start items-center  gap-1 md:ms-2 md:border-s border-black md:ps-2">
+            <span className="text-sm">Experience</span>
+            <span className=" font-extralight text-sm  overflow-hidden text-ellipsis text-nowrap">
+              {experience && (
+                <>
+                  {experience?.min} - {experience.max} yrs
+                </>
+              )}
+            </span>
+          </div>
+        )}
       </div>
-      <h1 className="text-end text-sm mt-2 text-slate-400">posted by  {postedBy}</h1>
+      <h1 className="text-end text-sm mt-2 text-slate-400">
+        posted by {postedBy}
+      </h1>
     </div>
   );
 };

@@ -46,8 +46,6 @@ const CompanyPage = () => {
 
   const {profileData}  = useContext(AuthContext)
 
-  console.log(profileData)
-
   const { id: companyId } = useParams();
   const PostedSections = [" Job Posts", "Freelance Post"];
   const [posttype, setPostType] = useState(0);
@@ -299,7 +297,7 @@ const CompanyPage = () => {
                 companyId={companyId}
               />
             ) : (
-              <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} />
+              <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} companyId={companyId}/>
             )}
           </div>
         </div>

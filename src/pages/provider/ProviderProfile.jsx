@@ -46,7 +46,7 @@ const ProviderProfile = () => {
       setPersonalDetails((prev)=> {
         return {
           company_id: profileData?.company_id || "",
-          // companyName: profileData?.company_name || "",
+          companyName: profileData?.company_name || "",
           email: profileData?.email || "",
           mobile: profileData?.mobile || "",
           location: profileData?.location || "",
@@ -56,7 +56,7 @@ const ProviderProfile = () => {
   }, [profileData])
 
   const [personalDetails, setPersonalDetails] = useState({
-    // companyName: profileData?.company_name || "",
+    companyName: profileData?.company_name || "",
     email: profileData?.email || "",
     mobile: profileData?.mobile || "",
     location: profileData?.location || "",

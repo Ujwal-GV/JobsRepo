@@ -13,13 +13,14 @@ import axios from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../Loading";
 import { NoPostFound } from "./CompanyPage";
+import { axiosInstance } from "../../utils/axiosInstance";
 
 const SearchFilterPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // All About Filters
   const [allFilters, setAllFilters] = useState({});
-  const [indicateFilter,setIndicateFilter]= useState(false);
+  const [indicateFilter, setIndicateFilter] = useState(false);
 
   const [locationFilter, setLocationFilter] = useState({});
   const [workTypeFilter, setWorkTypeFilter] = useState({});
@@ -90,23 +91,19 @@ const SearchFilterPage = () => {
     });
     return () => {
       window.removeEventListener("resize", handleResize);
-      queryClient.invalidateQueries(["search"])
+      queryClient.invalidateQueries(["search"]);
     };
   }, []);
 
-  useEffect(()=>{
-    
+  useEffect(() => {
     const values = Object.values(allFilters);
-     
-    if(values.some((d)=>Object.keys(d).length >0))
-    {
-      setIndicateFilter(true)
-    }else{
-      setIndicateFilter(false)
+
+    if (values.some((d) => Object.keys(d).length > 0)) {
+      setIndicateFilter(true);
+    } else {
+      setIndicateFilter(false);
     }
-
-
-  },[allFilters])
+  }, [allFilters]);
 
   //Api request
 
@@ -119,24 +116,26 @@ const SearchFilterPage = () => {
     if (firstLoading) {
       setFirstLoading(false);
     }
-    const res = await axios.get(
-      `http://localhost:8087/jobs?page=${page}&limit=${pageSize}&type=${Object.keys(workTypeFilter).join(",")}&location=${Object.keys(locationFilter).join(",")}`
+    const res = await axiosInstance.get(
+      `/jobs?page=${page}&limit=${pageSize}&type=${Object.keys(
+        workTypeFilter
+      ).join(",")}&location=${Object.keys(locationFilter).join(",")}`
     );
     setTotalData(res.data.searchdatas);
     return res.data.pageData;
   };
 
   const {
-    data : searchData,
+    data: searchData,
     isLoading: searchLoading,
     refetch,
-    isFetching : searchFetching
+    isFetching: searchFetching,
   } = useQuery({
     queryKey: ["search", currentPage],
-    queryFn: ()=>fetchSearchData(currentPage),
+    queryFn: () => fetchSearchData(currentPage),
     keepPreviousData: true,
-    staleTime:300000,
-    cacheTime:10000,
+    staleTime: 300000,
+    cacheTime: 10000,
     onError: () => {
       toast.error("Something went wrong while fetching jobs");
     },
@@ -154,7 +153,6 @@ const SearchFilterPage = () => {
     refetch();
   };
 
-
   return (
     <MainContext>
       <div
@@ -169,9 +167,9 @@ const SearchFilterPage = () => {
           <h2 className="mb-4 flex justify-between items-center px-2">
             <span>All Filters</span>
             <span className="relative">
-              {
-                indicateFilter && <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
-              }
+              {indicateFilter && (
+                <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
+              )}
               <CiFilter
                 className="text-xl"
                 onClick={() => console.log(JSON.stringify(allFilters))}
@@ -220,15 +218,18 @@ const SearchFilterPage = () => {
         <div className="flex w-full  md:w-[70%] me-0 flex-col ">
           <div className="w-[95%] mx-auto gap-2 flex  flex-col px-2  pt-0">
             <h4 className="lg:ps-24">Search Results :</h4>
-            {searchLoading  || searchFetching
+            {searchLoading || searchFetching
               ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d, idx) => (
                   <SearchJobCardSkeleton key={idx} />
                 ))
-              : searchData?.length > 0 && (searchData?.map((d, idx) => <SearchJobCard data={d} key={idx} />))}
-          </div>    
-            {
-              searchData?.length > 0 ? <Pagination
-              disabled={searchLoading || searchFetching }
+              : searchData?.length > 0 &&
+                searchData?.map((d, idx) => (
+                  <SearchJobCard data={d} key={idx} />
+                ))}
+          </div>
+          {searchData?.length > 0 ? (
+            <Pagination
+              disabled={searchLoading || searchFetching}
               defaultCurrent={1}
               current={currentPage}
               className="w-fit mx-auto mb-5 mt-3"
@@ -238,9 +239,11 @@ const SearchFilterPage = () => {
               onChange={(e) => handlePageChange(e)}
               prevIcon={
                 <button
-                  disabled={searchLoading || searchFetching || currentPage === 1}
+                  disabled={
+                    searchLoading || searchFetching || currentPage === 1
+                  }
                   className={
-                    "hidden md:flex " + (currentPage ===1 && " !hidden")
+                    "hidden md:flex " + (currentPage === 1 && " !hidden")
                   }
                   style={{ border: "none", background: "none" }}
                 >
@@ -249,16 +252,22 @@ const SearchFilterPage = () => {
               }
               nextIcon={
                 <button
-                  disabled={searchLoading || searchFetching }
-                  className={"hidden md:flex " + (currentPage*pageSize === totalData && "!hidden")}
+                  disabled={searchLoading || searchFetching}
+                  className={
+                    "hidden md:flex " +
+                    ((currentPage * pageSize === totalData ||
+                      totalData < pageSize) &&
+                      "!hidden")
+                  }
                   style={{ border: "none", background: "none" }}
                 >
                   Next →
                 </button>
               }
-            /> :  (!searchFetching && <NoPostFound/>)
-            }
-         
+            />
+          ) : (
+            !searchFetching && <NoPostFound />
+          )}
         </div>
       </div>
 
@@ -268,7 +277,13 @@ const SearchFilterPage = () => {
         title={
           <div className="w-full flex justify-between items-center px-2">
             <span>Location</span>
-            <span className="text-sm" onClick={() => {handleSearchApplyButton();setLocationDrawer(false)}}>
+            <span
+              className="text-sm"
+              onClick={() => {
+                handleSearchApplyButton();
+                setLocationDrawer(false);
+              }}
+            >
               Apply
             </span>
           </div>
@@ -313,7 +328,15 @@ const SearchFilterPage = () => {
         title={
           <div className="w-full flex justify-between items-center px-2">
             <span>Work Type</span>{" "}
-            <span className="text-sm" onClick={() => {handleSearchApplyButton();setWorkTypeDrawer(false)}}>Apply</span>
+            <span
+              className="text-sm"
+              onClick={() => {
+                handleSearchApplyButton();
+                setWorkTypeDrawer(false);
+              }}
+            >
+              Apply
+            </span>
           </div>
         }
         height={"40vh"}
@@ -321,33 +344,33 @@ const SearchFilterPage = () => {
         placement="bottom"
       >
         <div className="w-full grid grid-cols-2 gap-1">
-        {workTypes.map((d, idx) => (
-              <Checkbox
-                className="font-outfit max-w-fit"
-                key={idx}
-                checked={
-                  workTypeFilter[`${d}`] === null
-                    ? false
-                    : workTypeFilter[`${d}`]
-                    ? true
-                    : false
+          {workTypes.map((d, idx) => (
+            <Checkbox
+              className="font-outfit max-w-fit"
+              key={idx}
+              checked={
+                workTypeFilter[`${d}`] === null
+                  ? false
+                  : workTypeFilter[`${d}`]
+                  ? true
+                  : false
+              }
+              name={d}
+              onChange={(e) => {
+                const { name, checked } = e.target;
+                let updatedFilter = { ...workTypeFilter };
+                if (!checked) {
+                  delete updatedFilter[`${name}`];
+                } else {
+                  updatedFilter = { ...updatedFilter, [`${name}`]: checked };
                 }
-                name={d}
-                onChange={(e) => {
-                  const { name, checked } = e.target;
-                  let updatedFilter = { ...workTypeFilter };
-                  if (!checked) {
-                    delete updatedFilter[`${name}`];
-                  } else {
-                    updatedFilter = { ...updatedFilter, [`${name}`]: checked };
-                  }
-                  console.log(updatedFilter);
-                  handleWorkTypeFilter(updatedFilter);
-                }}
-              >
-                {d}
-              </Checkbox>
-            ))}
+                console.log(updatedFilter);
+                handleWorkTypeFilter(updatedFilter);
+              }}
+            >
+              {d}
+            </Checkbox>
+          ))}
         </div>
       </Drawer>
     </MainContext>
