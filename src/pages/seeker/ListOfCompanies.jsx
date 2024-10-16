@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const ListOfCompanies = () => {
   const pageSize = 8;
-  const [totalData, setTotalData] = useState(pageSize || 10);
+  const [totalData, setTotalData] = useState(pageSize || 8);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [searchData, setSearchData] = useState([]);

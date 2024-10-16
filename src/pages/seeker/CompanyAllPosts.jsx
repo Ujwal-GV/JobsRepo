@@ -173,6 +173,8 @@ export const JobPostContainer = ({ cardClassname, companyId }) => {
     });
   };
 
+  console.log(data)
+
   return (
     <>
       {isLoading ? (

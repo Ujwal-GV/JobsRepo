@@ -40,10 +40,7 @@ const JobApplicatioWithSimilarApplication = () => {
   const navigate = useNavigate();
 
   const fetchJobDetails = async (jobId) => {
-
-
-
-    const res = await axiosInstance.get(`/jobs/${jobId}`);
+    const res = await axiosInstance.get(`/jobs/${jobId}`,{params:{similar_jobs:true}});
     const { saved_ids, applied_ids } = res.data.job;
     if (saved_ids?.find((id) => id === profileData?.user_id)) {
       setSaved(true);
@@ -191,6 +188,7 @@ const JobApplicatioWithSimilarApplication = () => {
     img,
     description: company_description,
   } = jobApplicationData?.company || {};
+
 
   if(jobApplicationData )
   {
@@ -380,9 +378,12 @@ const JobApplicatioWithSimilarApplication = () => {
               <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
                 Similar jobs you might like :
               </h1>
-              {jobData?.map((data) => (
-                <JobSuggestionCard data={data} key={data.id} />
-              ))}
+              {
+                jobApplicationData?.similarData?.length > 0 ?
+                jobApplicationData?.similarData?.map((data) => (
+                  <JobSuggestionCard data={data} key={data.id} />
+                )) : <h1 className="w-full text-center">No Similar jobs Found</h1>
+              }
             </div>
           </div>
         </div>
@@ -392,3 +393,4 @@ const JobApplicatioWithSimilarApplication = () => {
 };
 
 export default JobApplicatioWithSimilarApplication;
+
