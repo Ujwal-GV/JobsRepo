@@ -33,3 +33,9 @@ export const forgotPasswordValidationSchema = Yup.object().shape({
     .email('Invalid email ')
     .required('Email is required'),
 });
+
+export const urlValidationSchema = Yup.object().shape({
+  url: Yup.string()
+    .url("Please enter a valid URL")
+    .required("URL is required"),
+});
