@@ -9,12 +9,14 @@ const ReadMore = ({ maxLength = 500, content = "", className }) => {
       {!readMore ? (
         <>
           {sortContent}{" "}
-          <span
+          {
+            content.length > maxLength ? <span
             className="ms-1 cursor-pointer text-blue-600"
             onClick={() => setReadMore(true)}
           >
             Read More
-          </span>
+          </span> : <></>
+          }
         </>
       ) : (
         <>

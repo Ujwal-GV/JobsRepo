@@ -49,10 +49,8 @@ function MainPage() {
   };
 
   const fetchCompanies = async () => {
-    const res = await axios.get(
-      "http://localhost:8087/provider/allcompany?limit=10"
-    );
-    return res.data;
+    const res = await axiosInstance.get("/provider/allcompany?limit=10");
+    return res.data.pageData;
   };
 
 
@@ -134,7 +132,7 @@ function MainPage() {
         <SwiperWrapper
           key={"company"}
           title="Explore jobs in top companies"
-          onViewClick={() => alert("comapny  List")}
+          onViewClick={() => navigate("/user/companies")}
         >
           <AdvancedSwiper>
             {companyDataLoading ? (

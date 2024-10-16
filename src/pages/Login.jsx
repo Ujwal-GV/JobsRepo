@@ -20,37 +20,6 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (values) => {
-    setErrorMessage("");
-    try {
-      const response = await axios.post("http://localhost:8087/user/login", {
-        email: values.email,
-        password: values.password,
-      });
-
-      if (response.status === 200) {
-        console.log("Role:", role);
-        setUserRole(role);
-        {
-          /* Redirect based on role */
-        }
-        if (role === "Job Provider") {
-          navigate("/select-role");
-        } else {
-          navigate("/user");
-        }
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      if (error.response && error.response.data) {
-        setErrorMessage(
-          error.response.data.message || "Login failed. Please try again."
-        );
-      } else {
-        setErrorMessage("Login failed. Please try again.");
-      }
-    }
-  };
 
   const loginJobSeeker = async (values) => {
     const res = await axiosInstance.post("/user/login", values);

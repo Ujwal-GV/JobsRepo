@@ -33,6 +33,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ScrollToTop from './components/ScrollToTop'
 import NewsPage from './pages/NewsPage'
 import ProviderMainWrapper from './pages/provider/components/ProviderMainWrapper'
+import ListOfCompanies from './pages/seeker/ListOfCompanies'
 
 const AppMain = () => {
   return (
@@ -46,7 +47,7 @@ const AppMain = () => {
           <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />
           <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
-          <Route path = "/reset-password" element={ <SetNewPassword/> } />
+          <Route path = "/reset-password/:token" element={ <SetNewPassword/> } />
           <Route path = "/select-role" element= { <OptionPage />} />
           <Route path="/user" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
@@ -58,6 +59,7 @@ const AppMain = () => {
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
+              <Route path='/user/companies' element={<ListOfCompanies/>}/>
           </Route>
           <Route path="/provider" element={<ProviderMainWrapper/>}>
               <Route index element={ <ProviderMainPage/> } />

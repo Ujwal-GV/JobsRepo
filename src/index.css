@@ -361,3 +361,23 @@ input::placeholder{
   border-color: #001529 !important;
 }
 
+
+.company-search-input{
+  border: 1px solid gray !important;
+}
+
+/* Add this CSS */
+.auto-complete-custom {
+  border-radius: 8px; /* For rounded corners */
+  border: 1px solid black !important;
+  width: 200px;
+}
+
+.auto-complete-custom:focus-within {
+  border: 1px solid black !important; /* Ensure the border remains 1px solid black on focus */
+  outline: none !important; /* Remove the default outline (optional) */
+}
+.auto-complete-custom .ant-select-selector{
+  box-shadow: none !important;
+}
+

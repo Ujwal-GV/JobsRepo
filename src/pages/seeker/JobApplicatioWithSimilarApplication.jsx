@@ -372,7 +372,7 @@ const JobApplicatioWithSimilarApplication = () => {
                   About Company
                 </h1>
                 <div className="font-outfit">
-                  <ReadMore content={company_description} maxLength={250} />
+                  {company_description && <ReadMore content={company_description} maxLength={250} />}
                 </div>
               </div>
             </div>

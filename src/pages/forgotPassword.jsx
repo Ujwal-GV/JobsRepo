@@ -4,6 +4,8 @@ import { forgotPasswordValidationSchema } from '../formikYup/ValidationSchema';
 import InputBox from '../components/InputBox';
 import { FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
+import { axiosInstance } from '../utils/axiosInstance';
+import toast from 'react-hot-toast';
 
 function ForgotPassword() {
   const [loading, setLoading] = useState(false);
@@ -11,16 +13,17 @@ function ForgotPassword() {
   const handlePasswordReset = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8087/user/forgot-password', {
+      const response = await axiosInstance.post('/user/forgot-password', {
         email: values.email,
       });
 
       if (response.status === 200) {
-        alert(`Password reset link has been sent to: ${values.email}`);
+        toast.success(`Password reset link has been sent to: ${values.email}`);
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Failed to send reset link. Please try again.';
       alert(errorMsg);
+      console.log(error)
     } finally {
       setLoading(false);
     }
