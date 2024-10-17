@@ -9,7 +9,7 @@ import JobApplicatioWithSimilarApplication from './pages/seeker/JobApplicatioWit
 import JobApplicationProviderView from './pages/provider/JobApplicationProviderView'
 import MainWrapper from './components/MainWrapper'
 import MainPage from './pages/mainPage'
-import ProviderMainPage from './pages/provider/providerMainPage'
+import ProviderMainPage from './pages/provider/ProviderMainPage'
 import CompanyPage from './pages/seeker/CompanyPage'
 import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'

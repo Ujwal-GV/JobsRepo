@@ -16,6 +16,8 @@ import { IoMdClose } from "react-icons/io";
 import toast from "react-hot-toast";
 
 import { axiosInstance } from '../../utils/axiosInstance';
+import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
+import { CiHome, CiUser } from 'react-icons/ci';
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -624,8 +626,20 @@ const JobApplicationProviderView = () => {
 
   return (
     <MainContext>
+      <div className="w-full flex center py-2 sticky pt-8 bg-slate-100">
+        <CustomBreadCrumbs
+          items={[
+            {
+              path: "/provider",
+              icon: <CiHome />,
+              title: "Home",
+            },
+            { title: "Post Job", icon: <CiUser /> },
+          ]}
+        />
+      </div>
       {/* Wrapper for the entire content */}
-      <div className="w-full mx-auto min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10 flex flex-col gap-10">
+      <div className="w-full mx-auto min-h-screen bg-gray-100 py-3 px-3 md:py-3 md:px-6 lg:px-3 flex flex-col gap-10">
         
         {/* Top Section: Company and Person Details */}
         <form onSubmit={handleSubmit} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">

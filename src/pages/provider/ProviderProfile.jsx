@@ -550,7 +550,7 @@ export default ProviderProfile;
     return (
       <div
         className={
-          "absolute top-[0] left-0 w-full flex center h-full bg-black profile-modal p-7 md:p-10 " +
+          "absolute top-[0] left-0 w-full flex center h-full bg-white profile-modal p-7 md:p-10 " +
           (open ? "profile-modal-show " : " ")
         }
       >

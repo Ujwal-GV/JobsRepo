@@ -3,12 +3,16 @@ import React, { useState, useEffect, useContext } from "react"; // Import useSta
 import { FaEye } from "react-icons/fa6";
 import { HiUserCircle } from "react-icons/hi";
 import ProviderNavbar from "./components/ProviderNavbar";
+import { Mutation, useMutation } from "@tanstack/react-query";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import SeachInput from "../../components/SeachInput";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { AuthContext } from "../../contexts/AuthContext";
+import { IoTrash, IoTrashBin } from "react-icons/io5";
+import { axiosInstance } from "../../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
@@ -28,7 +32,7 @@ function ProviderMainPage() {
     if (!companyId) {
       throw new Error("Company ID is not available");
     }
-    const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
+    const res = await axiosInstance.get(`/provider/${companyId}`);
     console.log("Jobs_Fetch", res.data);
     return res.data;
   };
@@ -51,14 +55,36 @@ function ProviderMainPage() {
     navigate('/provider/post-job');
   };
 
+  const deleteJob = async (jobId) => {
+    const response = await axiosInstance.delete(`/jobs/${jobId}`);
+    return response.data;
+  };
+
+  const mutation = useMutation({ 
+    mutationKey: ['provider_post_delete'],
+    mutationFn: deleteJob,
+    onSuccess: () => {
+        toast.success("Job post deleted successfully!");
+        queryClient.invalidateQueries(['jobs', companyId]);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error("Error deleting job post: " + error.message);
+    },
+  });
+
   const handleProfileClick = () => {
     navigate('/provider/profile');
   };
 
+  const handlePostDelete = (jobId) => {
+    mutation.mutate(jobId);
+  }
+
   // Refetch data when the component mounts or when the location changes
   useEffect(() => {
     refetch();
-  }, [location, refetch]);
+  }, [location, refetch, jobs]);
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
@@ -118,19 +144,30 @@ function ProviderMainPage() {
             <div key={job._id} className="p-4 bg-white shadow rounded-lg flex justify-between items-center">
               <div className="flex flex-col">
                 <h3 className="font-bold">{job.title}</h3>
-                <p className="text-sm text-gray-600">Company: {job.provider_details}</p>
-                <p className="text-sm text-gray-600">Applicants: {job.applied_ids.length}</p>
+                <p className="text-sm text-gray-600 mb-0">Company: {job?.provider_details}</p>
+                <p className="text-sm text-gray-600 mb-0">App-ID: {job?.job_id}</p>
+                <p className="text-sm text-gray-600">Applicants: {job?.applied_ids.length}</p>
               </div>
-              <button
-                className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center hover:bg-orange-700 transition"
-                onClick={() => 
-                  {console.log("Job Data:", job)
-                    navigate(`/provider/all-jobs/${job?.job_id}`)
-                  // navigate(/provider/all-jobs, { state: { jobId: job?.job_id } })
-                }}
-                  >
-                <FaEye className="mr-1" /> View
-              </button>
+              <div className="flex gap-2">
+                <button
+                  title="View"
+                  className="px-3 py-2 shadow-md sm:mb-1 bg-orange-600 text-white rounded-lg text-sm flex  items-center hover:bg-orange-700 transition"
+                  onClick={() => 
+                    {console.log("Job Data:", job)
+                      navigate(`/provider/all-jobs/${job?.job_id}`)
+                    // navigate(/provider/all-jobs, { state: { jobId: job?.job_id } })
+                  }}
+                    >
+                  <FaEye className="mr-1" />
+                </button>
+                <button
+                  title="Delete"
+                  className="px-3 py-2 shadow-md sm:mb-1 bg-gray-700 text-white rounded-lg text-sm flex items-center hover:bg-gray-300 transition"
+                  onClick={() => handlePostDelete(job?.job_id)}
+                >
+                <IoTrash className="mr-1" />
+                </button>
+              </div>
             </div>
           ))
         )}
