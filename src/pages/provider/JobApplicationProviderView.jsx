@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useJobContext } from '../../contexts/JobContext';
 import { useMutation } from "@tanstack/react-query";
@@ -449,13 +449,15 @@ const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = 
 const JobApplicationProviderView = () => {
   const [saved, setSaved] = useState(false);
   const { jobs, setJobs } = useJobContext();
-  const { userRole } = React.useContext(AuthContext);
+  const { userRole, profileData } = useContext(AuthContext);
+  
+  const company_name = profileData?.company_name;
   
   const [currency, setCurrency] = useState({ value: 'INR', label: 'INR' });
   const [isOptionalChecked, setIsOptionalChecked] = useState(false); 
   const [jobDetails, setJobDetails] = useState({
     title: "",
-    companyName: "Google",
+    companyName: profileData?.company_name,
     vacancy: "",
     postedBy: "",
     location: "",
@@ -834,7 +836,7 @@ const JobApplicationProviderView = () => {
                     <div className="flex flex-col mt-4 w-full lg:w-[45%]">
                       <KeyHighlightsListItem key={"1-3"} title="Salary" value={null} />
                     </div>
-                    <div className="flex flex-col md:flex-row w-full p-2 lg:w-[55%]">
+                    <div className="flex flex-col md:flex-row w-full p-2 lg:w-[75%]">
                       <input
                         type="number"
                         name="salaryMin"
