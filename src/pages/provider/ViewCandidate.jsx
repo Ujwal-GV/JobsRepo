@@ -8,11 +8,14 @@ import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { axiosInstance } from "../../utils/axiosInstance";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const ViewCandidate = () => {
     const { user_id: userId } = useParams();
     const { profileData } = useContext(AuthContext);
     const [applicant, setApplicant] = useState(null);
+    const [contactVisible, setContactVisible] = useState(false);
+    const [ maxTries, setMaxTries ] = useState(1);
 
     useEffect(() => {
         if (profileData && profileData.user_id === userId) {
@@ -28,6 +31,27 @@ const ViewCandidate = () => {
                 });
         }
     }, [userId, profileData]);
+
+  const toggleContactVisibility = () => {
+    if (maxTries === 1) {
+      const newVisibility = !contactVisible;
+      setContactVisible(newVisibility);
+      setMaxTries(0);
+
+      const newStatus = newVisibility ? "Profile viewed" : "Interested";
+      message.success(newVisibility ? "Profile viewed" : "Status updated to Interested");
+
+      axiosInstance.put(`/user/${userId}/status`, { status: newStatus })
+          .then(() => {
+              message.success(newVisibility ? "Profile viewed" : "Status updated to Interested");
+          })
+          .catch(err => {
+              console.error("Error updating status", err);
+          });
+    } else {
+        message.warning("Contact details have already been viewed.");
+    }
+  };
 
     if (!applicant) {
         return (
@@ -52,20 +76,39 @@ const ViewCandidate = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                             <h1 className="text-xl font-semibold">{applicant?.name || "N/A"}</h1>
-                            <a href={`mailto:${applicant?.email}`}>
-                                <h1 className="flex items-center gap-2 text-sm text-gray-600">
-                                    <MdEmail className="text-orange-600" />
-                                    {applicant?.email || "Not provided"}
-                                </h1>
-                            </a>
-                            <h1 className="flex items-center gap-2 text-sm text-gray-600">
-                                <FaPhoneAlt className="text-orange-600" />
-                                {applicant?.mobile || "Not provided"}
-                            </h1>
-                            <h1 className="flex items-center gap-2 text-sm text-gray-600">
-                                <IoIosMale className="text-orange-600" />
-                                {applicant?.profile_details?.gender || "Not provided"}
-                            </h1>
+                            <div className="relative">
+                                <button
+                                    onClick={toggleContactVisibility}
+                                    // disabled = { maxTries === 0 }
+                                    className={`absolute top-0 left-[220px] bg-white border rounded-full p-1 shadow-md ${ contactVisible ? "cursor-not-allowed opacity:50" : "cursor-pointer" }`}
+                                    title="View Contact Details"
+                                >
+                                    {contactVisible ? <FaEyeSlash /> : <FaEye />}
+                                </button>
+                                <div className={`${contactVisible ? ' ' : 'blur'}`}>
+                                    <a href={`mailto:${applicant?.email}`}>
+                                        <h1 className="flex items-center gap-2 text-sm text-gray-600">
+                                            <MdEmail className="text-orange-600" />
+                                            {applicant?.email || "Not provided"}
+                                        </h1>
+                                    </a>
+                                    <h1 className="flex items-center gap-2 text-sm text-gray-600">
+                                        <FaPhoneAlt className="text-orange-600" />
+                                        {applicant?.mobile || "Not provided"}
+                                    </h1>
+                                    <h1 className="flex items-center gap-2 text-sm text-gray-600">
+                                        <IoIosMale className="text-orange-600" />
+                                        {applicant?.profile_details?.gender || "Not provided"}
+                                    </h1>
+                                </div>
+                                <div
+                                  type="disabled"
+                                  disabled = {true}
+                                  className={`px-4 py-2 mt-2 ${contactVisible ? "bg-green-500 hover:bg-green-700" : "bg-orange-600 hover:bg-orange-700"} text-white center rounded-full transition-colors animation duration-200`}
+                                >
+                                  {contactVisible ? "Contact details viewed" : "Interested"}
+                              </div>
+                            </div>
                         </div>
                     </div>
 
@@ -146,18 +189,6 @@ const ViewCandidate = () => {
                           <p className="text-sm text-gray-600">No internships provided</p>
                       )}
                   </div>
-
-
-                    {/* Interested Button */}
-                    <div className="bg-white p-5 mt-6 rounded-xl shadow-md">
-                        <button
-                            type="submit"
-                            onClick={() => message.success("Interest shared")}
-                            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-200"
-                        >
-                            Interested
-                        </button>
-                    </div>
                 </div>
             </div>
         </MainContext>
