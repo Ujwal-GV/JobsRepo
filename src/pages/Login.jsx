@@ -36,7 +36,6 @@ function Login() {
     onSuccess: (response) => {
       alert(response);
       localStorage.setItem("authToken", response);
-      
       navigate(sessionStorage.getItem("location") || "/user" , {replace:true})
     },
     onError: (error) => {
@@ -51,6 +50,7 @@ function Login() {
     onSuccess: (response) => {
       alert(response);
       localStorage.setItem("authToken", response);
+      navigate(sessionStorage.getItem("location") || "/provider" , {replace:true})
       navigate('/select-role')
     },
     onError: (error) => {

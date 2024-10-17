@@ -24,7 +24,7 @@ function SignUp() {
     },
     onSuccess: () => {
       toast.success("Registration successful!");
-      navigate("/login");
+      navigate("/user");
     },
     onError: (error) => {
       const { message } = error.response.data;
@@ -41,7 +41,7 @@ function SignUp() {
     },
     onSuccess: () => {
       toast.success("Registration successful!");
-      navigate("/login");
+      navigate("/select-role");
     },
     onError: (error) => {
       const { message } = error.response.data;

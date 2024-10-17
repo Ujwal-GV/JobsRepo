@@ -315,6 +315,7 @@ const ProviderProfile = () => {
                   icon={"Add"}
                   editOnClick={() => {
                     setCompanyLinkModel(true);
+                    freezeBody();
                   }}
                 >
                   <div className="flex flex-wrap gap-1 w-full pb-2">
@@ -549,7 +550,7 @@ export default ProviderProfile;
     return (
       <div
         className={
-          "absolute top-[0] left-0 w-full flex center h-full bg-slate-200 profile-modal p-7 md:p-10 " +
+          "absolute top-[0] left-0 w-full flex center h-full bg-black profile-modal p-7 md:p-10 " +
           (open ? "profile-modal-show " : " ")
         }
       >
@@ -662,8 +663,8 @@ export default ProviderProfile;
     return (
       <div
         className={
-          "absolute top-0 left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
-          (open ? "profile-modal-show " : "")
+          "absolute top-0 left-0 w-full flex center h-full bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
+        (open ? "profile-modal-show " : " ")
         }
       >
         <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
@@ -752,8 +753,6 @@ export default ProviderProfile;
     );
   };
 
-  
-  
   const CompanySummaryModel = ({
     open,
     onClose = () => {},
@@ -763,7 +762,7 @@ export default ProviderProfile;
     return (
       <div
         className={
-          "absolute top-[0] left-0 w-full flex center h-screen bg-slate-200 profile-modal p-7 md:p-10 " +
+          "absolute top-0 left-0 w-full flex center h-full bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
           (open ? "profile-modal-show " : " ")
         }
       >
@@ -790,10 +789,10 @@ export default ProviderProfile;
                 <Field name="description">
                   {({ field }) => (
                     <TextArea
-                    variant="borderless"
+                      variant="borderless"
                       rows={4}
                       allowClear
-                      className="!max-h-[600px] font-outfit"
+                      className="!max-h-[600px] font-outfit bg-white"
                       placeholder="Enter Company Description"
                       maxLength={2000}
                       {...field}

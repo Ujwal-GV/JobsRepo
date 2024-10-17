@@ -376,7 +376,7 @@ const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = 
   const fetchAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8087/qualifications/locations/');
+      const response = await axios.get('http://localhost:8087/locations/');
       const locations = response.data;
       setFetchedLocations(locations);
       setChoices(locations);
@@ -450,9 +450,7 @@ const JobApplicationProviderView = () => {
   const [saved, setSaved] = useState(false);
   const { jobs, setJobs } = useJobContext();
   const { userRole, profileData } = useContext(AuthContext);
-  
-  const company_name = profileData?.company_name;
-  
+    
   const [currency, setCurrency] = useState({ value: 'INR', label: 'INR' });
   const [isOptionalChecked, setIsOptionalChecked] = useState(false); 
   const [jobDetails, setJobDetails] = useState({
@@ -462,7 +460,7 @@ const JobApplicationProviderView = () => {
     postedBy: "",
     location: "",
     description: "",
-    department: "",
+    // department: "",
     job_role: "",
     salaryMin: "",
     salaryMax: "",
@@ -510,18 +508,6 @@ const JobApplicationProviderView = () => {
 
   const navigate = useNavigate();
 
-  const handleSaveClick = async(jobDetails) => {
-    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.description) {
-      message.error("Please enter all details");
-      return;
-    }
-    const response = await axiosInstance.post('/jobs/create', jobDetails);
-    console.log("RESPONSE:", response.data);
-    return response.data;
-    setSaved((prev) => !prev);
-    navigate(-1);
-  };
-
   const handleBackClick = () => {
     navigate(-1);
   }
@@ -546,35 +532,69 @@ const JobApplicationProviderView = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!jobDetails.title || !jobDetails.companyName || !jobDetails.description) {
-      message.error("Please enter all details");
+  
+    const {
+      title,
+      companyName,
+      description,
+      vacancy,
+      salaryMin,
+      salaryMax,
+      location,
+      experienceMin,
+      experienceMax,
+      specification,
+      qualification,
+      must_skills,
+      other_skills,
+      postedBy,
+      job_role,
+      type,
+    } = jobDetails;
+  
+    if (!title || !companyName || !description || !location || !postedBy || !job_role || !type) {
+      message.error("Please enter all required details");
+      return;
+    }
+  
+    if (isNaN(vacancy) || isNaN(salaryMin) || isNaN(salaryMax) || isNaN(experienceMin) || isNaN(experienceMax)) {
+      message.error("Vacancy, Salary, and Experience must be valid numbers");
       return;
     }
 
+    if (Number(experienceMin) >= Number(experienceMax)) {
+      message.error("Minimum experience must be less than maximum experience");
+      return;
+    }
+  
+    if (Number(salaryMin) >= Number(salaryMax)) {
+      message.error("Minimum salary must be less than maximum salary");
+      return;
+    }
+  
     const jobData = {
-      title: jobDetails.title,
-      description: jobDetails.description,
-      vacancy: Number(jobDetails.vacancy),
+      title,
+      description,
+      vacancy: Number(vacancy),
       salary: {
-        min: Number(jobDetails.salaryMin),
-        max: Number(jobDetails.salaryMax),
+        min: Number(salaryMin),
+        max: Number(salaryMax),
         disclosed: true,
       },
-      location: jobDetails.location,
+      location,
       experience: {
-        min: Number(jobDetails.experienceMin),
-        max: Number(jobDetails.experienceMax),
+        min: Number(experienceMin),
+        max: Number(experienceMax),
       },
-      specification: jobDetails.specification,
-      qualification: jobDetails.qualification,
-      must_skills: jobDetails.must_skills,
-      other_skills: jobDetails.other_skills,
-      postedBy: jobDetails.postedBy,
-      job_role: jobDetails.job_role,
-      type: jobDetails.type,
+      specification,
+      qualification,
+      must_skills,
+      other_skills,
+      postedBy,
+      job_role,
+      type,
     };
-
+  
     mutation.mutate(jobData);
   };
 
@@ -617,17 +637,7 @@ const JobApplicationProviderView = () => {
                 alt="Company Logo" 
                 className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover mb-4 absolute top-4 right-4" 
               />
-              <h1 className="text-[1.3rem] md:text-2xl font-bold">
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Enter Job Title"
-                  value={jobDetails.title}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg p-2"
-                  required
-                />
-              </h1>
+
               <h1 className="text-[1.3rem] md:text-2xl font-semibold">
                 <input
                   type="text"
@@ -638,16 +648,29 @@ const JobApplicationProviderView = () => {
                   className="w-full border rounded-lg p-2"
                   required readOnly
                 />
+
+              <h1 className="text-[1.3rem] w-3/4 md:text-2xl font-bold border-b-2 rounded-b-md border-y-gray-200">
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Enter Job Title"
+                  value={jobDetails.title}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg p-2"
+                  required
+                />
               </h1>
-              <h3 className="font-light mt-5">
-                Posted by: 
+        
+              </h1>
+              <h3 className="font-light w-3/4 mt-5 border-b-2 rounded-b-md border-y-gray-200">
+                &nbsp;Posted by: 
                 <input
                   type="text"
                   name="postedBy"
                   placeholder="Enter Provider Name"
                   value={jobDetails.postedBy}
                   onChange={handleChange}
-                  className="w-full border rounded -lg p-2"
+                  className="w-full border mt-2 rounded-lg p-2"
                   required
                 />
               </h3>
@@ -785,7 +808,7 @@ const JobApplicationProviderView = () => {
                 </li>
 
                 {/* Department */}
-                <li className="flex flex-col md:flex-col items-start mb-4">
+                {/* <li className="flex flex-col md:flex-col items-start mb-4">
                   <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
                     <div className="flex flex-col mt-4 w-full lg:w-[55%]">
                       <KeyHighlightsListItem
@@ -805,7 +828,7 @@ const JobApplicationProviderView = () => {
                       />
                     </div>
                   </div>
-                </li>
+                </li> */}
 
                 {/* Employment Type */}
                 <li className="flex flex-col mb-4 mt-8">
@@ -958,7 +981,6 @@ const JobApplicationProviderView = () => {
                   <button
                     type= "submit"
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
-                    onClick={handleSaveClick}
                   >
                     {saved ? (
                       <FaCheckCircle className="text-orange-600" />

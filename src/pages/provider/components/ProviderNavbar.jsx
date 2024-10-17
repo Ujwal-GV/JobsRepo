@@ -22,7 +22,10 @@ const ProviderNavbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    console.log("Logging out");
+    
     localStorage.removeItem("authToken");
+    sessionStorage.clear();
     navigate("/login", { replace: true });
     window.history.pushState(null, null, "/login");
   };

@@ -250,7 +250,7 @@ const AllPostedJobs = () => {
                   <li className="mb-4">
                     <KeyHighlightsListItem
                       title='Salary'
-                      value={!salary?.disclosed ? "Not Disclosed" : `${salary?.min} - ${salary?.max}`}
+                      value={!salary?.disclosed ? "Not Disclosed" : `${salary?.min} - ${salary?.max} LPA`}
                     />
                   </li>
                 </ul>
