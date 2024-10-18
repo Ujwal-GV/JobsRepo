@@ -2,10 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../components/MainContext";
 import { FaCheckCircle } from "react-icons/fa";
 import JobSuggestionCard from "../../components/JobSuggestionCard";
-import { jobData } from "../../../assets/dummyDatas/Data";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import { IoIosPeople, IoIosBriefcase } from "react-icons/io";
-import { LiaRupeeSignSolid } from "react-icons/lia";
 import ReadMore from "../../components/ReadMore";
 import { useNavigate, useParams } from "react-router-dom";
 import { axiosInstance, getError } from "../../utils/axiosInstance";
@@ -14,33 +12,36 @@ import Loading from "../Loading";
 import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
 import { AuthContext } from "../../contexts/AuthContext";
+import { Steps } from "antd";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
 };
 
 const JobApplicatioWithSimilarApplication = () => {
-  const { id: jobApplicationId } = useParams();
+  const { id: jobApplicationId, applied: jobApplied } = useParams();
 
-  const {profileData} = useContext(AuthContext)
+  const { profileData } = useContext(AuthContext);
 
-
-  useEffect(()=>{
-      if(profileData?.application_applied_info?.jobs?.find((id)=>id.jobId === jobApplicationId))
-      {
-        setApplied(true)
-      }
-      if(profileData?.saved_ids?.jobs?.find((id)=>id === jobApplicationId))
-      {
-        setSaved(true)
-      }
-  },[profileData])
-
+  useEffect(() => {
+    if (
+      profileData?.application_applied_info?.jobs?.find(
+        (id) => id.jobId === jobApplicationId
+      )
+    ) {
+      setApplied(true);
+    }
+    if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
+      setSaved(true);
+    }
+  }, [profileData]);
 
   const navigate = useNavigate();
 
   const fetchJobDetails = async (jobId) => {
-    const res = await axiosInstance.get(`/jobs/${jobId}`,{params:{similar_jobs:true}});
+    const res = await axiosInstance.get(`/jobs/${jobId}`, {
+      params: { similar_jobs: true },
+    });
     const { saved_ids, applied_ids } = res.data.job;
     if (saved_ids?.find((id) => id === profileData?.user_id)) {
       setSaved(true);
@@ -56,7 +57,7 @@ const JobApplicatioWithSimilarApplication = () => {
     isLoading,
     isError,
     error,
-    isFetching
+    isFetching,
   } = useQuery({
     queryKey: ["jobApplication", jobApplicationId],
     queryFn: () => fetchJobDetails(jobApplicationId),
@@ -92,7 +93,7 @@ const JobApplicatioWithSimilarApplication = () => {
       setSaved(true);
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
       const { message } = getError(error); // Error handling function
       if (message) {
         toast.error(message);
@@ -108,7 +109,6 @@ const JobApplicatioWithSimilarApplication = () => {
     onSuccess: () => {
       toast.success("Post removed Successfully");
       setSaved(false);
-      setFollowing(false);
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -138,7 +138,6 @@ const JobApplicatioWithSimilarApplication = () => {
   });
 
   const handleSaveBtnClick = () => {
-    
     if (profileData?.user_id) {
       if (!saved) {
         savepostMutation.mutate(job_id);
@@ -150,14 +149,13 @@ const JobApplicatioWithSimilarApplication = () => {
     }
   };
 
-  const handleApplyClick =()=>{
-    if(profileData?.user_id)
-    {
-      jobApplyMutation.mutate(job_id)
-    }else{
-      navigate("/login")
+  const handleApplyClick = () => {
+    if (profileData?.user_id) {
+      jobApplyMutation.mutate(job_id);
+    } else {
+      navigate("/login");
     }
-  }
+  };
 
   if (isLoading || isFetching) {
     return <Loading />;
@@ -183,15 +181,27 @@ const JobApplicatioWithSimilarApplication = () => {
     job_role,
   } = jobApplicationData?.job || {};
 
+  console.log(jobApplicationData);
+
   const {
     company_name,
     img,
     description: company_description,
   } = jobApplicationData?.company || {};
 
+  if (jobApplicationData) {
+    const applicationStatus = [
+      {
+        title: "Applied",
+        status: "finish",
+      },
+      {
+        title: "Viewed",
+        status: "finish",
+      },
+      
+    ];
 
-  if(jobApplicationData )
-  {
     return (
       <MainContext>
         <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10  !pb-2 ">
@@ -214,7 +224,7 @@ const JobApplicatioWithSimilarApplication = () => {
                       "Not Disclosed"
                     ) : (
                       <>
-                        {salary?.min} - {salary?.max}{" "}
+                        {salary?.min} - {salary?.max}
                       </>
                     )}
                   </span>
@@ -237,47 +247,77 @@ const JobApplicatioWithSimilarApplication = () => {
                       <IoIosPeople /> Applicants : {applied_ids?.length}
                     </span>
                   </div>
-                  <div className="flex center gap-3">
-                    <button
-                      disabled={applied || jobApplyMutation.isPending}
-                      type="button"
-                      className="btn-orange px-3 py-1 tracking-widest"
-                      onClick={() => handleApplyClick()}
+                  {!jobApplied ? (
+                    <div className="flex center gap-3">
+                      <button
+                        disabled={applied || jobApplyMutation.isPending}
+                        type="button"
+                        className="btn-orange px-3 py-1 tracking-widest"
+                        onClick={() => handleApplyClick()}
+                      >
+                        {jobApplyMutation.isPending ? (
+                          <LuLoader2 className="animate-spin-slow text-white  " />
+                        ) : applied ? (
+                          <span className="flex center gap-1">
+                            <FaCheckCircle className="text-white" />
+                            Applied
+                          </span>
+                        ) : (
+                          "Apply"
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={
+                          savepostMutation.isPending ||
+                          unsavePostMutation?.isPending
+                        }
+                        className="btn-orange-outline px-3 py-1 flex center gap-1"
+                        onClick={handleSaveBtnClick}
+                      >
+                        {savepostMutation.isPending ||
+                        unsavePostMutation.isPending ? (
+                          <LuLoader2 className="animate-spin-slow text-orange-600 " />
+                        ) : saved ? (
+                          <>
+                            <FaCheckCircle className="text-orange-600" />
+                            Saved
+                          </>
+                        ) : (
+                          <>Save</>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="p-1 border rounded-full"
+                      style={{
+                        borderColor: "green",
+                        background: "#E2F7C5",
+                        color: "green",
+                      }}
                     >
-                      {jobApplyMutation.isPending ? (
-                        <LuLoader2 className="animate-spin-slow text-white  " />
-                      ) : applied ? (
-                        <span className="flex center gap-1">
-                          <FaCheckCircle className="text-white" />
-                          Applied
-                        </span>
-                      ) : (
-                        "Apply"
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={
-                        savepostMutation.isPending ||
-                        unsavePostMutation?.isPending
-                      }
-                      className="btn-orange-outline px-3 py-1 flex center gap-1"
-                      onClick={handleSaveBtnClick}
-                    >
-                      {savepostMutation.isPending ||
-                      unsavePostMutation.isPending ? (
-                        <LuLoader2 className="animate-spin-slow text-orange-600 " />
-                      ) : saved ? (
-                        <>
-                          <FaCheckCircle className="text-orange-600" />
-                          Saved
-                        </>
-                      ) : (
-                        <>Save</>
-                      )}
-                    </button>
-                  </div>
+                      {" "}
+                      Applied{" "}
+                    </div>
+                  )}
                 </div>
+
+                {/* Application Status */}
+
+                {
+                  jobApplied && <div className="flex flex-col p-3 md:p-3 justify-start items-start mt-2">
+                  <h1 className="text-orange-600 text-[1.1rem]">Application Status</h1>
+                  <Steps
+                    className="font-outfit mt-4"
+                    progressDot
+                    size="small"
+                    direction="horizontal"
+                    current={1}
+                    items={applicationStatus}
+                  />
+                </div>
+                }
               </div>
               <div className="w-full rounded-xl mt-8  h-fit bg-slate-50  p-2 md:p-10">
                 <h1 className="text-xl md:text-2xl font-semibold mb-4">
@@ -308,7 +348,7 @@ const JobApplicatioWithSimilarApplication = () => {
                         value={must_skills?.join(" , ")}
                       />
                     )}
-  
+
                     {other_skills?.length > 0 && (
                       <KeyHighlightsListItem
                         className={
@@ -339,7 +379,7 @@ const JobApplicatioWithSimilarApplication = () => {
                         value={type}
                       />
                     )}
-  
+
                     {location?.length > 0 && (
                       <KeyHighlightsListItem
                         className={
@@ -370,7 +410,9 @@ const JobApplicatioWithSimilarApplication = () => {
                   About Company
                 </h1>
                 <div className="font-outfit">
-                  {company_description && <ReadMore content={company_description} maxLength={250} />}
+                  {company_description && (
+                    <ReadMore content={company_description} maxLength={250} />
+                  )}
                 </div>
               </div>
             </div>
@@ -378,12 +420,13 @@ const JobApplicatioWithSimilarApplication = () => {
               <h1 className="text-xl md:text-2xl font-outfit text-orange-600">
                 Similar jobs you might like :
               </h1>
-              {
-                jobApplicationData?.similarData?.length > 0 ?
+              {jobApplicationData?.similarData?.length > 0 ? (
                 jobApplicationData?.similarData?.map((data) => (
                   <JobSuggestionCard data={data} key={data.id} />
-                )) : <h1 className="w-full text-center">No Similar jobs Found</h1>
-              }
+                ))
+              ) : (
+                <h1 className="w-full text-center">No Similar jobs Found</h1>
+              )}
             </div>
           </div>
         </div>
@@ -393,4 +436,3 @@ const JobApplicatioWithSimilarApplication = () => {
 };
 
 export default JobApplicatioWithSimilarApplication;
-

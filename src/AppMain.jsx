@@ -52,7 +52,7 @@ const AppMain = () => {
           <Route path = "/select-role" element= { <OptionPage />} />
           <Route path="/user" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
-              <Route path = "/user/job-post/:id" element={ <JobApplicatioWithSimilarApplication/> } />
+              <Route path = "/user/job-post/:id/:applied?" element={ <JobApplicatioWithSimilarApplication/> } />
               <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
               <Route path = "/user/company/:id" element={ <CompanyPage/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>

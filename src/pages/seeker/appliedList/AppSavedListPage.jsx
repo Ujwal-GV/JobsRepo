@@ -1,83 +1,196 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../../components/MainContext";
 import { jobData } from "../../../../assets/dummyDatas/Data";
 import JobSuggestionCard from "../../../components/JobSuggestionCard";
 import CustomBreadCrumbs from "../../../components/CustomBreadCrumbs";
 import { CiHome } from "react-icons/ci";
-import SavedCard from "../../../components/SavedCard";
-import { FaRegFaceFrownOpen } from "react-icons/fa6";
+import SavedCard, { SavedCardSkeleton } from "../../../components/SavedCard";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "../../../utils/axiosInstance";
+import { NoPostFound } from "../CompanyAllPosts";
+import { Pagination } from "antd";
 
 const AppSavedListPage = () => {
-  const count = 10;
 
-  return (
-    <MainContext>
-      <div className="w-full min-h-[90vh] bg-slate-100 p-3 md:px-6 md:py-4">
-        {/* Body Wrapper */}
+  const [totalData_pagination, setTotalData] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [savedList,setSavedList] = useState([])
+  const pageSize = 10;
+  const queryClinet = useQueryClient();
 
-        <div className="w-full flex center h-8">
-        <CustomBreadCrumbs
+  const getSavedData = async () => {
+    const res = await axiosInstance.get("/user/job/saved-list", {
+      params: {
+        page: currentPage,
+        limit: pageSize,
+      },
+    });
+    if (res.data?.totalData) {
+      setTotalData(res.data?.totalData);
+    }
+    if(res.data?.pageData)
+    {
+      setSavedList(res.data?.pageData)
+    }
+    return res.data;
+  };
+
+  
+
+  const { isLoading, isFetching, isError, error, data } = useQuery({
+    queryKey: ["saved_list", currentPage],
+    queryFn: getSavedData,
+    gcTime: 1000 * 60,
+    staleTime: 0,
+    retry: false,
+  });
+
+  const handleCurrentPageChange = (val) => {
+    setCurrentPage(val);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+
+  const handleUnsavePOst = (jobId)=>{
+    
+    const removedData =  savedList?.filter((sData)=>sData?.saved_app_info?.job_id !== jobId)
+    setSavedList((prev)=>[...removedData])
+
+  }
+
+
+  useEffect(()=>{
+     return ()=>{
+      
+      queryClinet.removeQueries(["saved_list"])
+     }
+  },[])
+
+
+  const { totalData} = data ||{};
+
+  if (!isError) {
+   
+
+    return (
+      <MainContext>
+        <div className="w-full min-h-[90vh] bg-slate-100 p-3 md:px-6 md:py-4">
+          {/* Body Wrapper */}
+
+          <div className="w-full flex center h-8">
+            <CustomBreadCrumbs
               items={[
                 {
                   path: "/user",
-                  icon:<CiHome />,
-                  title : "Home"
+                  icon: <CiHome />,
+                  title: "Home",
                 },
-                { title: "Saved Jobs"  },
+                { title: "Saved Jobs" },
               ]}
             />
-        </div>
-
-        <div className="w-full md:w-[99%] lg:w-[90%] mx-auto h-full">
-          {/* Job Application Status */}
-          <div className="bg-white flex justify-between items-center rounded-xl w-full h-20 px-1 md:px-3">
-            <span className="text-[1rem] md:text-xl font-outfit font-medium">
-              Applications Saved <span>({count >= 100 ? "99+" : count})</span>
-            </span>
           </div>
 
-          {/* Main content area */}
-          <div className="flex flex-col gap-10 md:gap-3 lg:gap-2 lg:flex-row  w-full  h-[620px] overflow-y-auto custom-scroll p-1 mt-3">
-            {/* Job Applications List */}
-            <div
-              className={`flex lg:flex-1  bg-white rounded-xl gap-2 lg:overflow-y-auto custom-scroll   p-3 ${
-                count === 0
-                  ? "justify-center items-center"
-                  : "justify-start items-start flex-wrap"
-              }`}
-            >
-              {count === 0 ? (
-                <span className="flex gap-1 text-gray-400 font-outfit">
-                  <FaRegFaceFrownOpen className="text-[1.1rem] md:text-xl" />
-                  No Jobs Found
-                </span>
-              ) : (
-                jobData.map((data, i) => <SavedCard data={data} key={i} />)
+          <div className="w-full md:w-[99%] lg:w-[90%] mx-auto h-full">
+            {/* Job Application Status */}
+            <div className="bg-white flex justify-between items-center rounded-xl w-full h-20 px-1 md:px-3">
+              <span className="text-[1rem] md:text-xl font-outfit font-medium">
+                Applications Saved{" "}
+                {
+                  (!isLoading && !isFetching && <span>({totalData >= 100 ? "99+" : totalData})</span>)
+                }
+              </span>
+            </div>
+
+            {/* Main content area */}
+
+            <div className="bg-white min-h-[70vh] w-full p-4 mt-2 rounded-md">
+              {
+                (isLoading || isFetching) ?   <>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 place-items-start bg-white min   w-[100%] lg:w-[80%] mx-auto  gap-2  p-1 mt-3">
+                    {/* Job Applications List */}
+
+                    {[...Array(6)]?.map((idx) => (
+                      <SavedCardSkeleton key={idx} />
+                    ))}
+                  </div>
                 
-              )}
-              
+                
+                
+                </> :      <>
+                {totalData === 0 ? (
+                <NoPostFound title={"No Application Found"} />
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 place-items-start bg-white min   w-[100%] lg:w-[80%] mx-auto  gap-2  p-1 mt-3">
+                    {/* Job Applications List */}
+
+                    {savedList?.map((sdata, idx) => (
+                      <SavedCard key={idx} data={sdata} onDelete={handleUnsavePOst}/>
+                    ))}
+                  </div>
+                  <div className="mt-2 w-full flex center">
+                    <Pagination
+                      disabled={isLoading || isFetching}
+                      defaultCurrent={1}
+                      current={currentPage}
+                      className="w-fit mx-auto mb-5 mt-3"
+                      total={totalData_pagination}
+                      showSizeChanger={false}
+                      pageSize={pageSize}
+                      onChange={(e) => handleCurrentPageChange(e)}
+                      prevIcon={
+                        <button
+                          disabled={
+                            isLoading || isFetching || currentPage === 1
+                          }
+                          className={
+                            "hidden md:flex " +
+                            (currentPage === 1 && " !hidden")
+                          }
+                          style={{ border: "none", background: "none" }}
+                        >
+                          ← Prev
+                        </button>
+                      }
+                      nextIcon={
+                        <button
+                          disabled={isLoading || isFetching}
+                          className={
+                            "hidden md:flex " +
+                            ((currentPage * pageSize === totalData ||
+                              totalData < pageSize) &&
+                              "!hidden")
+                          }
+                          style={{ border: "none", background: "none" }}
+                        >
+                          Next →
+                        </button>
+                      }
+                    />
+                  </div>
+                </>
+              )}</>
+              }
             </div>
 
             {/* Suggested Jobs */}
-            <div className="flex flex-col w-full lg:w-[40%]  rounded-xl px-1 py-2 bg-white">
-              <h5 className="mt-2 text-lg font-semibold font-outfit ms-1 text-orange-600">Suggested Jobs:</h5>
-              <div className="w-full flex flex-col gap-2 p-1 overflow-y-auto custom-scroll" style={{ maxHeight: "600px" }}>
-                {jobData.map((d) => (
-                  <JobSuggestionCard data={d} key={d.id} />
-                ))}
-              </div>
-            </div>
+            {/* <div className="flex flex-col w-full lg:w-[40%]  rounded-xl px-1 py-2 bg-white">
+                  <h5 className="mt-2 text-lg font-semibold font-outfit ms-1 text-orange-600">Suggested Jobs:</h5>
+                  <div className="w-full flex flex-col gap-2 p-1 overflow-y-auto custom-scroll" style={{ maxHeight: "600px" }}>
+                    {jobData.map((d) => (
+                      <JobSuggestionCard data={d} key={d.id} />
+                    ))}
+                  </div>
+                </div> */}
           </div>
-
-
         </div>
-      </div>
-    </MainContext>
-  );
+      </MainContext>
+    );
+  }
 };
 
-
-
-
-export default AppSavedListPage
-
+export default AppSavedListPage;

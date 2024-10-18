@@ -31,6 +31,7 @@ import Loading from "../Loading";
 import { useGetProfileData } from "./queries/ProfileQuery";
 import { LuLoader2 } from "react-icons/lu";
 import { HiOutlineEye } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -41,6 +42,8 @@ const UserProfile = () => {
     useState(false);
   const [intershipModalOpen, setInternShipModalOpen] = useState(false);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+
+  const navigate = useNavigate()
 
   //Auth Context
 
@@ -460,11 +463,13 @@ const UserProfile = () => {
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Applied"
               val={profileData?.application_applied_info?.jobs?.length || 0}
+              onClick={()=>navigate("/user/applied-job-list")}
             />
             <DeatilsBadge
               icon={<FaSave className=" text-orange-600" />}
               title="Saved"
-              val={profileData?.saved_info?.jobs?.length}
+              val={profileData?.saved_info?.jobs?.length} 
+              onClick={()=>navigate("/user/saved-job-list")}
             />
             <DeatilsBadge
               icon={<AiFillProject className="text-green-600 rotate-180" />}
@@ -695,7 +700,7 @@ const UserProfile = () => {
 
 export default UserProfile;
 
-const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
+const DeatilsBadge = ({ icon = "", title = "", val = "" ,onClick=()=>{}}) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -706,6 +711,7 @@ const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
         "w-[120px] h-[120px] sm:w-[150px] sm:h-[150pxx] relative cursor-pointer  flex-shrink-0 my-1 md:!my-0  center flex gap-1 border-[1px] bg-white rounded-3xl px-3  mx-2 flex-col " +
         (hovered && " !border-orange-600")
       }
+      onClick={onClick}
     >
       <span className="text-sm w-full  text-center flex center ">
         {icon}
