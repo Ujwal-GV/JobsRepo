@@ -453,8 +453,15 @@ const JobApplicationProviderView = () => {
   const { jobs, setJobs } = useJobContext();
   const { userRole, profileData } = useContext(AuthContext);
     
-  const [currency, setCurrency] = useState({ value: 'INR', label: 'INR' });
-  const [isOptionalChecked, setIsOptionalChecked] = useState(false); 
+  const [isOptionalChecked, setIsOptionalChecked] = useState(false);
+  
+  const disclosureOptions = [
+    { value: 'true', label: 'Disclosed' },
+    { value: 'false', label: 'Not Disclosed' },
+  ];
+  
+  const [salaryDisclosure, setSalaryDisclosure] = useState(disclosureOptions[0]);
+
   const [jobDetails, setJobDetails] = useState({
     title: "",
     companyName: profileData?.company_name,
@@ -502,11 +509,6 @@ const JobApplicationProviderView = () => {
       setJobTypeList([...jobTypeList, selectedOption]);
     }
   };
-
-  const currencyOptions = [
-    { value: 'INR', label: 'INR' },
-    { value: 'USD', label: 'USD ' },
-  ];
 
   const navigate = useNavigate();
 
@@ -569,9 +571,13 @@ const JobApplicationProviderView = () => {
       return;
     }
   
-    if (Number(salaryMin) >= Number(salaryMax)) {
-      message.error("Minimum salary must be less than maximum salary");
-      return;
+    if(salaryDisclosure.value === 'true') {
+      console.log("Salary dis:", salaryDisclosure);
+      
+      if (Number(salaryMin) >= Number(salaryMax)) {
+        message.error("Minimum salary must be less than maximum salary");
+        return;
+      }
     }
   
     const jobData = {
@@ -581,7 +587,7 @@ const JobApplicationProviderView = () => {
       salary: {
         min: Number(salaryMin),
         max: Number(salaryMax),
-        disclosed: true,
+        disclosed: salaryDisclosure.value,
       },
       location,
       experience: {
@@ -873,29 +879,38 @@ const JobApplicationProviderView = () => {
                     <div className="flex flex-col mt-4 w-full lg:w-[45%]">
                       <KeyHighlightsListItem key={"1-3"} title="Salary" value={null} />
                     </div>
-                    <div className="flex flex-col md:flex-row w-full p-2 lg:w-[75%]">
-                      <input
-                        type="number"
-                        name="salaryMin"
-                        placeholder="Min Salary"
-                        value={jobDetails.salaryMin}
-                        onChange={handleChange}
-                        className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-3 md:mb-0 md:mr-3"
-                      />
-                      <input
-                        type="number"
-                        name="salaryMax"
-                        placeholder="Max Salary"
-                        value={jobDetails.salaryMax}
-                        onChange={handleChange}
-                        className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-3 md:mb-0 md:mr-3"
-                      />
-                      <Select
-                        value={currency}
-                        onChange={setCurrency}
-                        options={currencyOptions}
-                        className="w-[10rem] md:w-1/2 lg:w-full font-outfit"
-                      />
+                    <div className="flex flex-col md:flex-row w-full p-2 lg:w-[85%]">
+                      <div className="flex flex-col md:flex-row w-full gap-2">
+                        {/* Select Disclosed or Not Disclosed */}
+                        <Select
+                          value={salaryDisclosure}
+                          onChange={setSalaryDisclosure}
+                          options={disclosureOptions}
+                          className="w-[10rem] items-start font-outfit mb-3 ml-2 md:mb-0"
+                        />
+
+                        {/* Conditionally show salary input fields only if 'Disclosed' is selected */}
+                        {salaryDisclosure.value === 'true' && (
+                          <div className="flex flex-col md:flex-row lg:w-[55%] w-full gap-2 sm:gap-0">
+                            <input
+                              type="number"
+                              name="salaryMin"
+                              placeholder="Min Salary"
+                              value={jobDetails.salaryMin}
+                              onChange={handleChange}
+                              className="w-[10rem] lg:w-full border-b-2 border-gray-200 !border-solid rounded-lg p-2 mb-3 md:mb-0 ml-2"
+                            />
+                            <input
+                              type="number"
+                              name="salaryMax"
+                              placeholder="Max Salary"
+                              value={jobDetails.salaryMax}
+                              onChange={handleChange}
+                              className="w-[10rem] lg:w-full border-b-2 border-gray-200 !border-solid rounded-lg p-2 mb-3 md:mb-0 ml-2"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </li>

@@ -288,7 +288,7 @@ const AllPostedJobs = () => {
 
         {/* Right Side: Applicants View */}
         <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll">
-          <h1 className="text-xl font-semibold mb-5 text-gray-700">Applicants</h1>
+          <h1 className="text-2xl font-bold mb-5 text-gray-800">Applicants</h1>
           {jobsDataLoading ? (
             [1, 2, 3].map((d) => (
               <div
@@ -302,7 +302,8 @@ const AllPostedJobs = () => {
             <div className="grid h-auto grid-cols-1 gap-4 text-sm">
               {applicants && applicants.length > 0 ? (
                 applicants.map((applicant) => (
-                  <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
+                  <>
+                    <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
                     <h2 className="font-semibold text-lg text-gray-800">{applicant.name}</h2>
                     <div className="w-[60px] h-[60px] absolute right-4 top-4 rounded-full bg-gray-200 overflow-hidden shadow-md">
                       <img
@@ -334,25 +335,25 @@ const AllPostedJobs = () => {
                       <FaEye className="mr-2" /> View Profile
                     </button>
                   </div>
+                   {/* Pagination */}
+                  <div className="mt-4 flex justify-center">
+                    <Pagination
+                      total={20}
+                      pageSize={limit}
+                      current={currentPage}
+                      onChange={handlePageChange}
+                      className="pagination"
+                    />
+                  </div>
+                  </>
                 ))
               ) : (
-                <div className="w-full flex flex-col gap-3 items-center">
+                <div className="w-full flex flex-col items-center">
                   <p className="text-lg text-gray-500">No applicants found</p>
                 </div>
               )}
             </div>
           )}
-
-          {/* Pagination */}
-          <div className="mt-4 flex justify-center">
-            <Pagination
-              total={20}
-              pageSize={limit}
-              current={currentPage}
-              onChange={handlePageChange}
-              className="pagination"
-            />
-          </div>
         </div>
       </div>
     </>

@@ -1,27 +1,20 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import React, { useState, useEffect, useContext } from "react"; // Import useState and useEffect
-import { FaEye } from "react-icons/fa6";
-import { HiUserCircle } from "react-icons/hi";
-import ProviderNavbar from "./components/ProviderNavbar";
-import { Mutation, useMutation } from "@tanstack/react-query";
+import { useState, useEffect, useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+import { axiosInstance } from "../../utils/axiosInstance";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import SeachInput from "../../components/SeachInput";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { AuthContext } from "../../contexts/AuthContext";
-import { IoTrash, IoTrashBin } from "react-icons/io5";
-import { axiosInstance } from "../../utils/axiosInstance";
+import { FaEye } from "react-icons/fa6";
+import { IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
   const [companyId, setCompanyId] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const queryClient = useQueryClient();
 
-  // Set companyId from profileData when it changes
   useEffect(() => {
     if (profileData) {
       setCompanyId(profileData?.company_id);
@@ -29,26 +22,19 @@ function ProviderMainPage() {
   }, [profileData]);
 
   const fetchJobs = async () => {
-    if (!companyId) {
-      throw new Error("Company ID is not available");
-    }
+    if (!companyId) throw new Error("Company ID is not available");
     const res = await axiosInstance.get(`/provider/${companyId}`);
-    console.log("Jobs_Fetch", res.data);
     return res.data;
   };
 
   const { data: jobsData, isLoading: jobsDataLoading, error, refetch } = useQuery({
-    queryKey: ['jobs', companyId], // Include companyId in the query key
-    queryFn: fetchJobs,      
-    staleTime: 300000,      
-    cacheTime: 300000,      
-    enabled: !!companyId, // Only run the query if companyId is available
-    onError: () => {
-      console.error("Error fetching jobs");
-    }
+    queryKey: ['jobs', companyId],
+    queryFn: fetchJobs,
+    staleTime: 30000,
+    cacheTime: 30000,
+    enabled: !!companyId,
   });
 
-  // Extract jobs from the fetched data
   const jobs = jobsData?.accountData?.Applications_info || [];
 
   const handlePostJobClick = () => {
@@ -60,42 +46,35 @@ function ProviderMainPage() {
     return response.data;
   };
 
-  const mutation = useMutation({ 
-    mutationKey: ['provider_post_delete'],
+  const mutation = useMutation({
     mutationFn: deleteJob,
     onSuccess: () => {
-        toast.success("Job post deleted successfully!");
-        queryClient.invalidateQueries(['jobs', companyId]);
+      toast.success("Job post deleted successfully!");
+      queryClient.invalidateQueries(['jobs', companyId]);
     },
     onError: (error) => {
-      console.log(error);
       toast.error("Error deleting job post: " + error.message);
     },
   });
 
-  const handleProfileClick = () => {
-    navigate('/provider/profile');
-  };
-
   const handlePostDelete = (jobId) => {
     mutation.mutate(jobId);
-  }
+  };
 
-  // Refetch data when the component mounts or when the location changes
   useEffect(() => {
-    refetch();
-  }, [location, refetch, jobs]);
+    if (location) {
+      refetch();
+    }
+  }, [location, refetch]);
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
       <div className="h-[600px] w-full bg-slate-50 relative py-10">
         {/* Blue bubble */}
         <div className="orange-bubble absolute top-[100px] left-[100px]" />
-        {/* Search input */}
         <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
           <SeachInput placeholder="Search posted job......" />
         </div>
-        {/* Prime header */}
         <div className="mt-10 mx-auto w-fit font-outfit">
           <h1 className="text-center text-xl md:text-5xl font-semibold">
             Welcome, Job Provider!
@@ -110,7 +89,6 @@ function ProviderMainPage() {
 
       {/* Posted Jobs List */}
       <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
-        {/* Header and Post Job Button */}
         <div className="my-5 flex flex-col gap-4 items-center justify-center text-center">
           <h2 className="text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
           <button
@@ -120,10 +98,7 @@ function ProviderMainPage() {
             Post a Job
           </button>
         </div>
-        
         <hr className="mt-5 mb-2 border-gray" />
-
-        {/* Scrollable Jobs List */}
         <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
         {jobsDataLoading ? (
           [1, 2, 3, 4, 5].map((d) => (
@@ -141,31 +116,33 @@ function ProviderMainPage() {
           </div>
         ) : (
           jobs.map((job) => (
-            <div key={job._id} className="p-4 bg-white shadow rounded-lg flex justify-between items-center">
+            <div className="flex flex-col bg-white p-5 rounded-lg lg:flex-row justify-between items-start lg:items-center" key={job.job_id}>
+              {/* Job Details */}
               <div className="flex flex-col">
                 <h3 className="font-bold">{job.title}</h3>
                 <p className="text-sm text-gray-600 mb-0">Company: {job?.provider_details}</p>
                 <p className="text-sm text-gray-600 mb-0">App-ID: {job?.job_id}</p>
                 <p className="text-sm text-gray-600">Applicants: {job?.applied_ids.length}</p>
               </div>
-              <div className="flex gap-2">
+
+              {/* Buttons */}
+              <div className="flex flex-row gap-2 mt-2 lg:mt-0 lg:ml-4">
                 <button
                   title="View"
-                  className="px-3 py-2 shadow-md sm:mb-1 bg-orange-600 text-white rounded-lg text-sm flex  items-center hover:bg-orange-700 transition"
-                  onClick={() => 
-                    {console.log("Job Data:", job)
-                      navigate(`/provider/all-jobs/${job?.job_id}`)
-                    // navigate(/provider/all-jobs, { state: { jobId: job?.job_id } })
-                  }}
-                    >
+                  className="px-3 py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
+                  onClick={() => navigate(`/provider/all-jobs/${job?.job_id}`)}
+                >
                   <FaEye className="mr-1" />
+                  View
                 </button>
+
                 <button
                   title="Delete"
-                  className="px-3 py-2 shadow-md sm:mb-1 bg-gray-700 text-white rounded-lg text-sm flex items-center hover:bg-gray-300 transition"
+                  className="px-3 py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
                   onClick={() => handlePostDelete(job?.job_id)}
                 >
-                <IoTrash className="mr-1" />
+                  <IoTrash className="mr-1" />
+                  Delete
                 </button>
               </div>
             </div>
