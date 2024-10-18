@@ -158,7 +158,7 @@ const SearchFilterPage = () => {
       <div
         className={
           `w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] pb-10 flex-col md:flex-row pt-5 md:pt-10 ` +
-          (searchData?.length === 0 ? "min-h-screen" : "h-fit")
+          "min-h-screen"
         }
       >
         {/* Search Filter  */}
@@ -391,6 +391,7 @@ const FilterItem = ({
   const contentRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState(defaultSelect);
+  const [openPopup,setPopupOpen] = useState(false)
 
   const handleFilterChnage = ({ name, checked }) => {
     let upadtedFilter = { ...selectedFilter };
@@ -465,17 +466,20 @@ const FilterItem = ({
         {data.length > maxData && (
           <p className="text-sm flex justify-between items-center cursor-pointer w-full">
             <Popover
+              open={openPopup}
               placement="rightTop"
               content={
                 <FilterMorePopOverContent
                   data={data}
                   onChange={handleFilterChnage}
                   selectedFilter={selectedFilter}
+                  onClickApply={()=>{onApplyClick();setPopupOpen(false)}}
+                  handleClose={()=>setPopupOpen(false)}
                 />
               }
               trigger={"click"}
             >
-              <button>View more+</button>
+              <button onClick={()=>setPopupOpen(true)}>View more+</button>
             </Popover>
           </p>
         )}
@@ -487,7 +491,7 @@ const FilterItem = ({
   );
 };
 
-const FilterMorePopOverContent = ({ data, onChange, selectedFilter }) => {
+const FilterMorePopOverContent = ({ data, onChange, selectedFilter , onClickApply=()=>{} , handleClose=()=>{} }) => {
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -503,8 +507,9 @@ const FilterMorePopOverContent = ({ data, onChange, selectedFilter }) => {
           </Checkbox>
         ))}
       </div>
-      <div className="w-full flex justify-end items-center mt-1">
-        <button className="px-2 py-1 bg-slate-200 rounded-full">Apply</button>
+      <div className="w-full flex gap-1 justify-end items-center mt-1 text-sm">
+      <button className="px-2 py-1 bg-slate-200 rounded-full" onClick={handleClose}>Back</button>
+        <button className="px-2 py-1 bg-slate-200 rounded-full" onClick={onClickApply}>Apply</button>
       </div>
     </>
   );
