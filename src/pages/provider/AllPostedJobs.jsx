@@ -312,7 +312,7 @@ const AllPostedJobs = () => {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <p className="text-gray-600 mt-1">Qualification: {applicant.profile_details.qualification || "Not mentioned"}</p>
+                    <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p>
                     <div className="mt-3 mb-2">
                       <h4 className="font-semibold text-gray-700">Skills:</h4>
                       {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
