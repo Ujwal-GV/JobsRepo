@@ -60,7 +60,8 @@ const AppMain = () => {
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
-              <Route path='/user/companies' element={<ListOfCompanies/>}/>
+              <Route path='/user/companies' element={<ListOfCompanies/>}/> 
+              
           </Route>
           <Route path="/provider" element={<ProviderMainWrapper/>}>
               <Route index element={ <ProviderMainPage/> } />
