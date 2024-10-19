@@ -87,7 +87,7 @@ const ViewCandidate = () => {
                     icon: <CiHome />,
                     title: "Home",
                     },
-                    { title: "Job Application", icon: <CiUser /> },
+                    { title: "Candidate Details", icon: <CiUser /> },
                 ]}
                 />
             </div>
@@ -171,7 +171,7 @@ const ViewCandidate = () => {
                             View Resume
                         </div>
                         <div>
-                            {resumeUrl && (
+                            {resumeUrl ? (
                                 <a
                                     href={resumeUrl}
                                     target="_blank"
@@ -181,7 +181,7 @@ const ViewCandidate = () => {
                                 >
                                     <FaEye />
                                 </a>
-                            )}
+                            ) : ( <span className="absolute right-9 px-4 py-2 center inline-flex bg-white border rounded-full shadow-md">No Resume</span> )}
                         </div>
                     </div>
 
@@ -239,17 +239,29 @@ const ViewCandidate = () => {
                         
                         {applicant?.internship_details?.length > 0 ? (
                             applicant.internship_details.map((internship, index) => (
-                                <div key={internship._id} className="mt-3">
-                                    <div className="text-sm text-gray-600">
-                                        <strong>Company Name:</strong> {internship.company_name || "Not Provided"}
+                                <div key={internship._id} className="mt-3 w-full flex gap-3 items-start">
+                                    <div className="w-[2%] mt-3 text-sm text-gray-600">
+                                        <strong>{index+1 || "Not Provided"}</strong>
                                     </div>
-                                    <div className="mt-3 text-sm text-gray-600">
-                                        <strong>Duration:</strong> {internship.duration || "Not Provided"}
+                                    <div className="w-3/4 mb-2 mt-3">
+                                        <div className="text-sm text-gray-600">
+                                            <strong>Company Name:</strong> {internship.company_name || "Not Provided"}
+                                        </div>
+                                        <div className="mt-3 text-sm text-gray-600">
+                                            <strong>Start Month:</strong> {internship.start_month || "Not Provided"}
+                                        </div>
+                                        <div className="mt-3 text-sm text-gray-600">
+                                            <strong>End Month:</strong> {internship.end_month || "Not Provided"}
+                                        </div>
+                                        <div className="mt-3 text-sm text-gray-600">
+                                            <strong>Designation:</strong> {internship.project || "Not Provided"}
+                                        </div>
+                                        <div className="mt-3 text-sm text-gray-600">
+                                            <strong>Description:</strong> {internship.project_description || "Not Provided"}
+                                        </div>
+                                        <hr className="my-3" />
                                     </div>
-                                    <div className="mt-3 text-sm text-gray-600">
-                                        <strong>Designation:</strong> {internship.designation || "Not Provided"}
-                                    </div>
-                                    <hr className="my-3" />
+                                    
                                 </div>
                             ))
                         ) : (
