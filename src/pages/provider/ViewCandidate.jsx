@@ -8,6 +8,8 @@ import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { axiosInstance } from "../../utils/axiosInstance";
+import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
+import { CiHome, CiUser } from "react-icons/ci";
 
 const ViewCandidate = () => {
     const { user_id: userId } = useParams();
