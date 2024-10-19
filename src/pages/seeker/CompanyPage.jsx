@@ -214,12 +214,15 @@ const CompanyPage = () => {
                     {4.5}
                   </span>
                 </h1>
-                <h3 className="font-light mt-7">
+                {
+                  (company_links?.length>0 && company_links[0]?.url) &&  <h3 className="font-light mt-7">
                   Website :
                   <a className="text-blue-600 cursor-pointer" href={company_links[0]?.url} target="_blank">
                     {company_links?.length>0 && company_links[0]?.url}
                   </a>
                 </h3>
+                }
+                
                 <div className="flex gap-2 mt-3">
                   <button
                     type="button"
