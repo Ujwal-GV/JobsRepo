@@ -11,7 +11,7 @@ const ReadMore = ({ maxLength = 500, content = "", className }) => {
           {sortContent}{" "}
           {
             content.length > maxLength ? <span
-            className="ms-1 cursor-pointer text-blue-600"
+            className="ms-1 cursor-pointer text-blue-600 text-nowrap"
             onClick={() => setReadMore(true)}
           >
             Read More
@@ -22,7 +22,7 @@ const ReadMore = ({ maxLength = 500, content = "", className }) => {
         <>
           {content}{" "}
           <span
-            className="ms-1 cursor-pointer text-blue-600"
+            className="ms-1 cursor-pointer text-blue-600 text-nowrap"
             onClick={() => setReadMore(false)}
           >
             Read Less

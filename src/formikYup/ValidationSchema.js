@@ -39,3 +39,12 @@ export const urlValidationSchema = Yup.object().shape({
     .url("Please enter a valid URL")
     .required("URL is required"),
 });
+
+
+export const userPersonalDetailsSchema = Yup.object({
+  fullName: Yup.string().required("Full Name is required"),
+  email: Yup.string().email("Invalid email format").required("Email is required"),
+  mobile: Yup.string()
+    .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
+  gender: Yup.string(),
+});

@@ -7,7 +7,7 @@ const MainWrapper = () => {
 
      if(localStorage.getItem("authToken"))
      {
-      useGetProfileData()
+      const {isError,error}   = useGetProfileData()
      }
      const location = useLocation();
      useEffect(()=>{
