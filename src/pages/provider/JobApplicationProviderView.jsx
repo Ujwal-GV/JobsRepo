@@ -630,6 +630,14 @@ const JobApplicationProviderView = () => {
     navigate(`/provider/post-job/${job.id}`, { state: { job } }); // Set selected job to display the details
   };
 
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      navigate('/login');
+      toast.error("Please login to post a job");
+    }
+  }, [navigate]);
+
   return (
     <MainContext>
       <div className="w-full flex center py-2 sticky pt-8 bg-slate-100">
