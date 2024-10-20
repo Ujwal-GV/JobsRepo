@@ -32,6 +32,7 @@ import { useGetProfileData } from "./queries/ProfileQuery";
 import { LuLoader2 } from "react-icons/lu";
 import { HiOutlineEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { userPersonalDetailsSchema } from "../../formikYup/ValidationSchema";
 
 const { TextArea } = Input;
 
@@ -43,11 +44,11 @@ const UserProfile = () => {
   const [intershipModalOpen, setInternShipModalOpen] = useState(false);
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   //Auth Context
 
-  const { profileData } = useContext(AuthContext);
+  const { profileData  , setProfileData} = useContext(AuthContext);
 
   useEffect(() => {
     if (profileData !== null) {
@@ -213,6 +214,7 @@ const UserProfile = () => {
           ...variables,
         };
       });
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -237,8 +239,8 @@ const UserProfile = () => {
     mutationFn: uploadProfilePhoto,
     onSuccess: (val, variables) => {
       toast.success("Profile Photo Updated Sucessfully");
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      console.log(val, variables);
       setProfileImg(variables);
     },
     onError: (error) => {
@@ -265,6 +267,7 @@ const UserProfile = () => {
       setSummaryModalOpen(false);
       freeBody();
       setProfileSummary(variables);
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -298,6 +301,7 @@ const UserProfile = () => {
       setSkillModalOpen(false);
       freeBody();
       setProfileSkills((prev) => [...variables]);
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -333,7 +337,9 @@ const UserProfile = () => {
       setEducationDetails((prev) => {
         return { ...prev, variables };
       });
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -377,6 +383,7 @@ const UserProfile = () => {
       setListOfIntership((prev) => {
         return { ...prev, ...variables };
       });
+      setProfileData(val)
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -463,13 +470,13 @@ const UserProfile = () => {
               icon={<BiSolidBadgeCheck className="text-green-600" />}
               title="Jobs Applied"
               val={profileData?.application_applied_info?.jobs?.length || 0}
-              onClick={()=>navigate("/user/applied-job-list")}
+              onClick={() => navigate("/user/applied-job-list")}
             />
             <DeatilsBadge
               icon={<FaSave className=" text-orange-600" />}
               title="Saved"
-              val={profileData?.saved_info?.jobs?.length} 
-              onClick={()=>navigate("/user/saved-job-list")}
+              val={profileData?.saved_info?.jobs?.length}
+              onClick={() => navigate("/user/saved-job-list")}
             />
             <DeatilsBadge
               icon={<AiFillProject className="text-green-600 rotate-180" />}
@@ -484,7 +491,7 @@ const UserProfile = () => {
             <ProfileInputWrapper>
               <ProfileInfoField
                 title="Profile Summary"
-                icon={profileSummary.trim() === "" ? "Add" : "Edit"}
+                icon={profileSummary?.trim() === "" ? "Add" : "Edit"}
                 editOnClick={() => {
                   setSummaryModalOpen(true);
                   freezeBody();
@@ -497,7 +504,7 @@ const UserProfile = () => {
                     </div>
                   ) : (
                     <>
-                      <div className="w-full h-full text-wrap bg-white p-2 rounded-lg  break-words">
+                      <div className="w-full h-full text-wrap bg-white p-2 rounded-lg  break-words text-gray-500 font-roboto">
                         {profileSummary}
                       </div>
                     </>
@@ -700,7 +707,12 @@ const UserProfile = () => {
 
 export default UserProfile;
 
-const DeatilsBadge = ({ icon = "", title = "", val = "" ,onClick=()=>{}}) => {
+const DeatilsBadge = ({
+  icon = "",
+  title = "",
+  val = "",
+  onClick = () => {},
+}) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -801,7 +813,7 @@ const ProfileInfoField = ({
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start gap-3 bg-white rounded-lg p-2 ps-4 ">
       <div className="flex justify-between items-center w-full">
-        <span>{title} :</span>{" "}
+        <span className="text-[1rem] ">{title} :</span>
         {showIcon && (
           <span
             className="text-orange-600 cursor-pointer"
@@ -987,7 +999,7 @@ const ProfileSkillModal = ({
         (open ? "profile-modal-show " : " ")
       }
     >
-      <div className="w-[90%] relative lg:w-[50%] h-fit border border-white p-3 md:p-10 rounded-lg">
+      <div className="w-[90%] relative lg:w-[50%] h-fit border bg-gray-100 border-white p-3 md:p-10 rounded-lg">
         <FaArrowLeft
           className="absolute top-2 left-2 md:top-5 md:left-5 cursor-pointer"
           onClick={() => {
@@ -995,8 +1007,7 @@ const ProfileSkillModal = ({
             setSelectSkills(defaulsSkills);
           }}
         />
-        <Spin className="w-full h-full" size="large" spinning={loading}>
-          <h1 className="mt-5">Select skills</h1>
+         <h1 className="mt-5">Select skills</h1>
 
           <div className="flex flex-wrap gap-1 w-full  items-start">
             {selectSkills.map((data) => (
@@ -1010,6 +1021,7 @@ const ProfileSkillModal = ({
           </div>
 
           <AutoComplete
+            notFoundContent={loading ? <Spin size="small"  className="w-full flex center"/> : null}
             onChange={(value) => {
               if (value.trim().length === 0) {
                 setSearchValue("");
@@ -1041,7 +1053,7 @@ const ProfileSkillModal = ({
               Cancle
             </button>
           </div>
-        </Spin>
+        
       </div>
     </div>
   );
@@ -1100,7 +1112,7 @@ const ProfileEducationModal = ({
     if (open) {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:8087/qualifications/");
+        const res = await axiosInstance.get("/qualifications/");
         if (res.data) {
           setQualification(Object.keys(res.data));
           setFetchedData(res.data);
@@ -1200,7 +1212,7 @@ const ProfileEducationModal = ({
           key={"percentage"}
           placeholder="Enter Percentage / CGPA"
           customClass="mt-4"
-          value={data.percentage?.replace(/%|cgpa/gi, "")}
+          value={data.percentage?.replace(/%|cgpa/gi, "").trim()}
           animate={false}
           onChange={(e) =>
             setData((prev) => {
@@ -1241,7 +1253,7 @@ const ProfileEducationModal = ({
                 percentage: (
                   data["percentage"]?.replace(/%|cgpa/gi, "") +
                   " " +
-                  marksTypeItems[marksType].symbol
+                  (data["percentage"] !=="" ? marksTypeItems[marksType].symbol : "")
                 ).trim(),
               });
             }}
@@ -1293,6 +1305,7 @@ const ProfilePersonalDetailsModal = ({
         <Formik
           initialValues={value}
           enableReinitialize={true} // Ensure form resets when modal opens again with new values
+          validationSchema={userPersonalDetailsSchema}
           onSubmit={(data, { resetForm }) => {
             onChange(data);
             resetForm();
@@ -1302,64 +1315,89 @@ const ProfilePersonalDetailsModal = ({
             <Form>
               {/* Full Name with Icon */}
               <Field name="fullName">
-                {({ field }) => (
-                  <InputBox
-                    animate={false}
-                    {...field}
-                    icon={<MdPerson />} // Icon for full name
-                    placeholder="Full Name"
-                    value={field.value}
-                    onChange={(e) => {
-                      field.onChange(e); // Formik's handleChange
-                    }}
-                  />
+                {({ field, meta }) => (
+                  <div>
+                    <InputBox
+                      animate={false}
+                      {...field}
+                      icon={<MdPerson />} // Icon for full name
+                      placeholder="Full Name"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e); // Formik's handleChange
+                      }}
+                    />
+                    {/* Error message for Full Name */}
+                    {meta.touched && meta.error && (
+                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                    )}
+                  </div>
                 )}
               </Field>
 
               {/* Email with Icon */}
               <Field name="email">
-                {({ field }) => (
-                  <InputBox
-                    animate={false}
-                    {...field}
-                    icon={<MdEmail />} // Icon for email
-                    placeholder="Email"
-                    customClass="mt-4"
-                    value={field.value}
-                    disabled={true} // Assuming email is non-editable
-                  />
+                {({ field, meta }) => (
+                  <div>
+                    <InputBox
+                      animate={false}
+                      {...field}
+                      disable={true}
+                      icon={<MdEmail />} // Icon for email
+                      placeholder="Email"
+                      customClass="mt-4"
+                      value={field.value}
+                      disabled={true} // Assuming email is non-editable
+                    />
+                    {/* Error message for Email */}
+                    {meta.touched && meta.error && (
+                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                    )}
+                  </div>
                 )}
               </Field>
 
               {/* Mobile with Icon */}
               <Field name="mobile">
-                {({ field }) => (
-                  <InputBox
-                    animate={false}
-                    {...field}
-                    icon={<FaPhoneAlt />} // Icon for mobile
-                    placeholder="Enter Mobile"
-                    customClass="mt-4"
-                    value={field.value}
-                    onChange={(e) => {
-                      field.onChange(e); // Formik's handleChange
-                    }}
-                  />
+                {({ field, meta }) => (
+                  <div>
+                    <InputBox
+                      animate={false}
+                      {...field}
+                      icon={<FaPhoneAlt />} // Icon for mobile
+                      placeholder="Enter Mobile"
+                      customClass="mt-4"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e); // Formik's handleChange
+                      }}
+                    />
+                    {/* Error message for Mobile */}
+                    {meta.touched && meta.error && (
+                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                    )}
+                  </div>
                 )}
               </Field>
 
               {/* Gender */}
               <Field name="gender">
-                {({ field }) => (
-                  <ProfileGender
-                    key={values.gender}
-                    {...field}
-                    customClass="mt-4"
-                    value={values.gender}
-                    onChange={(val) => {
-                      setFieldValue("gender", val); // Custom handler for select
-                    }}
-                  />
+                {({ field, meta }) => (
+                  <div>
+                    <ProfileGender
+                      key={values.gender}
+                      {...field}
+                      customClass="mt-4"
+                      value={values.gender}
+                      onChange={(val) => {
+                        setFieldValue("gender", val); // Custom handler for select
+                      }}
+                    />
+                    {/* Error message for Gender */}
+                    {meta.touched && meta.error && (
+                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                    )}
+                  </div>
                 )}
               </Field>
 
@@ -1528,7 +1566,7 @@ const ProfileSummaryModal = ({
   return (
     <div
       className={
-        "absolute top-0 left-0 w-full flex center h-full bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
+        "absolute top-0 left-0 w-full flex center h-full bg-slate-200 md:bg-slate-100 profile-modal p-4 md:p-10 " +
         (open ? "profile-modal-show " : " ")
       }
     >
@@ -1609,9 +1647,7 @@ const ResumeUploader = () => {
       setFileName(profileData?.profile_details?.resume?.fileName);
       setFileUrl(profileData?.profile_details?.resume?.url);
     }
-   
   }, [profileData]);
-
 
   const updateResume = async (val) => {
     const res = await axiosInstance.put("/user/update", val);
@@ -1699,7 +1735,7 @@ const ResumeUploader = () => {
         setLoading(false);
       }
     } else {
-      console.log("No file selected.");
+      toast.error("No file selected.");
     }
   };
 

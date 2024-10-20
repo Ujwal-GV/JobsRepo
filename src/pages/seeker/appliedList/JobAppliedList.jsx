@@ -25,6 +25,7 @@ const JobAppliedList = () => {
         limit: pageSize,
       },
     });
+    console.log(res.data)
     if (res.data?.totalData) {
       setTotalData(res.data?.totalData);
     }

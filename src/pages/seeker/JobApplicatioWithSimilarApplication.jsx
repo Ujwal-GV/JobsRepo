@@ -13,6 +13,8 @@ import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Steps } from "antd";
+import { useGetProfileData } from "./queries/ProfileQuery";
+import { CustomSkeleton } from "./CompanyAllPosts";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -20,19 +22,24 @@ const VerticalBar = () => {
 
 const JobApplicatioWithSimilarApplication = () => {
   const { id: jobApplicationId, applied: jobApplied } = useParams();
-
   const { profileData } = useContext(AuthContext);
+  const [user_id, setUser_id] = useState(null);
+  const [applicationStatus, setApplicationStatus] = useState([]);
 
   useEffect(() => {
-    if (
-      profileData?.application_applied_info?.jobs?.find(
-        (id) => id.jobId === jobApplicationId
-      )
-    ) {
-      setApplied(true);
-    }
-    if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
-      setSaved(true);
+    if (profileData && profileData !== null) {
+      if (
+        profileData?.application_applied_info?.jobs?.find(
+          (id) => id.jobId === jobApplicationId
+        )
+      ) {
+        setApplied(true);
+      }
+
+      if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
+        setSaved(true);
+      }
+      setUser_id(profileData?.user_id);
     }
   }, [profileData]);
 
@@ -63,6 +70,36 @@ const JobApplicatioWithSimilarApplication = () => {
     queryFn: () => fetchJobDetails(jobApplicationId),
     staleTime: 0,
     gcTime: 0,
+  });
+
+  const getApplicationStatus = async () => {
+    const res = await axiosInstance.post("/jobs/user/status", {
+      applicationId: jobApplicationId,
+      user_Id: user_id,
+    });
+
+    if (res.data?.applicationStatus) {
+      console.log();
+      setApplicationStatus((prev) => {
+        return res.data?.applicationStatus?.status?.map((s) => {
+          return { title: s };
+        });
+      });
+    }
+    return res.data;
+  };
+
+  const {
+    data: ApplicationStatusData,
+    error: ApplicationStatusError,
+    isLoading: ApplicationStatusLoading,
+    isFetching: ApplicationStatusFetching,
+  } = useQuery({
+    queryKey: ["application-status", jobApplicationId],
+    queryFn: getApplicationStatus,
+    staleTime: 1000 * 60,
+    gcTime: 0,
+    enabled: user_id !== null ? true : false,
   });
 
   const [saved, setSaved] = useState(false);
@@ -181,7 +218,6 @@ const JobApplicatioWithSimilarApplication = () => {
     job_role,
   } = jobApplicationData?.job || {};
 
-  console.log(jobApplicationData);
 
   const {
     company_name,
@@ -190,18 +226,6 @@ const JobApplicatioWithSimilarApplication = () => {
   } = jobApplicationData?.company || {};
 
   if (jobApplicationData) {
-    const applicationStatus = [
-      {
-        title: "Applied",
-        status: "finish",
-      },
-      {
-        title: "Viewed",
-        status: "finish",
-      },
-      
-    ];
-
     return (
       <MainContext>
         <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10  !pb-2 ">
@@ -209,14 +233,16 @@ const JobApplicatioWithSimilarApplication = () => {
             <div className="w-full  lg:w-[55%] job-apply-section">
               <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit relative">
                 <img
-                  className="border border-gray-100  absolute top-2 right-2 md:top-10 md:right-10 w-16 h-16 rounded-lg"
+                  className="border border-gray-100  absolute top-2 right-2 md:top-10 md:right-10 w-12 h-12 md:w-16 md:h-16 rounded-lg"
                   src={img?.url}
                   alt={company_name}
                 />
-                <h1 className="text-[1.3rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
+                <h1 className="text-[1.1rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
                   {jobTitle}
                 </h1>
-                <h3 className="font-light mt-5">{company_name}</h3>
+                <h3 className="text-sm font-light mt-1 max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
+                  {company_name}
+                </h3>
                 <div className="flex gap-2 text-sm">
                   <span className="flex center gap-1 text-sm ">
                     <IoIosBriefcase />{" "}
@@ -243,7 +269,7 @@ const JobApplicatioWithSimilarApplication = () => {
                 <hr className="mt-3 mb-2" />
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="flex center gap-1">
+                    <span className="flex center gap-1 text-sm">
                       <IoIosPeople /> Applicants : {applied_ids?.length}
                     </span>
                   </div>
@@ -297,27 +323,41 @@ const JobApplicatioWithSimilarApplication = () => {
                         color: "green",
                       }}
                     >
-                      {" "}
-                      Applied{" "}
+                      Applied
                     </div>
                   )}
                 </div>
 
                 {/* Application Status */}
 
-                {
-                  jobApplied && <div className="flex flex-col p-3 md:p-3 justify-start items-start mt-2">
-                  <h1 className="text-orange-600 text-[1.1rem]">Application Status</h1>
-                  <Steps
-                    className="font-outfit mt-4"
-                    progressDot
-                    size="small"
-                    direction="horizontal"
-                    current={1}
-                    items={applicationStatus}
-                  />
-                </div>
-                }
+                {jobApplied && (
+                  <div className="flex flex-col p-3 md:p-3 justify-start items-start mt-2">
+                    <h1 className="text-orange-600 text-[1.1rem]">
+                      Application Status
+                    </h1>
+
+                    {ApplicationStatusLoading || ApplicationStatusFetching ? (
+                      <div className="w-full h-[100px] ">
+                        <CustomSkeleton width="90%" height="100px" />
+                      </div>
+                    ) : isError ? (
+                      <div className="w-full h-[100px] flex center border border-gray-100 rounded-lg">
+                        <span className="text-[0.8rem] text-gray-500">
+                          Unable get Status
+                        </span>
+                      </div>
+                    ) : (
+                      <Steps
+                        className="font-outfit mt-4"
+                        progressDot
+                        size="small"
+                        direction="horizontal"
+                        current={applicationStatus?.length}
+                        items={applicationStatus}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
               <div className="w-full rounded-xl mt-8  h-fit bg-slate-50  p-2 md:p-10">
                 <h1 className="text-xl md:text-2xl font-semibold mb-4">
@@ -409,7 +449,7 @@ const JobApplicatioWithSimilarApplication = () => {
                 <h1 className="text-xl md:text-2xl font-semibold mb-4">
                   About Company
                 </h1>
-                <div className="font-outfit">
+                <div className="font-outfit text-sm md:text-[1rem]">
                   {company_description && (
                     <ReadMore content={company_description} maxLength={250} />
                   )}

@@ -22,8 +22,9 @@ function SignUp() {
       const res = await axiosInstance.post("/user/register", values);
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Registration successful!");
+      localStorage.setItem("authToken" ,data?.authToken)
       navigate("/user");
     },
     onError: (error) => {
@@ -41,6 +42,7 @@ function SignUp() {
     },
     onSuccess: () => {
       toast.success("Registration successful!");
+      localStorage.setItem("authToken" ,data?.authToken)
       navigate("/select-role");
     },
     onError: (error) => {
