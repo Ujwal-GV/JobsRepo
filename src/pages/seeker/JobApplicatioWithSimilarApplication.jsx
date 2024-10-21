@@ -15,6 +15,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { Steps } from "antd";
 import { useGetProfileData } from "./queries/ProfileQuery";
 import { CustomSkeleton } from "./CompanyAllPosts";
+import SomethingWentWrong from "../../components/SomethingWentWrong";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -65,6 +66,7 @@ const JobApplicatioWithSimilarApplication = () => {
     isError,
     error,
     isFetching,
+    isSuccess
   } = useQuery({
     queryKey: ["jobApplication", jobApplicationId],
     queryFn: () => fetchJobDetails(jobApplicationId),
@@ -79,11 +81,26 @@ const JobApplicatioWithSimilarApplication = () => {
     });
 
     if (res.data?.applicationStatus) {
-      console.log();
-      setApplicationStatus((prev) => {
-        return res.data?.applicationStatus?.status?.map((s) => {
-          return { title: s };
+      
+      let modifyStatus =[]
+
+      if(res.data?.applicationStatus?.status?.length === 1)
+      {
+         modifyStatus =  res.data?.applicationStatus?.status?.map((s) => {
+          return { title: s  ,status: "finish"};
         });
+        modifyStatus.push({title:"Viewed" ,status: "wait"})
+      } 
+      else{
+        modifyStatus = res.data?.applicationStatus?.status?.map((s) => {
+          return { title: s ,status: "finish" };
+        });
+      }
+      
+      console.log(modifyStatus)
+
+      setApplicationStatus((prev) => {
+        return [ ...modifyStatus ]
       });
     }
     return res.data;
@@ -197,8 +214,8 @@ const JobApplicatioWithSimilarApplication = () => {
   if (isLoading || isFetching) {
     return <Loading />;
   }
-  if (isError) {
-    toast.error(error.response.data.message);
+  if (isError || error) {
+    return <SomethingWentWrong />
   }
 
   const {
@@ -225,7 +242,7 @@ const JobApplicatioWithSimilarApplication = () => {
     description: company_description,
   } = jobApplicationData?.company || {};
 
-  if (jobApplicationData) {
+  if (jobApplicationData && isSuccess) {
     return (
       <MainContext>
         <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10  !pb-2 ">

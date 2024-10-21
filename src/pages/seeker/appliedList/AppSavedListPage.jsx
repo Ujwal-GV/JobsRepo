@@ -128,7 +128,7 @@ const AppSavedListPage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 place-items-start bg-white min   w-[100%] lg:w-[80%] mx-auto  gap-2  p-1 mt-3">
                     {/* Job Applications List */}
 
-                    {savedList?.map((sdata, idx) => (
+                    {data?.pageData?.map((sdata, idx) => (
                       <SavedCard key={idx} data={sdata} onDelete={handleUnsavePOst}/>
                     ))}
                   </div>

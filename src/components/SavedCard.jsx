@@ -14,6 +14,7 @@ import { CustomSkeleton } from "../pages/seeker/CompanyAllPosts";
 const SavedCard = ({ data  ,onDelete =()=>{} }) => {
   const [appliedIds, setAppliedIds] = useState([]);
 
+
   const unsavedPost = async (jobId) => {
     const res = await axiosInstance.post("/user/job/unsave", { jobId: jobId });
     return res.data;
@@ -38,17 +39,7 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
 
   const {
     saved_app_info = {},
-    company = {},
-    applicationStatus = [
-      {
-        title: "Applied",
-        status: "finish",
-      },
-      {
-        title: "Viewed",
-        status: "wait",
-      },
-    ],
+    companyData = {},
   } = data || {};
 
   const { profileData } = useContext(AuthContext);
@@ -67,54 +58,54 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
     <div
       className="w-full md:max-w-full relative md:mx-auto rounded-xl h-[140px] p-2 border border-slate-300  primary-shadow-hover  font-outfit flex flex-col gap-1  justify-between items-center cursor-pointer"
       onClick={(e) => {
-        navigate(`/user/job-post/${saved_app_info?.job_id}`);
+        navigate(`/user/job-post/${data?.job_id}`);
       }}
     >
       <div className="flex justify-between gap-1 items-center w-full flex-1 px-4">
         <div className="flex flex-1 flex-col">
           <h5 className="text-[1rem]">
-            {saved_app_info?.title.length > 30
-              ? saved_app_info?.title.slice(0, 30) + "..."
-              : saved_app_info?.title}
+            {data?.title?.length > 30
+              ? data?.title?.slice(0, 30) + "..."
+              : data?.title}
           </h5>
           <h6 className="text-[0.9rem] font-light">
-            {company?.company_name.length > 30
-              ? company?.company_name?.slice(0, 30) + "..."
-              : company?.company_name}
+            {companyData?.company_name?.length > 30
+              ? companyData?.company_name?.slice(0, 30) + "..."
+              : companyData?.company_name}
           </h6>
           <span className="text-[0.8rem] flex justify-start items-center">
             <LiaRupeeSignSolid />{" "}
-            {saved_app_info?.package?.disclosed ? (
+            {data?.package?.disclosed ? (
               <>
-                {saved_app_info?.package?.min +
+                {data?.package?.min +
                   " - " +
-                  saved_app_info?.package?.max}
+                  data?.package?.max}
               </>
             ) : (
               "Not Disclosed"
             )}
           </span>
-          {saved_app_info?.experience && (
+          {data?.experience && (
             <span className="text-[0.8rem] flex justify-start items-center gap-1">
               <IoMdBriefcase />{" "}
-              {saved_app_info?.experience?.min +
+              {data?.experience?.min +
                 " - " +
-                saved_app_info?.experience?.max +
+                data?.experience?.max +
                 " yrs"}{" "}
             </span>
           )}
         </div>
         <div className="p-1 border border-gray-100 rounded-lg">
           <img
-            src={company?.img?.url}
+            src={companyData?.img?.url}
             className="h-[60px] w-[60px] p-1 text-[0.5rem] "
-            alt={company?.company_name}
+            alt={companyData?.company_name}
           />
         </div>
       </div>
       <div className="flex justify-end gap-2 items-center w-full text-[0.8rem]">
         {appliedIds?.find(
-          (idData) => idData?.jobId === saved_app_info?.job_id
+          (idData) => idData?.jobId === data?.job_id
         ) && (
           <CustomBadge text="Applied" bgcolor="#E2F7C5" text_color="green" />
         )}
@@ -122,12 +113,12 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
           className="p-1 bg-orange-600 rounded-full text-white flex center gap-1"
           onClick={(e) => {
             e.stopPropagation();
-            unsavePostMutation.mutate(saved_app_info?.job_id);
+            unsavePostMutation.mutate(data?.job_id);
           }}
         >
           {unsavePostMutation.isPending && (
             <LuLoader2 className="animate-spin-slow text-white  " />
-          )}{" "}
+          )}
           Delete
         </button>
       </div>

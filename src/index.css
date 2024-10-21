@@ -381,3 +381,29 @@ input::placeholder{
   box-shadow: none !important;
 }
 
+.animate-slow-bounce{
+  animation: bounceAnimation  3s infinite linear;
+}
+
+
+@keyframes bounceAnimation {
+
+  0%{
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50%{
+    transform: translateY(-20px) rotate(10deg);
+
+  }
+  100%{
+    transform: translateY(0) rotate(0deg);
+  }
+  
+}
+
+.astronut-img{
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
+}
+
+

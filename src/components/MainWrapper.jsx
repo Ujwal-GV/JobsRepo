@@ -7,12 +7,14 @@ const MainWrapper = () => {
 
      if(localStorage.getItem("authToken"))
      {
-      const {isError,error}   = useGetProfileData()
+      useGetProfileData()
      }
      const location = useLocation();
      useEffect(()=>{
          sessionStorage.setItem("location" ,location.pathname)
      },[location])
+
+
   return (
     <div className='w-full relative max-w-[1800px] mx-auto'>
       <Navbar/>

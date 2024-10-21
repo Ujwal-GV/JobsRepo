@@ -15,7 +15,7 @@ import { Pagination } from "antd";
 const JobAppliedList = () => {
   const [totalData_pagination, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize,setPageSize]= useState(10)
   const queryClinet = useQueryClient();
 
   const getAppliedData = async () => {
@@ -25,14 +25,13 @@ const JobAppliedList = () => {
         limit: pageSize,
       },
     });
-    console.log(res.data)
     if (res.data?.totalData) {
       setTotalData(res.data?.totalData);
     }
     return res.data;
   };
 
-  
+
 
   const { isLoading, isFetching, isError, error, data } = useQuery({
     queryKey: ["applied_list", currentPage],
