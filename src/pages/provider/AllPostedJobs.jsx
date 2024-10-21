@@ -24,6 +24,8 @@ const AllPostedJobs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
   const limit = 3;  // Number of applicants per page
+  const [totalData, setTotalData] = useState(0);
+  const totalPages = Math.ceil(totalData / limit);
 
   useEffect(()=>{
       if(profileData?.application_applied_info?.jobs?.find((id)=>id.jobId === jobApplicationId)) {
@@ -92,6 +94,9 @@ const AllPostedJobs = () => {
 
       if (response.data) {
         console.log("Applicants_Response:", response.data.job);
+        setTotalData(response.data.job.applied_ids.length);
+        console.log(totalData);
+        
         return response.data;
       } else {
         throw new Error("No applicants found");
@@ -102,12 +107,14 @@ const AllPostedJobs = () => {
   };
 
   const handleViewClick = (userId) => {
-    navigate(`/provider/view-candidate/${userId}`);
+    navigate(`/provider/view-candidate/${jobApplicationId}/${userId}`);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  const handlePageChange = (val) => {
+    if (val <= totalPages && val > 0) {
+      setCurrentPage(val);
+    }
+  };  
 
   useEffect(() => {
     if (applicantsData && applicantsData.job && applicantsData.job.User_info) {
@@ -172,7 +179,7 @@ const AllPostedJobs = () => {
                 {/* Company and Job Info */}
                 <div className="w-full rounded-xl h-fit bg-white p-6 shadow-lg font-outfit relative">
                   <img 
-                    src={img?.url} 
+                    src={img} 
                     alt={company_name} 
                     className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
                   />
@@ -301,52 +308,76 @@ const AllPostedJobs = () => {
           ) : (
             <div className="grid h-auto grid-cols-1 gap-4 text-sm">
               {applicants && applicants.length > 0 ? (
-                applicants.map((applicant) => (
-                  <>
+                <>
+                  {applicants.map((applicant) => (
                     <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
-                    <h2 className="font-semibold text-lg text-gray-800">{applicant.name}</h2>
-                    <div className="w-[60px] h-[60px] absolute right-4 top-4 rounded-full bg-gray-200 overflow-hidden shadow-md">
-                      <img
-                        src={applicant.profile_details.profileImg}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
+                      <h2 className="font-semibold text-lg text-gray-800">{applicant.name}</h2>
+                      <div className="w-[60px] h-[60px] absolute right-4 top-4 rounded-full bg-gray-200 overflow-hidden shadow-md">
+                        <img
+                          src={applicant.profile_details.profileImg}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p>
+                      <div className="mt-3 mb-2">
+                        <h4 className="font-semibold text-gray-700">Skills:</h4>
+                        {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {applicant.profile_details.skills.map((skill, index) => (
+                              <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm shadow-sm">
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500">No skills added</p>
+                        )}
+                      </div>
+                      <hr className="mt-3 mb-3 border-gray-200" />
+                      <button
+                        className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-700 transition-colors duration-200 ease-in-out shadow-md"
+                        onClick={() => handleViewClick(applicant.user_id)}
+                      >
+                        <FaEye className="mr-2" /> View Profile
+                      </button>
                     </div>
-                    <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p>
-                    <div className="mt-3 mb-2">
-                      <h4 className="font-semibold text-gray-700">Skills:</h4>
-                      {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {applicant.profile_details.skills.map((skill, index) => (
-                            <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm shadow-sm">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">No skills added</p>
-                      )}
-                    </div>
-                    <hr className="mt-3 mb-3 border-gray-200" />
-                    <button
-                      className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-700 transition-colors duration-200 ease-in-out shadow-md"
-                      onClick={() => handleViewClick(applicant.user_id)}
-                    >
-                      <FaEye className="mr-2" /> View Profile
-                    </button>
-                  </div>
-                   {/* Pagination */}
+                  ))}
+                  {/* Pagination */}
                   <div className="mt-4 flex justify-center">
                     <Pagination
-                      total={20}
+                      disabled={isLoading || isFetching}
                       pageSize={limit}
+                      total={totalData}
+                      defaultCurrent={1}
                       current={currentPage}
-                      onChange={handlePageChange}
+                      onChange={(page) => handlePageChange(page)}
                       className="pagination"
+                      showSizeChanger={false}
+                      prevIcon={
+                        <button
+                          disabled={isLoading || isFetching || currentPage === 1}
+                          className={"hidden md:flex " + (currentPage === 1 && " !hidden")}
+                          style={{ border: "none", background: "none" }}
+                        >
+                          ← Prev
+                        </button>
+                      }
+                      nextIcon={
+                        <button
+                          disabled={isLoading || isFetching || currentPage >= totalPages}
+                          className={
+                            "hidden md:flex " + 
+                            (currentPage < totalPages ? "" : "!hidden")
+                          }
+                          style={{ border: "none", background: "none" }}
+                        >
+                          Next →
+                        </button>
+                      }
                     />
                   </div>
-                  </>
-                ))
+                </>
               ) : (
                 <div className="w-full flex flex-col items-center">
                   <p className="text-lg text-gray-500">No applicants found</p>

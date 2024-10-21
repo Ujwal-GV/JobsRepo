@@ -8,6 +8,7 @@ import SeachInput from "../../components/SeachInput";
 import { FaEye } from "react-icons/fa6";
 import { IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
+import { FaExclamationCircle } from 'react-icons/fa';
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
@@ -107,8 +108,9 @@ function ProviderMainPage() {
             </div>
           ))
         ) : error ? (
-          <div className="text-center flex flex-col my-auto text-gray-500">
-            Error fetching jobs
+          <div className="text-center flex flex-col items-center gap-4 mx-auto my-auto text-gray-500">
+            <span><FaExclamationCircle className="text-2xl text-red-500" /></span>
+            <span>Error fetching jobs</span>
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center flex flex-col my-auto text-gray-500">

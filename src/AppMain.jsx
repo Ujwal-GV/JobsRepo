@@ -70,7 +70,7 @@ const AppMain = () => {
               <Route path = "/provider/post-job/:id" element = { <JobDetails/> } />
               <Route path = "/provider/profile" element={ <ProviderProfile/> } />
               <Route path = '/provider/all-jobs/:id' element = { <AllPostedJobs /> } />
-              <Route path = '/provider/view-candidate/:user_id' element = { <ViewCandidate /> } />
+              <Route path = '/provider/view-candidate/:job_id/:user_id' element = { <ViewCandidate /> } />
               <Route path = "/provider/business-post" element = { <BusinessPost /> } />
           </Route> 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>
