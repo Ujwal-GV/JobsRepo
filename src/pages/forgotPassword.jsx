@@ -3,7 +3,6 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import { forgotPasswordValidationSchema } from '../formikYup/ValidationSchema';
 import InputBox from '../components/InputBox';
 import { FaEnvelope } from 'react-icons/fa';
-import axios from 'axios';
 import { axiosInstance } from '../utils/axiosInstance';
 import toast from 'react-hot-toast';
 
@@ -18,12 +17,11 @@ function ForgotPassword() {
       });
 
       if (response.status === 200) {
-        toast.success(`Password reset link has been sent to: ${values.email}`);
+        toast.success(`Password reset link has been sent to: ${values.email}`,{duration:1000*6});
       }
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Failed to send reset link. Please try again.';
-      alert(errorMsg);
-      console.log(error)
+      toast.error(errorMsg)
     } finally {
       setLoading(false);
     }

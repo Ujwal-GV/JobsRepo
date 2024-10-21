@@ -7,7 +7,6 @@ import { IoMdClose } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
 import { AutoComplete, DatePicker, message, Select, Spin } from "antd";
-import axios from "axios";
 import "antd/dist/reset.css";
 import dayjs from "dayjs";
 import { FaPhoneAlt, FaSave } from "react-icons/fa";
@@ -33,6 +32,7 @@ import { LuLoader2 } from "react-icons/lu";
 import { HiOutlineEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { userPersonalDetailsSchema } from "../../formikYup/ValidationSchema";
+import SomethingWentWrong from "../../components/SomethingWentWrong";
 
 const { TextArea } = Input;
 
@@ -188,6 +188,8 @@ const UserProfile = () => {
     data,
     isLoading: profileDataLoading,
     isFetching,
+    isSuccess,
+    isError,error
   } = useGetProfileData();
 
   const updatePersonalDetailsProfile = async (val) => {
@@ -401,308 +403,316 @@ const UserProfile = () => {
     return <Loading />;
   }
 
-  return (
-    <MainContext>
-      <div className="w-full min-h-screen bg-slate-50 p-5">
-        <div className="w-full min-h-screen  relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
-          {/* BreadCrumbs */}
+  if(isError || error)
+  {
+    return <SomethingWentWrong/>
+  }
 
-          <div className="w-full flex center py-3 pt-2   bg-slate-100">
-            <CustomBreadCrumbs
-              items={[
-                {
-                  path: "/user",
-                  icon: <CiHome />,
-                  title: "Home",
-                },
-                { title: "Profile", icon: <CiUser /> },
-              ]}
-            />
-          </div>
-
-          {/* Avatar and PersonalDetails */}
-          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2  h-fit mx-auto">
-            <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
-              <ProfileAvatar
-                url={profileImg}
-                onChange={(val) => profilePhotoUploadMutation.mutate(val)}
+  if(isSuccess)
+  {
+    return (
+      <MainContext>
+        <div className="w-full min-h-screen bg-slate-50 p-5">
+          <div className="w-full min-h-screen  relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
+            {/* BreadCrumbs */}
+  
+            <div className="w-full flex center py-3 pt-2   bg-slate-100">
+              <CustomBreadCrumbs
+                items={[
+                  {
+                    path: "/user",
+                    icon: <CiHome />,
+                    title: "Home",
+                  },
+                  { title: "Profile", icon: <CiUser /> },
+                ]}
               />
             </div>
-
-            {/* Profile Application Deatils */}
-
-            <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
-              <MdEdit
-                className="absolute top-2 right-2  cursor-pointer"
-                onClick={() => {
-                  setPersonalDetailsModalOpen(true);
-                  freezeBody();
-                }}
-              />
-              <h1>{personalDetails.fullName}</h1>
-              <h1 className="flex justify-start items-center gap-1">
-                <MdEmail className="text-orange-600" />
-                {personalDetails.email}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                <FaPhoneAlt className="text-orange-600" />
-                {personalDetails.mobile || "Mobile"}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                {personalDetails.gender.toLowerCase() === "male" && (
-                  <IoIosMale className="text-orange-600" />
-                )}
-                {personalDetails.gender.toLowerCase() === "female" && (
-                  <IoIosFemale className="text-orange-600" />
-                )}
-                {personalDetails.gender.toLowerCase() === "transgender" && (
-                  <IoMdTransgender className="text-orange-600" />
-                )}
-                {personalDetails.gender}
-              </h1>
+  
+            {/* Avatar and PersonalDetails */}
+            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2  h-fit mx-auto">
+              <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
+                <ProfileAvatar
+                  url={profileImg}
+                  onChange={(val) => profilePhotoUploadMutation.mutate(val)}
+                />
+              </div>
+  
+              {/* Profile Application Deatils */}
+  
+              <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
+                <MdEdit
+                  className="absolute top-2 right-2  cursor-pointer"
+                  onClick={() => {
+                    setPersonalDetailsModalOpen(true);
+                    freezeBody();
+                  }}
+                />
+                <h1>{personalDetails.fullName}</h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  <MdEmail className="text-orange-600" />
+                  {personalDetails.email}
+                </h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  <FaPhoneAlt className="text-orange-600" />
+                  {personalDetails.mobile || "Mobile"}
+                </h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  {personalDetails.gender.toLowerCase() === "male" && (
+                    <IoIosMale className="text-orange-600" />
+                  )}
+                  {personalDetails.gender.toLowerCase() === "female" && (
+                    <IoIosFemale className="text-orange-600" />
+                  )}
+                  {personalDetails.gender.toLowerCase() === "transgender" && (
+                    <IoMdTransgender className="text-orange-600" />
+                  )}
+                  {personalDetails.gender}
+                </h1>
+              </div>
             </div>
-          </div>
-
-          {/* Other Profile Details */}
-
-          <div className="w-[100%]   mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
-            <DeatilsBadge
-              icon={<BiSolidBadgeCheck className="text-green-600" />}
-              title="Jobs Applied"
-              val={profileData?.application_applied_info?.jobs?.length || 0}
-              onClick={() => navigate("/user/applied-job-list")}
-            />
-            <DeatilsBadge
-              icon={<FaSave className=" text-orange-600" />}
-              title="Saved"
-              val={profileData?.saved_info?.jobs?.length}
-              onClick={() => navigate("/user/saved-job-list")}
-            />
-            <DeatilsBadge
-              icon={<AiFillProject className="text-green-600 rotate-180" />}
-              title="Projects Applied"
-              val={profileData?.application_applied_info?.projects?.length || 0}
-            />
-          </div>
-          <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2">
-            {/* Section 1 */}
-
-            {/* <div className="part-1 flex-1"> */}
-            <ProfileInputWrapper>
-              <ProfileInfoField
-                title="Profile Summary"
-                icon={profileSummary?.trim() === "" ? "Add" : "Edit"}
-                editOnClick={() => {
-                  setSummaryModalOpen(true);
-                  freezeBody();
-                }}
-              >
-                <div className="flex flex-wrap gap-1 w-full pb-2 ">
-                  {!profileSummary ? (
-                    <div className="w-full gap-1 center flex">
-                      <TbMoodEmptyFilled /> Add Summary About Your Profile
-                    </div>
-                  ) : (
-                    <>
-                      <div className="w-full h-full text-wrap bg-white p-2 rounded-lg  break-words text-gray-500 font-roboto">
-                        {profileSummary}
+  
+            {/* Other Profile Details */}
+  
+            <div className="w-[100%]   mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
+              <DeatilsBadge
+                icon={<BiSolidBadgeCheck className="text-green-600" />}
+                title="Jobs Applied"
+                val={profileData?.application_applied_info?.jobs?.length || 0}
+                onClick={() => navigate("/user/applied-job-list")}
+              />
+              <DeatilsBadge
+                icon={<FaSave className=" text-orange-600" />}
+                title="Saved"
+                val={profileData?.saved_info?.jobs?.length}
+                onClick={() => navigate("/user/saved-job-list")}
+              />
+              <DeatilsBadge
+                icon={<AiFillProject className="text-green-600 rotate-180" />}
+                title="Projects Applied"
+                val={profileData?.application_applied_info?.projects?.length || 0}
+              />
+            </div>
+            <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2">
+              {/* Section 1 */}
+  
+              {/* <div className="part-1 flex-1"> */}
+              <ProfileInputWrapper>
+                <ProfileInfoField
+                  title="Profile Summary"
+                  icon={profileSummary?.trim() === "" ? "Add" : "Edit"}
+                  editOnClick={() => {
+                    setSummaryModalOpen(true);
+                    freezeBody();
+                  }}
+                >
+                  <div className="flex flex-wrap gap-1 w-full pb-2 ">
+                    {!profileSummary ? (
+                      <div className="w-full gap-1 center flex">
+                        <TbMoodEmptyFilled /> Add Summary About Your Profile
                       </div>
-                    </>
-                  )}
-                </div>
-              </ProfileInfoField>
-            </ProfileInputWrapper>
-
-            <ProfileInputWrapper>
-              <ProfileInfoField
-                title="Skills"
-                editOnClick={() => {
-                  setSkillModalOpen(true);
-                  freezeBody();
-                }}
-              >
-                <div className="flex flex-wrap gap-1 w-full md:max-h-[100px] custom-scroll-nowidth overflow-auto">
-                  {profileSkills.length === 0 ? (
-                    <div className="w-full gap-1 center flex">
-                      <TbMoodEmptyFilled /> No Skills Selected
-                    </div>
-                  ) : (
-                    <>
-                      {profileSkills.map((skill) => (
-                        <Tag val={skill.value} key={skill.label} />
-                      ))}
-                    </>
-                  )}
-                </div>
-              </ProfileInfoField>
-            </ProfileInputWrapper>
-
-            <ProfileInputWrapper>
-              <ProfileInfoField
-                title="Education"
-                icon={
-                  Object.values(profileEducationDetails).some(
-                    (s) => s !== null && s !== ""
-                  )
-                    ? "Edit"
-                    : "Add"
-                }
-                editOnClick={() => {
-                  setEducationModalOpen(true);
-                  freezeBody();
-                }}
-              >
-                <div className="w-full md:min-h-[100px] flex center">
-                  {Object.values(profileEducationDetails).some(
-                    (s) => s !== null && s !== ""
-                  ) ? (
-                    <EducationCard
-                      profileEducationDetails={profileEducationDetails}
-                      key={"edu-card"}
-                    />
-                  ) : (
-                    <div className="flex center w-full ">
-                      <TbMoodEmptyFilled /> No Data Found
-                    </div>
-                  )}
-                </div>
-              </ProfileInfoField>
-            </ProfileInputWrapper>
-            {/* </div>
-            <div className="part-2 flex-1"> */}
-            <ProfileInputWrapper>
-              <ProfileInfoField
-                title="Internship"
-                editOnClick={() => {
-                  setInternShipModalOpen(true), setIntershipDetails({});
-                  freezeBody();
-                }}
-              >
-                <div className="w-full md:min-h-[100px] flex center flex-col">
-                  {Object.keys(listOfIntership).length !== 0 ? (
-                    <>
-                      {Object.values(listOfIntership).map((idata, idx) => (
-                        <div
-                          className="flex w-full justify-start items-start gap-1 "
-                          key={idx}
-                        >
-                          <KeyHighlightsListItem
-                            icon={<HiBadgeCheck className="text-green-700" />}
-                          />
-                          <InternShipCard
-                            key={idata.company}
-                            profileIntershipDetails={{ ...idata }}
-                            onEditCLick={() => {
-                              handleIntershipDetails({
-                                ...idata,
-                                index: idx,
-                              });
-                              setInternShipModalOpen(true);
-                            }}
-                          />
+                    ) : (
+                      <>
+                        <div className="w-full h-full text-wrap bg-white p-2 rounded-lg  break-words text-gray-500 font-roboto">
+                          {profileSummary}
                         </div>
-                      ))}
-                    </>
-                  ) : (
-                    <div className="flex center w-full ">
-                      <TbMoodEmptyFilled /> No Data Found
-                    </div>
-                  )}
-                </div>
-              </ProfileInfoField>
-            </ProfileInputWrapper>
-            {/* </div> */}
-
-            <ProfileInputWrapper>
-              <ProfileInfoField
-                title="Resume"
-                editOnClick={() => {}}
-                showIcon={false}
-              >
-                <ResumeUploader />
-              </ProfileInfoField>
-            </ProfileInputWrapper>
+                      </>
+                    )}
+                  </div>
+                </ProfileInfoField>
+              </ProfileInputWrapper>
+  
+              <ProfileInputWrapper>
+                <ProfileInfoField
+                  title="Skills"
+                  editOnClick={() => {
+                    setSkillModalOpen(true);
+                    freezeBody();
+                  }}
+                >
+                  <div className="flex flex-wrap gap-1 w-full md:max-h-[100px] custom-scroll-nowidth overflow-auto">
+                    {profileSkills.length === 0 ? (
+                      <div className="w-full gap-1 center flex">
+                        <TbMoodEmptyFilled /> No Skills Selected
+                      </div>
+                    ) : (
+                      <>
+                        {profileSkills.map((skill) => (
+                          <Tag val={skill.value} key={skill.label} />
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </ProfileInfoField>
+              </ProfileInputWrapper>
+  
+              <ProfileInputWrapper>
+                <ProfileInfoField
+                  title="Education"
+                  icon={
+                    Object.values(profileEducationDetails).some(
+                      (s) => s !== null && s !== ""
+                    )
+                      ? "Edit"
+                      : "Add"
+                  }
+                  editOnClick={() => {
+                    setEducationModalOpen(true);
+                    freezeBody();
+                  }}
+                >
+                  <div className="w-full md:min-h-[100px] flex center">
+                    {Object.values(profileEducationDetails).some(
+                      (s) => s !== null && s !== ""
+                    ) ? (
+                      <EducationCard
+                        profileEducationDetails={profileEducationDetails}
+                        key={"edu-card"}
+                      />
+                    ) : (
+                      <div className="flex center w-full ">
+                        <TbMoodEmptyFilled /> No Data Found
+                      </div>
+                    )}
+                  </div>
+                </ProfileInfoField>
+              </ProfileInputWrapper>
+              {/* </div>
+              <div className="part-2 flex-1"> */}
+              <ProfileInputWrapper>
+                <ProfileInfoField
+                  title="Internship"
+                  editOnClick={() => {
+                    setInternShipModalOpen(true), setIntershipDetails({});
+                    freezeBody();
+                  }}
+                >
+                  <div className="w-full md:min-h-[100px] flex center flex-col">
+                    {Object.keys(listOfIntership).length !== 0 ? (
+                      <>
+                        {Object.values(listOfIntership).map((idata, idx) => (
+                          <div
+                            className="flex w-full justify-start items-start gap-1 "
+                            key={idx}
+                          >
+                            <KeyHighlightsListItem
+                              icon={<HiBadgeCheck className="text-green-700" />}
+                            />
+                            <InternShipCard
+                              key={idata.company}
+                              profileIntershipDetails={{ ...idata }}
+                              onEditCLick={() => {
+                                handleIntershipDetails({
+                                  ...idata,
+                                  index: idx,
+                                });
+                                setInternShipModalOpen(true);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="flex center w-full ">
+                        <TbMoodEmptyFilled /> No Data Found
+                      </div>
+                    )}
+                  </div>
+                </ProfileInfoField>
+              </ProfileInputWrapper>
+              {/* </div> */}
+  
+              <ProfileInputWrapper>
+                <ProfileInfoField
+                  title="Resume"
+                  editOnClick={() => {}}
+                  showIcon={false}
+                >
+                  <ResumeUploader />
+                </ProfileInfoField>
+              </ProfileInputWrapper>
+            </div>
+  
+            {/* All Modals  */}
           </div>
-
-          {/* All Modals  */}
         </div>
-      </div>
-      <AnimatePresence>
-        {skillModalOpen && (
-          <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-            <ProfileSkillModal
-              saveLoading={profileSkillsMutation.isPending}
-              open={skillModalOpen}
-              onClose={() => {
-                setSkillModalOpen(false);
-                freeBody();
-              }}
-              defaulsSkills={profileSkills}
-              onChange={handleSkillsChange}
-            />
-          </AnimateEnterExit>
-        )}
-
-        {educationModalOpen && (
-          <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-            <ProfileEducationModal
-              saveLoading={profileEducationMutation.isPending}
-              open={educationModalOpen}
-              onClose={() => {
-                setEducationModalOpen(false);
-                freeBody();
-              }}
-              onChange={handleEducatioDetails}
-              value={profileEducationDetails}
-            />
-          </AnimateEnterExit>
-        )}
-
-        {personalDetailsModalOpen && (
-          <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-            <ProfilePersonalDetailsModal
-              open={personalDetailsModalOpen}
-              onClose={() => {
-                setPersonalDetailsModalOpen(false);
-                freeBody();
-              }}
-              value={personalDetails}
-              onChange={handlePersonalDetails}
-            />
-          </AnimateEnterExit>
-        )}
-
-        {summaryModalOpen && (
-          <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-            <ProfileSummaryModal
-              open={summaryModalOpen}
-              onClose={() => {
-                setSummaryModalOpen(false);
-                freeBody();
-              }}
-              value={profileSummary}
-              onSummaryChange={handleSummaryChange}
-            />
-          </AnimateEnterExit>
-        )}
-
-        {intershipModalOpen && (
-          <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-            <ProfileIntershipModal
-              open={intershipModalOpen}
-              onClose={() => {
-                setInternShipModalOpen(false);
-                freeBody();
-              }}
-              value={intershipDetails}
-              addInterShipData={addIntershipDataToList}
-              onDeleteInternship={deleteIntershipDataFromList}
-            />
-          </AnimateEnterExit>
-        )}
-      </AnimatePresence>
-    </MainContext>
-  );
+        <AnimatePresence>
+          {skillModalOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+              <ProfileSkillModal
+                saveLoading={profileSkillsMutation.isPending}
+                open={skillModalOpen}
+                onClose={() => {
+                  setSkillModalOpen(false);
+                  freeBody();
+                }}
+                defaulsSkills={profileSkills}
+                onChange={handleSkillsChange}
+              />
+            </AnimateEnterExit>
+          )}
+  
+          {educationModalOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+              <ProfileEducationModal
+                saveLoading={profileEducationMutation.isPending}
+                open={educationModalOpen}
+                onClose={() => {
+                  setEducationModalOpen(false);
+                  freeBody();
+                }}
+                onChange={handleEducatioDetails}
+                value={profileEducationDetails}
+              />
+            </AnimateEnterExit>
+          )}
+  
+          {personalDetailsModalOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+              <ProfilePersonalDetailsModal
+                open={personalDetailsModalOpen}
+                onClose={() => {
+                  setPersonalDetailsModalOpen(false);
+                  freeBody();
+                }}
+                value={personalDetails}
+                onChange={handlePersonalDetails}
+              />
+            </AnimateEnterExit>
+          )}
+  
+          {summaryModalOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+              <ProfileSummaryModal
+                open={summaryModalOpen}
+                onClose={() => {
+                  setSummaryModalOpen(false);
+                  freeBody();
+                }}
+                value={profileSummary}
+                onSummaryChange={handleSummaryChange}
+              />
+            </AnimateEnterExit>
+          )}
+  
+          {intershipModalOpen && (
+            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+              <ProfileIntershipModal
+                open={intershipModalOpen}
+                onClose={() => {
+                  setInternShipModalOpen(false);
+                  freeBody();
+                }}
+                value={intershipDetails}
+                addInterShipData={addIntershipDataToList}
+                onDeleteInternship={deleteIntershipDataFromList}
+              />
+            </AnimateEnterExit>
+          )}
+        </AnimatePresence>
+      </MainContext>
+    );
+  }
 };
 
 export default UserProfile;

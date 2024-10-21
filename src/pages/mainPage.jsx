@@ -14,10 +14,10 @@ import JobCard, { JobCardSkeleton } from "../components/JobCard";
 import CompanyCard, { CompanyCardSkeleton } from "../components/CompanyCard";
 import ProjectCard from "../components/ProjectCard";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance, getError } from "../utils/axiosInstance";
+import SomethingWentWrong from "../components/SomethingWentWrong";
 
 const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   return (
@@ -44,7 +44,7 @@ function MainPage() {
   const navigate = useNavigate();
 
   const fetchJobs = async () => {
-    const res = await axios.get("http://localhost:8087/jobs?limit=10");
+    const res = await axiosInstance.get("/jobs?limit=10",{params:{suggestion:true}});
     return res.data.pageData;
   };
 
@@ -56,7 +56,7 @@ function MainPage() {
 
 
 
-  const { data: jobsData, isLoading: jobsDataLoading } = useQuery({
+  const { data: jobsData, isLoading: jobsDataLoading ,isError:jobDataError ,isSuccess:jobDataSuccess  } = useQuery({
     queryKey: ["jobsData"],
     queryFn: fetchJobs,
     staleTime: 300000,
@@ -68,7 +68,7 @@ function MainPage() {
     },
   });
 
-  const { data: companiesData, isLoading: companyDataLoading } = useQuery({
+  const { data: companiesData, isLoading: companyDataLoading ,isError:companyDataError ,isSuccess:companyDataSuccess} = useQuery({
     queryKey: ["companyData"],
     queryFn: fetchCompanies,
     staleTime: 300000,
@@ -79,6 +79,7 @@ function MainPage() {
       toast.error("Something went wrong while fetching jobs");
     },
   });
+
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
