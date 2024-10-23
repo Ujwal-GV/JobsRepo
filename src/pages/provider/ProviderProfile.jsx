@@ -26,6 +26,7 @@ import { useGetProviderProfileData } from "../provider/queries/ProviderProfileQu
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getError } from '../../utils/axiosInstance';
 import { urlValidationSchema } from "../../formikYup/ValidationSchema";
+import SomethingWentWrong from "../../components/SomethingWentWrong";
 
 
 const { TextArea } = Input;
@@ -36,7 +37,7 @@ const ProviderProfile = () => {
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
   const [companyLinkModel, setCompanyLinkModel] = useState(false);
 
-  const { profileData } = useContext(AuthContext);
+  const { profileData, setProfileData } = useContext(AuthContext);
 
   console.log("Provider_Details:", profileData);
   
@@ -52,6 +53,7 @@ const ProviderProfile = () => {
         }
       });
 
+      setProviderProfileImg(profileData?.img);
       setCompanySummary(profileData?.description);
       const links = {};
       profileData.company_links.forEach((link, idx) => {
@@ -68,7 +70,7 @@ const ProviderProfile = () => {
     location: profileData?.location || "",
   });
 
-  const [providerProfileImg, setProviderProfileImg] = useState(profileData?.img?.url);
+  const [providerProfileImg, setProviderProfileImg] = useState("");
   const [companySummary, setCompanySummary] = useState("");
   const [companyLinksList, setCompanyLinksList] = useState({});
   const [compayLinks, setCompanyLinks] = useState({});
@@ -90,7 +92,13 @@ const ProviderProfile = () => {
   };
 
   const queryClient = useQueryClient();
-  const {data,isLoading:profileDataLoading,isFetching} = useGetProviderProfileData();
+  const {
+    data,
+    isLoading:profileDataLoading,
+    isFetching,
+    isSuccess,
+    isError,error
+  } = useGetProviderProfileData();
   console.log(profileDataLoading,isFetching);
 
 
@@ -110,13 +118,13 @@ const ProviderProfile = () => {
       toast.success("Profile Updated");
       setpersonalDetailsModelOpen(false);
       freeBody();
-      
       setPersonalDetails((prev) => {
         return {
           ...prev,
           ...variables
         };
       });
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
     },
     onError: (error) => {
@@ -142,6 +150,7 @@ const ProviderProfile = () => {
     mutationFn:uploadProfilePhoto,
     onSuccess:(val,variables)=>{
        toast.success("Profile Photo Updated Sucessfully");
+       setProfileData(val);
        queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
       //  console.log(val , variables)
        setProviderProfileImg(variables);
@@ -169,6 +178,8 @@ const ProviderProfile = () => {
     onSuccess: (val) => {
       toast.success("Company website links updated successfully");
       setCompanyLinkModel(false);
+      freeBody();
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ['provider_profile'] });
     },
     onError: (error) => {
@@ -209,6 +220,7 @@ const ProviderProfile = () => {
       setSummaryModelOpen(false);
       freeBody();
       setCompanySummary(variables);
+      setProfileData(val);
       queryClient.invalidateQueries[{ queryKey: 'provider_profile' }];
     },
     onError: (error) => {
@@ -227,223 +239,238 @@ const ProviderProfile = () => {
     return <Loading/>
   }
 
-  return (
-    <MainContext>
-      <div className="w-full h-screen bg-slate-50 ">
-        <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
-          {/* BreadCrumbs */}
+  if(isError || error) {
+    <SomethingWentWrong />
+  }
 
-          <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
-            <CustomBreadCrumbs
-              items={[
-                {
-                  path: "/provider",
-                  icon: <CiHome />,
-                  title: "Home",
-                },
-                { title: "Profile", icon: <CiUser /> },
-              ]}
-            />
-          </div>
-
-          {/* Avatar and PersonalDetails */}
-
-
-          <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 relative top-0 pt-2   h-fit mx-auto">
-
-            <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
-              <ProfileAvatar url={providerProfileImg} onChange={(val)=>providerProfilePhotoUploadMutation.mutate(val)} />
-            </div>
-
-            {/* Profile Application Deatils */}
-
-            <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-5 rounded-xl relative">
-              <MdEdit
-                className="absolute top-2 right-2  cursor-pointer" 
-                onClick={() => { 
-                  setpersonalDetailsModelOpen(true);
-                  freezeBody();
-                }}
+  if(isSuccess) {
+    return (
+      <MainContext>
+        <div className="w-full h-screen bg-slate-50 ">
+          <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
+            {/* BreadCrumbs */}
+  
+            <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
+              <CustomBreadCrumbs
+                items={[
+                  {
+                    path: "/provider",
+                    icon: <CiHome />,
+                    title: "Home",
+                  },
+                  { title: "Profile", icon: <CiUser /> },
+                ]}
               />
-              <h1 className="flex justify-start text-3xl font-bold items-center gap-1">
-                <BiSolidBadgeCheck className="text-orange-600" />
-                {personalDetails.companyName || "Company Name"}
-              </h1>
-              <hr className="m-2" />
-              <h1 className="flex justify-start items-center gap-1">
-                <BiKey className="text-orange-600" />
-                {personalDetails.company_id || "Company ID"}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                <MdEmail className="text-orange-600" />
-                {personalDetails.email || "Email"}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                {" "}
-                <FaPhoneAlt className="text-orange-600" />{" "}
-                {personalDetails.mobile || "Mobile"}
-              </h1>
-              <h1 className="flex justify-start items-center gap-1">
-                {" "}
-                <FaLocationArrow className="text-orange-600" />{" "}
-                {personalDetails.location || "Location"}
-              </h1>
             </div>
-          </div>
-
-          {/* Other Profile Details */}
-
-          <div className="w-[100%] mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
-            <DeatilsBadge
-              icon={<BiSolidBadgeCheck className="text-green-600" />}
-              title="Jobs Posted"
-              val={profileData?.job_details?.jobs?.length || 0}
-            />
-            <DeatilsBadge
-              icon={<BiGroup className=" text-orange-600" />}
-              title="No. of Employees"
-              val={2001}
-            />
-          </div>
-
-          <div className="w-full  h-80 max-w-[90%] md:w-full mx-auto mt-4 flex flex-col lg:flex-row gap-2">
-          <div className="part-1 flex-1">
-              {/* Company Links Section */}
-              <CompanyInputWrapper>
-                <CompanyInfoField
-                  title="Company Link"
-                  icon={"Add"}
-                  editOnClick={() => {
-                    setCompanyLinkModel(true);
+  
+            {/* Avatar and PersonalDetails */}
+  
+  
+            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2 relative top-0 pt-2   h-fit mx-auto">
+  
+              <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
+                <ProfileAvatar 
+                  url={providerProfileImg} 
+                  onChange={(val)=>providerProfilePhotoUploadMutation.mutate(val)} 
+                />
+              </div>
+  
+              {/* Profile Application Deatils */}
+  
+              <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-5 rounded-xl relative">
+                <MdEdit
+                  className="absolute top-2 right-2  cursor-pointer" 
+                  onClick={() => { 
+                    setpersonalDetailsModelOpen(true);
                     freezeBody();
                   }}
-                >
-                  <div className="flex flex-wrap gap-1 w-full pb-2">
-                    {/* {console.log("companyLinksList:", companyLinksList)} */}
-
-                    {/* If no links are added */}
-                    {Object.keys(companyLinksList).length === 0 ? (
-                      <div className="w-full gap-1 center flex">
-                        <TbMoodEmptyFilled /> Add Company Links
-                      </div>
-                    ) : (
-                      <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
-                        {/* Map over the company links */}
-                        {Object.values(companyLinksList).map((idata, idx) => {
-                          // console.log("idata inside map:", idata);
-
-                          return (
-                            <div key={idx} className="flex items -center gap-2 mb-2">
-                              <CompanyLinksField
-                                key={idata.url}
-                                companyLinksDetails={{ ...idata }}
-                                onDeleteLink={(link) => {
-                                  // handleCompanyLinkChange({
-                                  //   ...idata,
-                                  //   index: idx,
-                                  // });
-                                  handleDeleteLink(link);
-                                  setCompanyLinks(idata);
-                                }}
-                              >
-                                <FaGlobe className="text-gray-500" />
-                                <a
-                                  href={idata.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500"
+                />
+                <h1 className="flex justify-start text-3xl font-bold items-center gap-1">
+                  <BiSolidBadgeCheck className="text-orange-600" />
+                  {personalDetails.companyName || "Company Name"}
+                </h1>
+                <hr className="m-2" />
+                <h1 className="flex justify-start items-center gap-1">
+                  <BiKey className="text-orange-600" />
+                  {personalDetails.company_id || "Company ID"}
+                </h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  <MdEmail className="text-orange-600" />
+                  {personalDetails.email || "Email"}
+                </h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  {" "}
+                  <FaPhoneAlt className="text-orange-600" />{" "}
+                  {personalDetails.mobile || "Mobile"}
+                </h1>
+                <h1 className="flex justify-start items-center gap-1">
+                  {" "}
+                  <FaLocationArrow className="text-orange-600" />{" "}
+                  {personalDetails.location || "Location"}
+                </h1>
+              </div>
+            </div>
+  
+            {/* Other Profile Details */}
+  
+            <div className="w-[100%] mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
+              <DeatilsBadge
+                icon={<BiSolidBadgeCheck className="text-green-600" />}
+                title="Jobs Posted"
+                val={profileData?.job_details?.jobs?.length || 0}
+                onClick={() => navigate(`/provider/jobs-posted/${personalDetails.company_id}`)}
+              />
+              <DeatilsBadge
+                icon={<BiGroup className="text-orange-600" />}
+                title="No. of Employees"
+                val={2001}
+              />
+            </div>
+  
+            <div className="w-full  h-80 max-w-[90%] md:w-full mx-auto mt-4 flex flex-col lg:flex-row gap-2">
+            <div className="part-1 flex-1">
+                {/* Company Links Section */}
+                <CompanyInputWrapper>
+                  <CompanyInfoField
+                    title="Company Link"
+                    icon={"Add"}
+                    editOnClick={() => {
+                      setCompanyLinkModel(true);
+                      freezeBody();
+                    }}
+                  >
+                    <div className="flex flex-wrap gap-1 w-full pb-2">
+                      {/* {console.log("companyLinksList:", companyLinksList)} */}
+  
+                      {/* If no links are added */}
+                      {Object.keys(companyLinksList).length === 0 ? (
+                        <div className="w-full gap-1 center flex">
+                          <TbMoodEmptyFilled /> Add Company Links
+                        </div>
+                      ) : (
+                        <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis">
+                          {/* Map over the company links */}
+                          {Object.values(companyLinksList).map((idata, idx) => {
+                            // console.log("idata inside map:", idata);
+  
+                            return (
+                              <div key={idx} className="flex items -center gap-2 mb-2">
+                                <CompanyLinksField
                                   key={idata.url}
+                                  companyLinksDetails={{ ...idata }}
+                                  onDeleteLink={(link) => {
+                                    // handleCompanyLinkChange({
+                                    //   ...idata,
+                                    //   index: idx,
+                                    // });
+                                    handleDeleteLink(link);
+                                    setCompanyLinks(idata);
+                                  }}
                                 >
-                                  {idata.title || idata.url}
-                                </a>
-                              </CompanyLinksField>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </CompanyInfoField>
-              </CompanyInputWrapper>
-
-              {/* Company Summary Section */}
-              <CompanyInputWrapper>
-                <CompanyInfoField
-                  title="Company Description"
-                  icon={companySummary === "" ? "Add" : "Edit"}
-                  editOnClick={() => {
-                    setSummaryModelOpen(true);
-                    freezeBody();
-                  }}
-                >
-                  <div className="flex flex-wrap gap-1 w-full pb-2 ">
-                    {!companySummary ? (
-                      <div className="w-full gap-1 center flex">
-                        <TbMoodEmptyFilled /> Add summary about the Company
-                      </div>
-                    ) : (
-                      <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis text-justify">
-                        {companySummary}
-                      </div>
-                    )}
-                  </div>
-                </CompanyInfoField>
-              </CompanyInputWrapper>
+                                  <FaGlobe className="text-gray-500" />
+                                  <a
+                                    href={idata.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500"
+                                    key={idata.url}
+                                  >
+                                    {idata.title || idata.url}
+                                  </a>
+                                </CompanyLinksField>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </CompanyInfoField>
+                </CompanyInputWrapper>
+  
+                {/* Company Summary Section */}
+                <CompanyInputWrapper>
+                  <CompanyInfoField
+                    title="Company Description"
+                    icon={companySummary === "" ? "Add" : "Edit"}
+                    editOnClick={() => {
+                      setSummaryModelOpen(true);
+                      freezeBody();
+                    }}
+                  >
+                    <div className="flex flex-wrap gap-1 w-full pb-2 ">
+                      {!companySummary ? (
+                        <div className="w-full gap-1 center flex">
+                          <TbMoodEmptyFilled /> Add summary about the Company
+                        </div>
+                      ) : (
+                        <div className="w-full h-full bg-white p-2 rounded-lg overflow-hidden text-ellipsis text-justify">
+                          {companySummary}
+                        </div>
+                      )}
+                    </div>
+                  </CompanyInfoField>
+                </CompanyInputWrapper>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-        {/* Models */}
-        <AnimatePresence>
-            {personalDetailsModelOpen && (
-            <AnimateEnterExit transition={{ duration: 0.2 }}>
-              <ProfilePersonalDetailsModal
-                open={personalDetailsModelOpen}
-                onClose={() => {
-                  setpersonalDetailsModelOpen(false);
-                  freeBody();
-                }}
-                value={personalDetails}
-                onChange={handlePersonalDetails}
-              />
-          </AnimateEnterExit>
-            )}
-                  
-          {summaryModelOpen && (
-                <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-                <CompanySummaryModel
-                    open={summaryModelOpen}
-                    onClose={() => {
-                      setSummaryModelOpen(false);
-                      freeBody();
-                    }}
-                    value={ companySummary }
-                    onSummaryChange={handleSummaryChange}
+  
+          {/* Models */}
+          <AnimatePresence>
+              {personalDetailsModelOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }}>
+                <ProfilePersonalDetailsModal
+                  open={personalDetailsModelOpen}
+                  onClose={() => {
+                    setpersonalDetailsModelOpen(false);
+                    freeBody();
+                  }}
+                  value={personalDetails}
+                  onChange={handlePersonalDetails}
                 />
-                </AnimateEnterExit>
-            )}
-
-          {companyLinkModel && (
-            <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
-              <CompanyLinkModel
-                open={companyLinkModel}
-                onClose={() => {
-                  setCompanyLinkModel(false);
-                }}
-                value={{}}
-                addCompanyLinks={handleAddLink}
-              />
             </AnimateEnterExit>
-          )}
-      </AnimatePresence>
-    </MainContext>
-  );
+              )}
+                    
+            {summaryModelOpen && (
+                  <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+                  <CompanySummaryModel
+                      open={summaryModelOpen}
+                      onClose={() => {
+                        setSummaryModelOpen(false);
+                        freeBody();
+                      }}
+                      value={ companySummary }
+                      onSummaryChange={handleSummaryChange}
+                  />
+                  </AnimateEnterExit>
+              )}
+  
+            {companyLinkModel && (
+              <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+                <CompanyLinkModel
+                  open={companyLinkModel}
+                  onClose={() => {
+                    setCompanyLinkModel(false);
+                  }}
+                  value={{}}
+                  addCompanyLinks={handleAddLink}
+                />
+              </AnimateEnterExit>
+            )}
+        </AnimatePresence>
+      </MainContext>
+    );
+  }
 };
 
 export default ProviderProfile;
 
-  const DeatilsBadge = ({ icon = "", title = "", val = "" }) => {
+  const DeatilsBadge = ({ 
+    icon = "", 
+    title = "", 
+    val = "",
+    onClick = ()=> {}
+  }) => {
     const [hovered, setHovered] = useState(false);
 
     return (
@@ -454,6 +481,7 @@ export default ProviderProfile;
           "w-[120px] h-[120px] sm:w-[150px] sm:h-[150pxx] relative cursor-pointer  flex-shrink-0 my-1 md:!my-0  center flex gap-1 border-[1px] bg-white rounded-3xl px-3  mx-2 flex-col " +
           (hovered && " !border-orange-600")
         }
+        onClick={onClick}
       >
         <span className="text-sm w-full  text-center flex center ">
           {icon}
@@ -561,7 +589,7 @@ export default ProviderProfile;
               onClose();
             }}
           />
-          <h1 className="mb-5 mx-4 ml-5">Personal Details</h1>
+          <h1 className="mb-5 mx-4 ml-5">Company Details</h1>
   
           <Formik
             initialValues={value}

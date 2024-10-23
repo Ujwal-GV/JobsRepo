@@ -36,6 +36,7 @@ import ProviderMainWrapper from './pages/provider/components/ProviderMainWrapper
 import ListOfCompanies from './pages/seeker/ListOfCompanies'
 import BusinessPost from './pages/provider/BusinessPost'
 import SomethingWentWrong from './components/SomethingWentWrong'
+import JobPostedByCompany from './pages/provider/JobPostedByCompany'
 
 const AppMain = () => {
   return (
@@ -72,6 +73,7 @@ const AppMain = () => {
               <Route path = '/provider/all-jobs/:id' element = { <AllPostedJobs /> } />
               <Route path = '/provider/view-candidate/:job_id/:user_id' element = { <ViewCandidate /> } />
               <Route path = "/provider/business-post" element = { <BusinessPost /> } />
+              <Route path = '/provider/jobs-posted/:company_id' element = { <JobPostedByCompany /> } />
           </Route> 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>
         </Routes> 

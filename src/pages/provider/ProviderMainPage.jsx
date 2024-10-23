@@ -9,6 +9,7 @@ import { FaEye } from "react-icons/fa6";
 import { IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { FaExclamationCircle } from 'react-icons/fa';
+import JobSearchCard from './components/JobSearchCard';
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
@@ -88,15 +89,26 @@ function ProviderMainPage() {
         <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[200px] shadow-sm" />
       </div>
 
+      {/* <JobSearchCard /> */}
+
       {/* Posted Jobs List */}
       <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
-        <div className="my-5 flex flex-col gap-4 items-center justify-center text-center">
+        <div className="my-5 flex flex-col gap-4 items-center justify-center text-center relative">
           <h2 className="text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
           <button
             onClick={handlePostJobClick}
             className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
           >
             Post a Job
+          </button>
+          <button
+            title="View"
+            // className="px-3 py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
+            className="absolute right-6 bottom-0 center underline"
+            onClick={() => navigate(`/provider/jobs-posted/${companyId}`)}
+          >
+            <FaEye className="mr-1" />
+            All Jobs
           </button>
         </div>
         <hr className="mt-5 mb-2 border-gray" />

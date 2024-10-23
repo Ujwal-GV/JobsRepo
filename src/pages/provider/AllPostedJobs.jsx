@@ -14,6 +14,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { IoIosBriefcase } from 'react-icons/io';
 import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
+import moment from 'moment/moment';
+import dayjs from 'dayjs';
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
@@ -147,12 +149,22 @@ const AllPostedJobs = () => {
     location,
     job_role,
     postedBy,
+    createdAt,
   } = jobApplicationData?.job || {};
 
   const {
     company_name,
     img,
   } = jobApplicationData?.company || {};
+
+  const postedDate = dayjs(createdAt).isValid() ? dayjs(createdAt).format("DD MMM YYYY") : "Invlalid format";
+  // console.log("P",postedDate);
+  
+  const deadLine = dayjs(createdAt).add(1, 'M');
+  // console.log("D", deadLine);
+
+  const remainingDays = dayjs(deadLine).diff(dayjs(), 'day');
+  // console.log("R", remainingDays);
 
   return (
     <>
@@ -191,6 +203,14 @@ const AllPostedJobs = () => {
                     <p className="text-sm md:text-base text-gray-600 mt-2">Experience: {experience?.min} - {experience?.max} years</p>
                   )}
                   <p className="text-sm md:text-base text-gray-600 mt-2">Vacancies: {vacancy || "Not mentioned"}</p>
+                  {/* <p className="text-sm md:text-base text-gray-600 mt-2">Posted: {moment(createdAt).fromNow()}</p> */}
+                  
+                  {/* <div className='w-full p-2 bg-gray-200 text-black rounded-lg text-sm hover:bg-gray-300 transition-colors duration-200 ease-in-out shadow-md'>
+                    <p className="text-sm md:text-base text-gray-600"><b>Posted On:</b> {postedDate}</p>
+                    <p className="text-sm md:text-base text-gray-600 mt-2">Apply By: {deadLine}</p>
+                    <p className="text-sm md:text-base text-gray-600"><b>Remaining Days:</b> {remainingDays}</p>
+                  </div> */}
+
                 </div>
 
                 {/* Qualifications Section */}
