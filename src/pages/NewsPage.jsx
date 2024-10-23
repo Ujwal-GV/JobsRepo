@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Loading from "./Loading";
 import { capitalizeWords } from "../utils/CommonUtils";
 import toast from "react-hot-toast";
+const  newsAPIkey = import.meta.env.VITE_NEWS_API_KEY 
 
 const NewsPage = () => {
   const newCategories = [
@@ -23,7 +24,7 @@ const NewsPage = () => {
 
   const getNews = async (category) => {
     const res = await axios.get(
-      `https://newsapi.org/v2/top-headlines?category=${category}&pageSize=20&apiKey=856c111fbcd940f99d42abbe48e3e062`
+      `https://newsapi.org/v2/top-headlines?category=${category}&pageSize=20&apiKey=${newsAPIkey}`
     );
     return res.data.articles;
   };

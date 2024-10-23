@@ -4,7 +4,6 @@ import { FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { loginValidationSchema } from "../formikYup/ValidationSchema";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import InputBox from "../components/InputBox";
 import RoleChecker from "../components/RoleChecker";
 import { AuthContext } from "../contexts/AuthContext";
@@ -12,6 +11,7 @@ import { axiosInstance } from "../utils/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
+
 
 function Login() {
   const { setUserRole } = useContext(AuthContext);
@@ -69,7 +69,7 @@ function Login() {
     <div className="w-full h-screen max-w-[1600px] flex items-center justify-center font-outfit">
       <div className="bg-white w-[90%] md:w-[400px] shadow-lg shadow-black rounded-lg p-3 px-4 md:px-6 ">
         <div className="mt-4 flex justify-center items-center">
-          <span className="text-2xl md:text-2xl font-bold">LOGIN</span>
+          <span className="text-2xl md:text-2xl font-bold">LOGIN </span>
         </div>
         <div className="mb-4 w-full">
           <hr className="m-4" />
