@@ -40,7 +40,7 @@ function SignUp() {
       const res = await axiosInstance.post("/provider/create", values);
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Registration successful!");
       localStorage.setItem("authToken" ,data?.authToken)
       navigate("/select-role");

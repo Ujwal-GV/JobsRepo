@@ -30,7 +30,6 @@ function SetNewPassword() {
         navigate('/login');
       }
     } catch (error) {
-      console.error('Error resetting password:', error.response?.data || error.message);
       toast.error('Failed to reset password. Please try again.');
     } finally {
       setLoading(false);
