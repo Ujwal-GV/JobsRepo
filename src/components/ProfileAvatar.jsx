@@ -46,6 +46,7 @@ const ProfileAvatar = ({ url = "" ,onChange=()=>{} }) => {
       setLoading(false);
     } catch (err) {
       onError(err);
+      console.log(err)
       message.error("Upload failed.");
       setLoading(false);
     }
