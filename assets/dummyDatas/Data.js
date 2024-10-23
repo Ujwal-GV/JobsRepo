@@ -267,6 +267,7 @@ export const companyData = [
     { id: 1, label: "Full Time" },
     { id: 2, label: "Part Time" },
     { id: 3, label: "Remote" },
+    { id: 4, label: "Hybrid" },
   ];
 
   export const jobLocations = [

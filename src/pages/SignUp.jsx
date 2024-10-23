@@ -38,14 +38,18 @@ function SignUp() {
     mutationKey: "provider-signup",
     mutationFn: async (values) => {
       const res = await axiosInstance.post("/provider/create", values);
+      console.log(res.data);
+      
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Registration successful!");
       localStorage.setItem("authToken" ,data?.authToken)
       navigate("/select-role");
     },
     onError: (error) => {
+      console.log("Err:", error);
+      
       const { message } = error.response.data;
       toast.error(message || "Signup failed. Please try again.");
     },
