@@ -502,6 +502,12 @@ const JobApplicationProviderView = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if(e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   const handleJobTypeChange = (selectedOption) => {
     setJobType(selectedOption);
     // Add new job type if it's not already in the list
@@ -656,7 +662,7 @@ const JobApplicationProviderView = () => {
       <div className="w-full mx-auto min-h-screen bg-gray-100 py-3 px-3 md:py-3 md:px-6 lg:px-3 flex flex-col gap-10">
         
         {/* Top Section: Company and Person Details */}
-        <form onSubmit={handleSubmit} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
           
             {/* Company and Person Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
