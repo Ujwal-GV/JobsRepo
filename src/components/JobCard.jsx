@@ -19,6 +19,9 @@ const JobCard = ({ data }) => {
     isNew,
     job_id,
   } = data;
+
+  
+
   return (
     <div
       key={id}
@@ -32,7 +35,7 @@ const JobCard = ({ data }) => {
       )}
       <img
         src={provider_info?.img?.url}
-        alt=""
+        alt={provider_info?.company_name}
         className=" w-[30%] md:w-[38%] h-[30%] md:h-[38%] rounded-lg border-gray job-card-img"
       />
       <h3 className="w-full text-[0.9rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3 ">
@@ -41,12 +44,14 @@ const JobCard = ({ data }) => {
       <h2 className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">
         {provider_info?.companyName}
       </h2>
-      <div className="mt-2 flex justify-start items-center  gap-1">
+      {
+        location ? <div className="mt-2 flex justify-start items-center  gap-1">
         <IoLocationOutline />
         <span className=" font-extralight text-sm w-full overflow-hidden text-ellipsis text-nowrap">
-          {location ? location : "Remote"}
+          {location?.length > 1 ? location[0]+" /..." : location}
         </span>
-      </div>
+      </div> :<></>
+      }
       <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1>
     </div>
   );

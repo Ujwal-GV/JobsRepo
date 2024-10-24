@@ -242,6 +242,9 @@ const JobApplicatioWithSimilarApplication = () => {
     description: company_description,
   } = jobApplicationData?.company || {};
 
+
+  console.log(jobApplicationData?.company)
+
   if (jobApplicationData && isSuccess) {
     return (
       <MainContext>
@@ -251,7 +254,7 @@ const JobApplicatioWithSimilarApplication = () => {
               <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit relative">
                 <img
                   className="border border-gray-100  absolute top-2 right-2 md:top-10 md:right-10 w-12 h-12 md:w-16 md:h-16 rounded-lg"
-                  src={img?.url}
+                  src={img?.url || "https://wheretocart.com/assets/images/business-image/business-default.jpg"}
                   alt={company_name}
                 />
                 <h1 className="text-[1.1rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">

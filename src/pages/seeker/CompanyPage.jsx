@@ -260,12 +260,18 @@ const CompanyPage = () => {
               <div className="mt-4">
                 <h2 className="text-lg font-semibold">More Details</h2>
                 <ul className="list-disc list-inside mt-3 text-sm md:text-[1rem]">
-                  <li className="text-nowrap">
-                    <span className="font-semibold">Email :</span> {email}
-                  </li>
-                  <li className="text-nowrap">
+                  {
+                    email ? <li className="text-nowrap">
+                    <span className="font-semibold">Email :</span> <span>{email}</span>
+                  </li> :<></>
+                  }
+                  
+                  {
+                    location ?  <li className="text-nowrap">
                     <span className="font-semibold">Location :</span> {location}
-                  </li>
+                  </li> :<></>
+                  }
+                 
                   <li className="text-nowrap">
                     <span className="font-semibold">Type : </span> Software
                     Development

@@ -71,16 +71,48 @@ const Navbar = () => {
             </a>
           </>
         ) : (
-          <div className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md" onClick={()=>navigate("/user/profile")}>
+          <div className="flex justify-center items-center gap-2">
+            <button
+          className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+          onClick={() => {
+            localStorage.removeItem("authToken");
+            navigate("/login");
+          }}
+        >
+          Logout
+        </button>
+          <div
+            className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md"
+            onClick={() => navigate("/user/profile")}
+          >
             <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
             Profile
+          </div>
           </div>
         )}
       </div>
 
-      <div className="flex md:hidden">
+      <div className="flex md:hidden justify-center items-center gap-2">
+        {!localStorage.getItem("authToken") ? (
+          <a href="/login">
+            <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
+              SignIn
+            </button>
+          </a>
+        ) : (
+          <button
+            className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              navigate("/login");
+            }}
+          >
+            Logout
+          </button>
+        )}
         <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
+
       <Drawer
         title="Menu"
         placement={"left"}
@@ -107,10 +139,9 @@ const MobileNavBar = ({
   menuItem = [],
   selectedMenu = 0,
   setSelectedMenu = () => {},
-  onClick=()=>{}
+  onClick = () => {},
 }) => {
   const navigate = useNavigate();
-
 
   return (
     <div className="w-full">
@@ -124,19 +155,43 @@ const MobileNavBar = ({
               setTimeout(() => {
                 navigate(d.nav);
               }, 500);
-              onClick()
+              onClick();
             }}
           >
-            {d.title}
-            {selectedMenu === idx && (
-              <motion.div
-                layoutId="underline_mobile_nav"
-                className={
-                  "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
-                }
-              >
-                <RiArrowLeftSFill className="w-5 h-5" />
-              </motion.div>
+            {d.title === "Profile" ? (
+              <>
+                {!localStorage.getItem("authToken") ? (
+                  <></>
+                ) : (
+                  <>
+                    {d.title}
+                    {selectedMenu === idx && (
+                      <motion.div
+                        layoutId="underline_mobile_nav"
+                        className={
+                          "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                        }
+                      >
+                        <RiArrowLeftSFill className="w-5 h-5" />
+                      </motion.div>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {d.title}
+                {selectedMenu === idx && (
+                  <motion.div
+                    layoutId="underline_mobile_nav"
+                    className={
+                      "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                    }
+                  >
+                    <RiArrowLeftSFill className="w-5 h-5" />
+                  </motion.div>
+                )}
+              </>
             )}
           </div>
         );
@@ -144,4 +199,3 @@ const MobileNavBar = ({
     </div>
   );
 };
-

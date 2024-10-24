@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { axiosInstance } from '../../utils/axiosInstance';
 import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
+import { LuLoader2 } from 'react-icons/lu';
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -1023,8 +1024,12 @@ const JobApplicationProviderView = () => {
                   </button>
                   <button
                     type= "submit"
+                    disabled={mutation.isPending}
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
                   >
+                     {
+                      mutation.isPending &&  <LuLoader2 className="animate-spin-slow " />
+                     }
                     {saved ? (
                       <FaCheckCircle className="text-orange-600" />
                     ) : (
