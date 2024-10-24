@@ -71,6 +71,16 @@ const Navbar = () => {
             </a>
           </>
         ) : (
+          <div className="flex justify-center items-center gap-2">
+            <button
+          className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+          onClick={() => {
+            localStorage.removeItem("authToken");
+            navigate("/login");
+          }}
+        >
+          Logout
+        </button>
           <div
             className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md"
             onClick={() => navigate("/user/profile")}
@@ -78,17 +88,28 @@ const Navbar = () => {
             <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
             Profile
           </div>
+          </div>
         )}
       </div>
 
       <div className="flex md:hidden justify-center items-center gap-2">
-        {
-          !localStorage.getItem("authToken") && <a href="/login">
-          <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
-            SignIn
+        {!localStorage.getItem("authToken") ? (
+          <a href="/login">
+            <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
+              SignIn
+            </button>
+          </a>
+        ) : (
+          <button
+            className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+            onClick={() => {
+              localStorage.removeItem("authToken");
+              navigate("/login");
+            }}
+          >
+            Logout
           </button>
-        </a>
-        }
+        )}
         <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
 
@@ -140,7 +161,7 @@ const MobileNavBar = ({
             {d.title === "Profile" ? (
               <>
                 {!localStorage.getItem("authToken") ? (
-                  <> </>
+                  <></>
                 ) : (
                   <>
                     {d.title}

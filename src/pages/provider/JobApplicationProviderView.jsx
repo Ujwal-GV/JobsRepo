@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { axiosInstance } from '../../utils/axiosInstance';
 import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
+import { LuLoader2 } from 'react-icons/lu';
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -52,7 +53,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
   const fetchAllSkills = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/skills/");
+      const res = await axiosInstance.get("/skills/");
       if (res.data) {
         const skills = res.data.map(skill => ({ label: skill.value, value: skill.value }));
         setChoices(skills);
@@ -160,7 +161,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
   const fetchAllQualifications = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/qualifications/");
+      const res = await axiosInstance.get("/qualifications/");
       if (res.data) {
         const qualifications = Object.keys(res.data).map(key => ({ label: key, value: key }));
         setChoices(qualifications);
@@ -268,7 +269,7 @@ const SpecializationSelector = ({
   const fetchAllSpecializations = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/qualifications/");
+      const res = await axiosInstance.get("/qualifications/");
       if (res.data) {
         const specializations = Object.values(res.data).flat();
         const uniqueSpecializations = Array.from(new Set(specializations));
@@ -378,7 +379,7 @@ const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = 
   const fetchAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8087/locations/');
+      const response = await axiosInstance.get('/locations/');
       const locations = response.data;
       setFetchedLocations(locations);
       setChoices(locations);
@@ -499,6 +500,12 @@ const JobApplicationProviderView = () => {
     // Add new location if it's not already in the list
     if (selectedOption && !locationsList.find(loc => loc.value === selectedOption.value)) {
       setLocationsList([...locationsList, selectedOption]);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if(e.key === 'Enter') {
+      e.preventDefault();
     }
   };
 
@@ -656,7 +663,7 @@ const JobApplicationProviderView = () => {
       <div className="w-full mx-auto min-h-screen bg-gray-100 py-3 px-3 md:py-3 md:px-6 lg:px-3 flex flex-col gap-10">
         
         {/* Top Section: Company and Person Details */}
-        <form onSubmit={handleSubmit} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
           
             {/* Company and Person Details */}
             <div className="w-full rounded-xl h-fit bg-white p-5 md:p-5 font-outfit">
@@ -1017,8 +1024,12 @@ const JobApplicationProviderView = () => {
                   </button>
                   <button
                     type= "submit"
+                    disabled={mutation.isPending}
                     className="btn-orange-outline px-3 py-1 flex center gap-1"
                   >
+                     {
+                      mutation.isPending &&  <LuLoader2 className="animate-spin-slow " />
+                     }
                     {saved ? (
                       <FaCheckCircle className="text-orange-600" />
                     ) : (

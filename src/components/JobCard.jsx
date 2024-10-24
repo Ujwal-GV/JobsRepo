@@ -20,6 +20,8 @@ const JobCard = ({ data }) => {
     job_id,
   } = data;
 
+  
+
   return (
     <div
       key={id}

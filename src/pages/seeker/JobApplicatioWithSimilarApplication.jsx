@@ -384,6 +384,7 @@ const JobApplicatioWithSimilarApplication = () => {
                   Key Highlights
                 </h1>
                 <div className="high-light-content font-outfit">
+
                   <p dangerouslySetInnerHTML={{ __html: job_description }}></p>
                   <ul className="mt-3">
                     {qualification && (

@@ -54,6 +54,8 @@ function Login() {
       navigate('/select-role')
     },
     onError: (error) => {
+      console.log(error);
+      
       const { message } = error.response.data;
       toast.error(message);
     },

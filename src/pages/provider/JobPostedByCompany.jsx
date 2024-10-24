@@ -10,6 +10,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { JobCardSkeleton } from '../../components/JobCard';
 import { VerticalBar } from '../seeker/CompanyPage';
+import { axiosInstance } from '../../utils/axiosInstance';
 
 const JobPostedByCompany = () => {
     const { profileData } = useContext(AuthContext);
@@ -24,7 +25,7 @@ const JobPostedByCompany = () => {
     }, [companyId, queryClient]);
 
     const fetchCompanyData = async () => {
-        const res = await axios.get(`http://localhost:8087/provider/${companyId}`);
+        const res = await axiosInstance.get(`/provider/${companyId}`);
         return res.data;
     };
 
