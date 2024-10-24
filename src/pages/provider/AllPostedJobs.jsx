@@ -191,7 +191,7 @@ const AllPostedJobs = () => {
                 {/* Company and Job Info */}
                 <div className="w-full rounded-xl h-fit bg-white p-6 shadow-lg font-outfit relative">
                   <img 
-                    src={img} 
+                    src={img?.url} 
                     alt={company_name} 
                     className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
                   />
