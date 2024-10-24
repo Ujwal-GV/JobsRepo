@@ -52,7 +52,7 @@ const SkillSelector = ({ defaultSkills = [], onChange = () => {}, isOptionalChec
   const fetchAllSkills = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/skills/");
+      const res = await axiosInstance.get("/skills/");
       if (res.data) {
         const skills = res.data.map(skill => ({ label: skill.value, value: skill.value }));
         setChoices(skills);
@@ -160,7 +160,7 @@ const QualificationSelector = ({ defaultQualifications = [], onChange = () => {}
   const fetchAllQualifications = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/qualifications/");
+      const res = await axiosInstance.get("/qualifications/");
       if (res.data) {
         const qualifications = Object.keys(res.data).map(key => ({ label: key, value: key }));
         setChoices(qualifications);
@@ -268,7 +268,7 @@ const SpecializationSelector = ({
   const fetchAllSpecializations = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8087/qualifications/");
+      const res = await axiosInstance.get("/qualifications/");
       if (res.data) {
         const specializations = Object.values(res.data).flat();
         const uniqueSpecializations = Array.from(new Set(specializations));
@@ -378,7 +378,7 @@ const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = 
   const fetchAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8087/locations/');
+      const response = await axiosInstance.get('/locations/');
       const locations = response.data;
       setFetchedLocations(locations);
       setChoices(locations);
