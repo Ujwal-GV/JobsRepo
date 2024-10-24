@@ -57,7 +57,7 @@ const ProviderNavbar = () => {
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div className="center gap-1 ">
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">JOB SHINE</span>
+        <span className="font-employez font-bold text-2xl text-yellow-500 md:text-3xl">EMPLOEZ<span className="font-employez font-bold text-2xl ml-2 text-gray-600 md:text-3xl">.in</span></span>
       </div>
 
       <div className="justify-center items-center gap-5 hidden md:flex">
@@ -144,10 +144,19 @@ const MobileNavBar = ({
   onClick = () => {}
 }) => {
   const navigate = useNavigate();
+  const authToken = localStorage.getItem("authToken");
 
   return (
     <div className="w-full">
       {menuItem.map((d, idx) => {
+        if (
+            (
+              d.title === "Logout" 
+              || d.title == "Post Job" 
+              || d.title == "Profile") 
+          && !authToken) 
+          return null;
+
         return (
           <div
             key={idx}
@@ -177,6 +186,20 @@ const MobileNavBar = ({
           </div>
         );
       })}
+
+      {/* Show SignIn if no token is present */}
+      {!authToken && (
+        <div
+          className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
+          onClick={() => {
+            setSelectedMenu(null);
+            navigate("/login");
+            onClick();
+          }}
+        >
+          Sign In
+        </div>
+      )}
     </div>
   );
 };

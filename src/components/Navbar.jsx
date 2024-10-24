@@ -30,7 +30,7 @@ const Navbar = () => {
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div className="center gap-1 ">
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">JOB SHINE</span>
+        <span className="font-employez font-bold text-2xl text-yellow-500 md:text-3xl">EMPLOEZ<span className="font-employez font-bold text-2xl ml-2 text-gray-600 md:text-3xl">.in</span></span>
       </div>
 
       <div className="justify-center items-center gap-1 hidden md:flex ">
