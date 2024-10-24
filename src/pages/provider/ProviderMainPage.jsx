@@ -8,13 +8,14 @@ import SeachInput from "../../components/SeachInput";
 import { FaEye } from "react-icons/fa6";
 import { IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
-import { FaExclamationCircle } from 'react-icons/fa';
-import JobSearchCard from './components/JobSearchCard';
+import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { LuLoader2 } from "react-icons/lu";
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
   const [companyId, setCompanyId] = useState(null);
   const navigate = useNavigate();
+  const [deletedJobs, setDeletedJobs] = useState({});
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -50,8 +51,9 @@ function ProviderMainPage() {
 
   const mutation = useMutation({
     mutationFn: deleteJob,
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast.success("Job post deleted successfully!");
+      setDeletedJobs((prev) => ({ ...prev, [variables]: true }));
       queryClient.invalidateQueries(['jobs', companyId]);
     },
     onError: (error) => {
@@ -101,15 +103,16 @@ function ProviderMainPage() {
           >
             Post a Job
           </button>
-          <button
+          {!error && !jobsDataLoading && 
+          (<button
             title="View"
             // className="px-3 py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
-            className="absolute right-6 bottom-0 center underline"
+            className="absolute right-2 bottom-[-1rem] center underline text-sm"
             onClick={() => navigate(`/provider/jobs-posted/${companyId}`)}
           >
-            <FaEye className="mr-1" />
+            <FaEye className="mr-1 text-sm" />
             All Jobs
-          </button>
+          </button>)}
         </div>
         <hr className="mt-5 mb-2 border-gray" />
         <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
@@ -122,7 +125,7 @@ function ProviderMainPage() {
         ) : error ? (
           <div className="text-center flex flex-col items-center gap-4 mx-auto my-auto text-gray-500">
             <span><FaExclamationCircle className="text-2xl text-red-500" /></span>
-            <span>Error fetching jobs</span>
+            <span>Please login to post and view job details</span>
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center flex flex-col my-auto text-gray-500">
@@ -156,7 +159,18 @@ function ProviderMainPage() {
                   onClick={() => handlePostDelete(job?.job_id)}
                 >
                   <IoTrash className="mr-1" />
-                  Delete
+                  {
+                    mutation.isLoading && mutation.variables === job.job_id && (
+                      <LuLoader2 className="animate-spin-slow" />
+                    )
+                  }
+                  {
+                    deletedJobs[job.job_id] ? (
+                      <FaCheckCircle className="text-black" />
+                    ) : (
+                      "Delete"
+                    )
+                  }
                 </button>
               </div>
             </div>

@@ -53,7 +53,7 @@ const ProviderProfile = () => {
         }
       });
 
-      setProviderProfileImg(profileData?.img);
+      setProviderProfileImg(profileData?.img?.url);
       setCompanySummary(profileData?.description);
       const links = {};
       profileData.company_links.forEach((link, idx) => {
