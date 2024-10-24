@@ -140,7 +140,7 @@ const ProviderProfile = () => {
 
 
   const uploadProfilePhoto = async(url)=>{
-    const data = {"img":url}
+    const data = {"img.url":url}
     const res = await axiosInstance.put("/provider/update",data);
     return res.data;  
   }

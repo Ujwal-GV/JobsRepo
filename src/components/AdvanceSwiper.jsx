@@ -73,9 +73,6 @@ const AdvancedSwiper = ({ children }) => {
             // Update the state when the swiper slide changes
             setIsBeginning(swiper.isBeginning);
             setIsEnd(swiper.isEnd);
-
-            console.log(swiper.isBeginning +"  "+swiper.isEnd)
-
           }}
           onInit={(swiper) => {
             // Set the initial state on load

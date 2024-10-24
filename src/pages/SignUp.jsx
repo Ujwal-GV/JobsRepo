@@ -9,6 +9,7 @@ import RoleChecker from "../components/RoleChecker";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../utils/axiosInstance";
+import { LuLoader2 } from "react-icons/lu";
 
 function SignUp() {
   const roleData = ["Job Seeker", "Job Provider"];
@@ -171,16 +172,15 @@ function SignUp() {
                 (!isValid && "cursor-not-allowed")
               }
             >
+              Register
               {(SeekerSignUpMutation.isPending ||
                 ProviderSignUpMutation.isPending) && (
-                <span className="loader animate-spin-slow"></span>
+                  <LuLoader2 className="animate-spin-slow " />
               )}
-              Register
             </button>
-
             <hr />
             <p className="m-2 text-center text-gray-400 text-sm">
-              Already have an account?{" "}
+              Already have an account?
               <a href="/login" className="text-black text-[1rem] hover:underline">
                 Login
               </a>
