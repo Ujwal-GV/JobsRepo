@@ -164,8 +164,7 @@ function Login() {
                   (!isValid && "cursor-not-allowed")
                 }
               >
-                
-                Login
+                <span>Login</span>
                 {(SeekerLoginMutation.isPending ||
                   ProviderLoginMutation.isPending) && (
                   <LuLoader2 className="animate-spin-slow " />

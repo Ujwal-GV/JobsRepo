@@ -15,9 +15,7 @@ import ProjectApplication from './pages/seeker/ProjectApplication'
 import UserProfile from './pages/seeker/UserProfile'
 import ProviderProfile from './pages/provider/ProviderProfile'
 import AllPostedJobs from './pages/provider/AllPostedJobs'
-
 import ViewCandidate from './pages/provider/ViewCandidate'
-
 import JobAppliedList from './pages/seeker/appliedList/JobAppliedList'
 import AppSavedListPage from './pages/seeker/appliedList/AppSavedListPage'
 import SearchFilterPage from './pages/seeker/SearchFilterPage'
@@ -37,6 +35,7 @@ import ListOfCompanies from './pages/seeker/ListOfCompanies'
 import BusinessPost from './pages/provider/BusinessPost'
 import SomethingWentWrong from './components/SomethingWentWrong'
 import JobPostedByCompany from './pages/provider/JobPostedByCompany'
+import FollowingCompanies from './pages/seeker/appliedList/FollowingCompanies'
 
 const AppMain = () => {
   return (
@@ -60,6 +59,7 @@ const AppMain = () => {
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
+              <Route path='/user/company/following' element={<FollowingCompanies/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
               <Route path='/user/companies' element={<ListOfCompanies/>}/> 

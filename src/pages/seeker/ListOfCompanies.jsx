@@ -131,7 +131,7 @@ const ListOfCompanies = () => {
             </ConfigProvider>
             <button
               type="button"
-              className="p-1 px-2 bg-orange-600 ms-2 rounded-full text-sm"
+              className="p-1 text-white px-2 bg-orange-600 ms-2 rounded-full text-sm"
               onClick={() => {refetch();setSuggestionOpen(false)}}
             >
               Search
@@ -140,7 +140,7 @@ const ListOfCompanies = () => {
           <div className="mt-10 w-full">
             <h1>Search Results:</h1>
             <div
-              className={"mt-2  grid grid-cols-1 sm:grid-cols-2 gap-5 sm:p-5 "}
+              className={"mt-2  grid grid-cols-1 sm:grid-cols-2 gap-5 sm:p-5 "+(data?.length === 0 ? " !grid-cols-1 ":"")}
             >
               {isLoading || isFetching ? (
                 [...Array(pageSize)].map((i) => <CompanySearchCardSkeleton />)
@@ -151,47 +151,48 @@ const ListOfCompanies = () => {
                       <CompanySearchCard key={idx} data={cData} />
                     ))
                   ) : (
-                    <NoPostFound />
+                    <NoPostFound title={"No companies found"}/>
                   )}
                 </>
               )}
             </div>
             <div className="mt-2 w-full flex center">
-              <Pagination
-                disabled={isLoading || isFetching}
-                defaultCurrent={1}
-                current={currentPage}
-                className="w-fit mx-auto mb-5 mt-3"
-                total={totalData}
-                showSizeChanger={false}
-                pageSize={pageSize}
-                onChange={(e) => handlePageChange(e)}
-                prevIcon={
-                  <button
-                    disabled={isLoading || isFetching || currentPage === 1}
-                    className={
-                      "hidden md:flex " + (currentPage === 1 && " !hidden")
-                    }
-                    style={{ border: "none", background: "none" }}
-                  >
-                    ← Prev
-                  </button>
-                }
-                nextIcon={
-                  <button
-                    disabled={isLoading || isFetching}
-                    className={
-                      "hidden md:flex " +
-                      ((currentPage * pageSize === totalData ||
-                        totalData < pageSize) &&
-                        "!hidden")
-                    }
-                    style={{ border: "none", background: "none" }}
-                  >
-                    Next →
-                  </button>
-                }
-              />
+              {
+                 totalData > pageSize ? <Pagination
+                 disabled={isLoading || isFetching}
+                 current={currentPage}
+                 className="w-fit mx-auto mb-5 mt-3"
+                 total={totalData}
+                 showSizeChanger={false}
+                 pageSize={pageSize}
+                 onChange={(e) => handlePageChange(e)}
+                 prevIcon={
+                   <button
+                     disabled={isLoading || isFetching || currentPage === 1}
+                     className={
+                       "hidden md:flex " + (currentPage === 1 && " !hidden")
+                     }
+                     style={{ border: "none", background: "none" }}
+                   >
+                     ← Prev
+                   </button>
+                 }
+                 nextIcon={
+                   <button
+                     disabled={isLoading || isFetching}
+                     className={
+                       "hidden md:flex " +
+                       ((currentPage * pageSize === totalData ||
+                         totalData < pageSize) &&
+                         "!hidden")
+                     }
+                     style={{ border: "none", background: "none" }}
+                   >
+                     Next →
+                   </button>
+                 }
+               />:<></>
+              }
             </div>
           </div>
         </div>
@@ -202,7 +203,7 @@ const ListOfCompanies = () => {
 
 export default ListOfCompanies;
 
-const CompanySearchCard = ({ data }) => {
+export const CompanySearchCard = ({ data ,showFollowing = true }) => {
   const [userId, setUserId] = useState("");
   const { profileData } = useContext(AuthContext);
 
@@ -220,29 +221,35 @@ const CompanySearchCard = ({ data }) => {
     project_details,
     company_id,
   } = data;
+
+  console.log(data)
   return (
     <div
       className="w-full h-[130px] md:h-[150px] rounded-lg flex justify-between items-center cursor-pointer border border-gray-300 p-4 primary-shadow-hover relative hover:scale-[1.0002] "
       onClick={() => navigate(`/user/company/${company_id}`)}
     >
-      {followers?.find((uid) => uid === userId) ? (
-        <div className="absolute top-2 right-2">
-          <CustomBadge text="Following" bgcolor="#1E5BF0" text_color="white" />
-        </div>
-      ) : (
-        <></>
-      )}
+      {
+        showFollowing ? followers?.find((uid) => uid === userId) ? (
+          <div className="absolute top-2 right-2">
+            <CustomBadge text="Following" bgcolor="#1E5BF0" text_color="white" />
+          </div>
+        ) : (
+          <></>
+        ) :<></>
+      }
       <div>
         <h1 className="text-[1rem] md:text-[1.1rem] font-light">
           {company_name}
         </h1>
-        <h6 className="text-[0.8rem] font-extralight mb-0">
-          No of Post :{" "}
-          {job_details.jobs
-            ? job_details?.jobs?.length +
-              (project_details?.projects?.length || 0)
-            : 0}
-        </h6>
+       {
+        job_details &&  <h6 className="text-[0.8rem] font-extralight mb-0">
+        No of Post :{" "}
+        {job_details.jobs
+          ? job_details?.jobs?.length +
+            (project_details?.projects?.length || 0)
+          : 0}
+      </h6>
+       }
         <h6 className="text-[0.8rem] font-extralight mb-0">
           Followers : {followers ? followers?.length : 0}
         </h6>

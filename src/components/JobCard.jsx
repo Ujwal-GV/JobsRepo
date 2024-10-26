@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import img from "../../assets/images/p4.png";
 import NewBadge from "./badges/NewBadge";
 import { IoLocationOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
+import { daysSince } from "../utils/CommonUtils";
+import CustomBadge from "./badges/CustomBadge";
 
 const JobCard = ({ data }) => {
 
@@ -16,11 +18,11 @@ const JobCard = ({ data }) => {
     location,
     postedBy,
     provider_info,
-    isNew,
     job_id,
+    createdAt
   } = data;
 
-  
+  const postedSince= daysSince(createdAt)
 
   return (
     <div
@@ -28,9 +30,11 @@ const JobCard = ({ data }) => {
       className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 "
       onClick={() => navigate(`/user/job-post/${job_id}`)}
     >
-      {isNew && (
+      {postedSince && (
         <div className="absolute top-2 right-2">
-          <NewBadge />
+          {
+            postedSince <=2 ? <NewBadge /> : <CustomBadge text={postedSince+" days ago"} bgcolor="white" text_color="blue"/>
+          }
         </div>
       )}
       <img

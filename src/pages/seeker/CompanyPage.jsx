@@ -83,35 +83,6 @@ const CompanyPage = () => {
     },
   });
 
-  // const handleFollowBtnClick = async () => {
-  //   if (!following) {
-  //     try {
-  //       const res = await axiosInstance.post("/user/company/follow", {
-  //         companyId: companyId,
-  //       });
-  //       if (res.data.success) {
-  //         toast.success("Stated Follwing");
-  //         setFollowing(true);
-  //       }
-  //     } catch (error) {
-  //       const { message, isError } = getError(error);
-  //       toast.error(message);
-  //     }
-  //   } else {
-  //     try {
-  //       const res = await axiosInstance.post("/user/company/unfollow", {
-  //         companyId: companyId,
-  //       });
-  //       if (res.data.success) {
-  //         toast.success("Unfollowed");
-  //         setFollowing(false);
-  //       }
-  //     } catch (error) {
-  //       const { message, isError } = getError(error);
-  //       toast.error(message);
-  //     }
-  //   }
-  // };
 
   const handleFollowBtnClick = () => {
     
@@ -188,6 +159,7 @@ const CompanyPage = () => {
     description,
     followers,
   } = data?.accountData || {};
+  console.log(data)
 
  if(!companyDataLoading && data?.accountData)
  {

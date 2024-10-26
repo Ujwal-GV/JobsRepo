@@ -57,7 +57,7 @@ const SearchFilterPage = () => {
     // Haryana
   ];
 
-  const workTypes = ["Full Time", "Part Time", "Hybrid"];
+  const workTypes = ["Full Time", "Part Time", "Hybrid","Remote"];
 
   const handleLocationFilter = (val) => {
     setLocationFilter((prev) => {
@@ -207,7 +207,7 @@ const SearchFilterPage = () => {
               onApplyClick={handleSearchApplyButton}
             />
             <FilterItem
-              title={"Employeement Type"}
+              title={"Employement Type"}
               data={workTypes}
               key={"emp_type"}
               onChange={handleWorkTypeFilter}

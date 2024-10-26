@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import MainContext from "../../../components/MainContext";
 import CustomBreadCrumbs from "../../../components/CustomBreadCrumbs";
 import { CiHome } from "react-icons/ci";
@@ -7,17 +7,21 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../../../utils/axiosInstance";
 import { NoPostFound } from "../CompanyAllPosts";
 import { Pagination } from "antd";
+import { CompanySearchCard } from "../ListOfCompanies";
+import CustomBadge from "../../../components/badges/CustomBadge";
 
-const AppSavedListPage = () => {
+
+
+const FollowingCompanies = () => {
 
   const [totalData_pagination, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [savedList,setSavedList] = useState([])
+  const [companyList,setCompanyList] = useState([])
   const pageSize = 10;
   const queryClinet = useQueryClient();
 
   const getSavedData = async () => {
-    const res = await axiosInstance.get("/user/job/saved-list", {
+    const res = await axiosInstance.get("/user/companies/following", {
       params: {
         page: currentPage,
         limit: pageSize,
@@ -28,7 +32,7 @@ const AppSavedListPage = () => {
     }
     if(res.data?.pageData)
     {
-      setSavedList(res.data?.pageData)
+      setCompanyList(res.data?.pageData)
     }
     return res.data;
   };
@@ -36,7 +40,7 @@ const AppSavedListPage = () => {
   
 
   const { isLoading, isFetching, isError, error, data } = useQuery({
-    queryKey: ["saved_list", currentPage],
+    queryKey: ["companies_list", currentPage],
     queryFn: getSavedData,
     gcTime: 1000 * 60,
     staleTime: 0,
@@ -52,23 +56,17 @@ const AppSavedListPage = () => {
   };
 
 
-  const handleUnsavePOst = (jobId)=>{
-    
-    const removedData =  savedList?.filter((sData)=>sData?.saved_app_info?.job_id !== jobId)
-    setSavedList((prev)=>[...removedData])
-
-  }
-
-
   useEffect(()=>{
      return ()=>{
-      
-      queryClinet.removeQueries(["saved_list"])
+      queryClinet.removeQueries(["companies_list"])
      }
   },[])
 
 
   const { totalData} = data ||{};
+
+
+
 
   if (!isError) {
    
@@ -86,7 +84,7 @@ const AppSavedListPage = () => {
                   icon: <CiHome />,
                   title: "Home",
                 },
-                { title: "Saved Jobs" },
+                { title: "Following" },
               ]}
             />
           </div>
@@ -94,16 +92,13 @@ const AppSavedListPage = () => {
           <div className="w-full md:w-[99%] lg:w-[90%] mx-auto h-full">
             {/* Job Application Status */}
             <div className="bg-white flex justify-between items-center rounded-xl w-full h-20 px-1 md:px-3">
-              <span className="text-[1rem] md:text-xl font-outfit font-medium">
-                Applications Saved{" "}
-                {
-                  (!isLoading && !isFetching && <span>({totalData >= 100 ? "99+" : totalData})</span>)
-                }
-              </span>
+              <h3 className="text-[1rem] md:text-xl font-outfit font-medium flex center gap-1">
+                <span>Following </span>
+            </h3>
             </div>
 
             {/* Main content area */}
-
+            
             <div className="bg-white min-h-[70vh] w-full p-4 mt-2 rounded-md">
               {
                 (isLoading || isFetching) ?   <>
@@ -120,14 +115,15 @@ const AppSavedListPage = () => {
                 
                 </> :      <>
                 {totalData === 0 ? (
-                <NoPostFound title={"No Application Found"} />
+                <NoPostFound title={"Start Following"} />
               ) : (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 place-items-start bg-white min   w-[100%] lg:w-[80%] mx-auto  gap-2  p-1 mt-3">
                     {/* Job Applications List */}
 
                     {data?.pageData?.map((sdata, idx) => (
-                      <SavedCard key={idx} data={sdata} onDelete={handleUnsavePOst}/>
+                      
+                      <CompanySearchCard key={idx} data={sdata.companiesData} showFollowing={false}/>
                     ))}
                   </div>
                   <div className="mt-2 w-full flex center">
@@ -174,6 +170,7 @@ const AppSavedListPage = () => {
               )}</>
               }
             </div>
+            
           </div>
         </div>
       </MainContext>
@@ -181,4 +178,4 @@ const AppSavedListPage = () => {
   }
 };
 
-export default AppSavedListPage;
+export default FollowingCompanies;

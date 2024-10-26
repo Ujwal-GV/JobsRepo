@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
-import { Drawer } from "antd";
+import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 const Navbar = () => {
   const menuItem = [
-    { title: "Home", nav: "/user" },
-    { title: "News", nav: "/user/news" },
-    { title: "Profile", nav: "/user/profile" },
+    { title: "Home", nav: "/user", label: "home" },
+    { title: "News", nav: "/user/news", label: "news" },
+    { title: "Profile", nav: "/user/profile", label: "profile" },
   ];
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedMenu, setSelectedMenu] = useState("home");
   const [open, setOpen] = useState(false); //for drawer
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -28,9 +29,9 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="center gap-1 ">
+      <div className="center gap-1 cursor-pointer" onClick={()=>navigate("/user")}>
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">JOB SHINE</span>
+        <span className="font-bold text-2xl md:text-3xl"><span className="text-orange-600">Emploez</span><span>.in</span></span>
       </div>
 
       <div className="justify-center items-center gap-1 hidden md:flex ">
@@ -41,12 +42,12 @@ const Navbar = () => {
                 key={idx}
                 className="p-1 cursor-pointer relative flex center "
                 onClick={() => {
-                  setSelectedMenu(idx);
+                  setSelectedMenu(d.label);
                   navigate(d.nav);
                 }}
               >
                 {d.title}
-                {selectedMenu === idx && (
+                {selectedMenu === d.label && (
                   <motion.div
                     layoutId="underline_nav"
                     className={"absolute -bottom-1 h-1 w-full bg-orange-600  "}
@@ -73,21 +74,28 @@ const Navbar = () => {
         ) : (
           <div className="flex justify-center items-center gap-2">
             <button
-          className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
-          onClick={() => {
-            localStorage.removeItem("authToken");
-            navigate("/login");
-          }}
-        >
-          Logout
-        </button>
-          <div
-            className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md"
-            onClick={() => navigate("/user/profile")}
-          >
-            <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
-            Profile
-          </div>
+              className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+              onClick={() => {
+                // localStorage.removeItem("authToken");
+                // navigate("/login");
+                setLogoutModalOpen(true);
+              }}
+            >
+              Logout
+            </button>
+            <div
+              className={
+                "flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md " +
+                (selectedMenu === "profile" ? " text-orange-600" : "")
+              }
+              onClick={() => {
+                navigate("/user/profile");
+                setSelectedMenu("profile");
+              }}
+            >
+              <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />
+              Profile
+            </div>
           </div>
         )}
       </div>
@@ -101,10 +109,9 @@ const Navbar = () => {
           </a>
         ) : (
           <button
-            className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+            className="bg-white shadow-sm shadow-black px-3 py-[1px] rounded-lg"
             onClick={() => {
-              localStorage.removeItem("authToken");
-              navigate("/login");
+              setLogoutModalOpen(true);
             }}
           >
             Logout
@@ -129,6 +136,37 @@ const Navbar = () => {
           onClick={onClose}
         />
       </Drawer>
+
+      {/* logout confirm modal */}
+
+      <Modal
+        title="Comfirm Logout"
+        open={logoutModalOpen}
+        onCancel={() => setLogoutModalOpen(false)}
+        footer={
+          <div className="flex justify-end items-start gap-2">
+            <button
+              className="border border-orange-600 rounded-lg px-1"
+              onClick={() => setLogoutModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="border bg-orange-600 text-white rounded-lg px-1"
+              onClick={() => {
+                localStorage.removeItem("authToken");
+                sessionStorage.removeItem("location");
+                toast.success("Logout Successfully!!")
+                navigate("/login");
+              }}
+            >
+              OK
+            </button>
+          </div>
+        }
+      >
+        Are you sure want to logout ?
+      </Modal>
     </div>
   );
 };
@@ -151,7 +189,7 @@ const MobileNavBar = ({
             key={idx}
             className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
             onClick={() => {
-              setSelectedMenu(idx);
+              setSelectedMenu(d.label);
               setTimeout(() => {
                 navigate(d.nav);
               }, 500);
@@ -165,7 +203,7 @@ const MobileNavBar = ({
                 ) : (
                   <>
                     {d.title}
-                    {selectedMenu === idx && (
+                    {selectedMenu === d.label && (
                       <motion.div
                         layoutId="underline_mobile_nav"
                         className={
@@ -181,7 +219,7 @@ const MobileNavBar = ({
             ) : (
               <>
                 {d.title}
-                {selectedMenu === idx && (
+                {selectedMenu === d.label && (
                   <motion.div
                     layoutId="underline_mobile_nav"
                     className={

@@ -1,12 +1,9 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import React, { useEffect, useState } from "react";
+import React  from "react";
 import MainContext from "../components/MainContext";
 import SeachInput from "../components/SeachInput";
 import { FaArrowRight } from "react-icons/fa";
 import AdvancedSwiper from "../components/AdvanceSwiper";
 import {
-  companyData,
-  jobData,
   projectData,
 } from "../../assets/dummyDatas/Data";
 import { SwiperSlide } from "swiper/react";
@@ -17,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance, getError } from "../utils/axiosInstance";
-import SomethingWentWrong from "../components/SomethingWentWrong";
 
 const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   return (
@@ -170,6 +166,7 @@ function MainPage() {
       </MainContext>
     </div>
   );
+  
 }
 
 export default MainPage;

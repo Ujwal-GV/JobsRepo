@@ -116,7 +116,7 @@ const JobApplicatioWithSimilarApplication = () => {
     queryFn: getApplicationStatus,
     staleTime: 1000 * 60,
     gcTime: 0,
-    enabled: user_id !== null ? true : false,
+    enabled: user_id !== null ? (jobApplied ? true: false) : false,
   });
 
   const [saved, setSaved] = useState(false);
