@@ -149,9 +149,7 @@ export const JobPostContainer = ({ cardClassname, companyId }) => {
   // Fetch Jobs
   const fetchJobs = async ({ queryKey }) => {
     const currentPage = queryKey[1]; // Extract current page
-    const res = await axios.get(
-      `http://localhost:8087/jobs/?provider_details=${companyId}&limit=10&page=${currentPage}`
-    );
+    const res = await axiosInstance(`/jobs/?provider_details=${companyId}&limit=10&page=${currentPage}`);
     setTotalDatas(res.data.searchdatas);
     return res.data;
   };
@@ -229,9 +227,7 @@ export const FreelanePostContainer = ({ cardClassname, companyId }) => {
 
   // Fetch Jobs
   const fetchJobs = async () => {
-    const res = await axiosInstance.get(
-      `/projects/?providerId=${companyId}&page=1&limit=10`
-    );
+    const res = await axiosInstance.get(`/projects/?providerId=${companyId}&page=1&limit=10`);
     console.log(res.data);
     if (res.data) {
       setTotalDatas(res.data.totalResults);

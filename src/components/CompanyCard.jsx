@@ -9,12 +9,14 @@ const CompanyCard = ({ data }) => {
       key={_id}
       className="company-card relative w-[180px] md:w-[200px] h-[160px] md:h-[180px] bg-white border-gray flex flex-col center  rounded-lg m-3 p-3 cursor-pointer duration-800 "
     >
+      <div className=" rounded-md w-[40%] h-[40%] border border-gray-200">
       <img
         src={img?.url}
         loading="lazy"
         alt=""
-        className="w-[40%] h-[40%] mx-auto border border-gray-400 rounded-lg p-1"
+        className="h-full w-full mx-auto border rounded-md p-1"
       />
+      </div>
       <h5 className="max-w-[80%] text-center text-nowrap mt-5">
         {company_name}
       </h5>

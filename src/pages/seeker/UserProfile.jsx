@@ -492,6 +492,12 @@ const UserProfile = () => {
                 title="Projects Applied"
                 val={profileData?.application_applied_info?.projects?.length || 0}
               />
+               <DeatilsBadge
+                icon={<AiFillProject className="text-orange-600 rotate-180" />}
+                title="Following"
+                val={profileData?.follwing?.length || 0}
+                onClick={()=>navigate("/user/company/following")}
+              />
             </div>
             <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2">
               {/* Section 1 */}
