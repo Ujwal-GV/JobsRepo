@@ -31,7 +31,7 @@ const Navbar = () => {
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div className="center gap-1 cursor-pointer" onClick={()=>navigate("/user")}>
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl"><span className="text-orange-600">Emploez</span><span>.in</span></span>
+        <span className="font-bold text-2xl md:text-3xl"><span className="font emploez text-orange-600">Emploez</span><span>.in</span></span>
       </div>
 
       <div className="justify-center items-center gap-1 hidden md:flex ">
