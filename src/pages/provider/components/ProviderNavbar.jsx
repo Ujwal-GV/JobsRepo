@@ -1,34 +1,26 @@
 import React, { useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
-import { BiLogOut, BiSolidUserCircle } from "react-icons/bi";
+import { BiSolidUserCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
-import { Drawer } from "antd";
+import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const ProviderNavbar = () => {
   const menuItem = [
-    { title: "Home", nav: "/provider" },
-    { title: "Profile", nav: "/provider/profile" },
-    { title: "Post Job", nav: "/provider/post-job" },
-    { title: "Logout", nav: "/login" },
+    { title: "Home", nav: "/provider", label: "home" },
+    { title: "Post Job", nav: "/provider/post-job", label: "postJob" },
+    { title: "Profile", nav: "/provider/profile", label: "profile" },
   ];
-
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedMenu, setSelectedMenu] = useState("home");
   const [open, setOpen] = useState(false); //for drawer
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
+  const authToken = localStorage.getItem("authToken");
 
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    console.log("Logging out");
-    
-    localStorage.removeItem("authToken");
-    sessionStorage.clear();
-    navigate("/login", { replace: true });
-    window.history.pushState(null, null, "/login");
-  };
 
   const showDrawer = () => {
     setOpen(true);
@@ -37,30 +29,15 @@ const ProviderNavbar = () => {
   const onClose = () => {
     setOpen(false);
   };
-  
-  const getProviderProfileData = async () => {
-    const res = await axiosInstance.get("/provider/profile");
-    if (res.data) {
-      console.log("user logged in");
-    }
-    return res.data;
-  };
-
-  const { data: profileProfileData, isLoading: profileDataLoading, isError, error } = useQuery({
-    queryKey: ["provider-profile"],
-    queryFn: getProviderProfileData,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="center gap-1 ">
+      <div className="center gap-1 cursor-pointer" onClick={()=>navigate("/provider")}>
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">JOB SHINE</span>
+        <span className="font-bold text-2xl md:text-3xl"><span className="font-emploez text-orange-600">Emploez</span><span>.in</span></span>
       </div>
 
-      <div className="justify-center items-center gap-5 hidden md:flex">
+      <div className="justify-center items-center gap-1 hidden md:flex ">
         {menuItem.map(
           (d, idx) =>
             d.title !== "Profile" && d.title !== "Logout" && (
@@ -68,12 +45,12 @@ const ProviderNavbar = () => {
                 key={idx}
                 className="p-1 cursor-pointer relative flex center "
                 onClick={() => {
-                  setSelectedMenu(idx);
+                  setSelectedMenu(d.label);
                   navigate(d.nav);
                 }}
               >
                 {d.title}
-                {selectedMenu === idx && (
+                {selectedMenu === d.label && (
                   <motion.div
                     layoutId="underline_nav"
                     className={"absolute -bottom-1 h-1 w-full bg-orange-600  "}
@@ -83,9 +60,8 @@ const ProviderNavbar = () => {
             )
         )}
       </div>
-
       <div className="hidden md:flex gap-2 items-center justify-center font-outfit">
-        {!localStorage.getItem("authToken") ? (
+        {!authToken ? (
           <>
             <a href="/signup">
               <button className="btn-dark px-3 py-1 rounded-lg hidden md:flex">
@@ -99,22 +75,54 @@ const ProviderNavbar = () => {
             </a>
           </>
         ) : (
-          <>
-            <div className="flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md" onClick={() => navigate("/provider/profile")}>
-              <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
+          <div className="flex justify-center items-center gap-2">
+            <button
+              className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+              onClick={() => {
+                // localStorage.removeItem("authToken");
+                // navigate("/login");
+                setLogoutModalOpen(true);
+              }}
+            >
+              Logout
+            </button>
+            <div
+              className={
+                "flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md " +
+                (selectedMenu === "profile" ? " text-orange-600" : "")
+              }
+              onClick={() => {
+                navigate("/provider/profile");
+                setSelectedMenu("profile");
+              }}
+            >
+              <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />
               Profile
             </div>
-            <div className="flex center gap-1 text-sm cursor-pointer p-1 primary-shadow rounded-md" onClick={handleLogout}>
-              <BiLogOut className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />{" "}
-            </div>
-          </>
+          </div>
         )}
       </div>
 
-      {/* Drawer for mobile devices */}
-      <div className="flex md:hidden mr-3">
+      <div className="flex md:hidden justify-center items-center gap-2">
+        {!authToken ? (
+          <a href="/login">
+            <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
+              SignIn
+            </button>
+          </a>
+        ) : (
+          <button
+            className="bg-white shadow-sm shadow-black px-3 py-[1px] rounded-lg"
+            onClick={() => {
+              setLogoutModalOpen(true);
+            }}
+          >
+            Logout
+          </button>
+        )}
         <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
+
       <Drawer
         title="Menu"
         placement={"left"}
@@ -131,6 +139,37 @@ const ProviderNavbar = () => {
           onClick={onClose}
         />
       </Drawer>
+
+      {/* logout confirm modal */}
+
+      <Modal
+        title="Comfirm Logout"
+        open={logoutModalOpen}
+        onCancel={() => setLogoutModalOpen(false)}
+        footer={
+          <div className="flex justify-end items-start gap-2">
+            <button
+              className="border border-orange-600 rounded-lg px-1"
+              onClick={() => setLogoutModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="border bg-orange-600 text-white rounded-lg px-1"
+              onClick={() => {
+                localStorage.removeItem("authToken");
+                sessionStorage.removeItem("location");
+                toast.success("Logout Successfull!!")
+                navigate("/login");
+              }}
+            >
+              OK
+            </button>
+          </div>
+        }
+      >
+        Are you sure want to logout ?
+      </Modal>
     </div>
   );
 };
@@ -141,42 +180,86 @@ const MobileNavBar = ({
   menuItem = [],
   selectedMenu = 0,
   setSelectedMenu = () => {},
-  onClick = () => {}
+  onClick = () => {},
 }) => {
   const navigate = useNavigate();
+
+  const authToken = localStorage.getItem("authToken");
 
   return (
     <div className="w-full">
       {menuItem.map((d, idx) => {
+         if (
+          (
+            d.title === "Logout" 
+            || d.title == "Post Job" 
+            || d.title == "Profile") 
+            && !authToken) 
+            return null;
+            
         return (
           <div
             key={idx}
             className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
             onClick={() => {
-              setSelectedMenu(idx);
+              setSelectedMenu(d.label);
               setTimeout(() => {
-                if (d.title === "Logout") {
-                  localStorage.removeItem("authToken");
-                  navigate("/login");
-                } else {
-                  navigate(d.nav);
-                }
+                navigate(d.nav);
               }, 500);
               onClick();
             }}
           >
-            {d.title}
-            {selectedMenu === idx && (
-              <motion.div
-                layoutId="underline_mobile_nav"
-                className="absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center"
-              >
-                <RiArrowLeftSFill className="w-5 h-5" />
-              </motion.div>
+            {d.title === "Profile" ? (
+              <>
+                {!authToken ? (
+                  <></>
+                ) : (
+                  <>
+                    {d.title}
+                    {selectedMenu === d.label && (
+                      <motion.div
+                        layoutId="underline_mobile_nav"
+                        className={
+                          "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                        }
+                      >
+                        <RiArrowLeftSFill className="w-5 h-5" />
+                      </motion.div>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {d.title}
+                {selectedMenu === d.label && (
+                  <motion.div
+                    layoutId="underline_mobile_nav"
+                    className={
+                      "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                    }
+                  >
+                    <RiArrowLeftSFill className="w-5 h-5" />
+                  </motion.div>
+                )}
+              </>
             )}
           </div>
         );
       })}
+      {/* Show SignIn if no token is present */}
+      {!authToken && (
+        <div
+          className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
+          onClick={() => {
+            setSelectedMenu(null);
+            navigate("/login");
+            onClick();
+          }}
+        >
+          Sign In
+        </div>
+      )}
     </div>
   );
 };
