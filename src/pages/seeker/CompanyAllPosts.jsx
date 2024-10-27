@@ -55,12 +55,24 @@ const PostCard = ({ data, className }) => {
     title,
     location,
     must_skills,
-    other_skills,
+    other_skills, 
     package: salary,
     description,
     experience,
     job_id,
   } = data;
+
+
+  const skills= new Set();
+
+  must_skills.forEach(element => {
+    skills.add(element)
+  });
+  other_skills.forEach(element => {
+    skills.add(element)
+  });
+  
+
   return (
     <div
       className={
@@ -75,7 +87,9 @@ const PostCard = ({ data, className }) => {
       <div className="w-full flex justify-start items-start gap-2 my-3">
         <span className="w-fit block"> Skills : </span>
         <div className="flex-1 w-full flex text-wrap overflow-hidden text-ellipsis max-h-9 ">
-          {must_skills?.join(" , ") + (other_skills?.length > 0 ? " , "+other_skills.join(" , ")  : "")}
+          {
+            [...skills].join(" , ")
+          }
         </div>
       </div>
       <div className="mt-1 flex flex-row justify-start items-center gap-1 text-gray-500 text-xs md:text-sm">
@@ -200,7 +214,7 @@ export const JobPostContainer = ({ cardClassname, companyId }) => {
           prevIcon={
             <button
               disabled={isLoading}
-              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              className={"hidden md:flex " + (currentPage == 1  && " !hidden")}
               style={{ border: "none", background: "none" }}
             >
               ← Prev
@@ -209,7 +223,7 @@ export const JobPostContainer = ({ cardClassname, companyId }) => {
           nextIcon={
             <button
               disabled={isLoading}
-              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              className={"hidden md:flex " + (currentPage >= Math.ceil(totalDatas / pageSize) && " !hidden")}
               style={{ border: "none", background: "none" }}
             >
               Next →
@@ -280,7 +294,7 @@ export const FreelanePostContainer = ({ cardClassname, companyId }) => {
           onChange={(e) => handlePageChange(e)}
           prevIcon={
             <button
-              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              className={"hidden md:flex " + (currentPage == 1 && " !hidden")}
               style={{ border: "none", background: "none" }}
             >
               ← Prev
@@ -288,7 +302,7 @@ export const FreelanePostContainer = ({ cardClassname, companyId }) => {
           }
           nextIcon={
             <button
-              className={"hidden md:flex " + (totalDatas < 10 && " !hidden")}
+              className={"hidden md:flex " + ((currentPage >= Math.ceil(totalDatas / pageSize)) && " !hidden")}
               style={{ border: "none", background: "none" }}
             >
               Next →

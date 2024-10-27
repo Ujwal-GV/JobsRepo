@@ -38,7 +38,7 @@ const JobSuggestionCard = ({ data }) => {
       <div className="mt-1 flex justify-start items-center  gap-1">
         <IoLocationOutline />
         <span className=" font-extralight text-sm max-w-[90%] md:max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
-          {location}
+          {location.join(" , ")}
         </span>
       </div>
     </div>

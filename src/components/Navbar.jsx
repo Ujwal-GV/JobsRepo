@@ -29,9 +29,15 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="center gap-1 cursor-pointer" onClick={()=>navigate("/user")}>
+      <div
+        className="center gap-1 cursor-pointer"
+        onClick={() => navigate("/user")}
+      >
         <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl"><span className="font-emploez text-orange-600">Emploez</span><span>.in</span></span>
+        <span className="font-bold text-2xl md:text-3xl">
+          <span className="font-emploez text-orange-600">Emploez</span>
+          <span>.in</span>
+        </span>
       </div>
 
       <div className="justify-center items-center gap-1 hidden md:flex ">
@@ -156,7 +162,7 @@ const Navbar = () => {
               onClick={() => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
-                toast.success("Logout Successfully!!")
+                toast.success("Logout Successfully!!");
                 navigate("/login");
               }}
             >
@@ -184,55 +190,65 @@ const MobileNavBar = ({
   return (
     <div className="w-full">
       {menuItem.map((d, idx) => {
-        return (
-          <div
-            key={idx}
-            className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
-            onClick={() => {
-              setSelectedMenu(d.label);
-              setTimeout(() => {
-                navigate(d.nav);
-              }, 500);
-              onClick();
-            }}
-          >
-            {d.title === "Profile" ? (
-              <>
-                {!localStorage.getItem("authToken") ? (
-                  <></>
-                ) : (
-                  <>
-                    {d.title}
-                    {selectedMenu === d.label && (
-                      <motion.div
-                        layoutId="underline_mobile_nav"
-                        className={
-                          "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
-                        }
-                      >
-                        <RiArrowLeftSFill className="w-5 h-5" />
-                      </motion.div>
-                    )}
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                {d.title}
-                {selectedMenu === d.label && (
-                  <motion.div
-                    layoutId="underline_mobile_nav"
-                    className={
-                      "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
-                    }
-                  >
-                    <RiArrowLeftSFill className="w-5 h-5" />
-                  </motion.div>
-                )}
-              </>
-            )}
-          </div>
-        );
+        if (d.title !== "Profile") {
+          return (
+            <div
+              key={idx}
+              className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
+              onClick={() => {
+                setSelectedMenu(d.label);
+                setTimeout(() => {
+                  navigate(d.nav);
+                }, 500);
+                onClick();
+              }}
+            >
+              {d.title}
+              {selectedMenu === d.label && (
+                <motion.div
+                  layoutId="underline_mobile_nav"
+                  className={
+                    "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                  }
+                >
+                  <RiArrowLeftSFill className="w-5 h-5" />
+                </motion.div>
+              )}
+            </div>
+          );
+        } else {
+          {
+            if (!localStorage.getItem("authToken")) {
+              return <></>;
+            } else {
+              return (
+                <div
+                  key={idx}
+                  className="p-1 cursor-pointer relative flex center h-10 hover:bg-orange-100 rounded-md duration-700"
+                  onClick={() => {
+                    setSelectedMenu(d.label);
+                    setTimeout(() => {
+                      navigate(d.nav);
+                    }, 500);
+                    onClick();
+                  }}
+                >
+                  {d.title}
+                  {selectedMenu === d.label && (
+                    <motion.div
+                      layoutId="underline_mobile_nav"
+                      className={
+                        "absolute top-0 right-0 rounded-md h-full  w-fit bg-orange-600 flex center  "
+                      }
+                    >
+                      <RiArrowLeftSFill className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                </div>
+              );
+            }
+          }
+        }
       })}
     </div>
   );

@@ -24,10 +24,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 const queryClient = new QueryClient();
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
 import ScrollToTop from './components/ScrollToTop'
 import NewsPage from './pages/NewsPage'
 import ProviderMainWrapper from './pages/provider/components/ProviderMainWrapper'
@@ -54,7 +52,7 @@ const AppMain = () => {
           <Route path="/user" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
               <Route path = "/user/job-post/:id/:applied?" element={ <JobApplicatioWithSimilarApplication/> } />
-              <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
+              <Route path = "/user/project-apply/:id" element={ <ProjectApplication/> } />
               <Route path = "/user/company/:id" element={ <CompanyPage/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
@@ -79,7 +77,7 @@ const AppMain = () => {
         </Routes> 
       </BrowserRouter>
       </JobProvider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </AuthProvider>
     </QueryClientProvider>
   ) 

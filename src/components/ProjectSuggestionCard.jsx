@@ -1,41 +1,41 @@
 import React from "react";
 import NewBadge from "./badges/NewBadge";
+import { useNavigate } from "react-router-dom";
+import CustomBadge from "./badges/CustomBadge";
+import { formatTimestampToDate } from "../pages/seeker/ProjectApplication";
 
 const ProjectSuggestionCard = ({ data }) => {
   const {
-    isNew = "",
-    img = "",
-    name = "",
-    companyName="",
-    companyUrl = "",
-    cost="",
-    postedBy = "",
+    name,provider_info,cost
   } = data;
+
+  console.log(data)
+  const navigate = useNavigate()
+
   return (
-    <div onClick={()=>alert(data.id)} className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover">
-      {isNew && (
-        <div className="absolute top-2 right-2">
-          <NewBadge />
-        </div>
-      )}
+    <div onClick={()=>navigate(`/user/project-apply/${data.project_id}`)} className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover">
+      
+      <div className="absolute top-1 right-1">
+        <CustomBadge text={"Due "+formatTimestampToDate(data?.dueTime)} bgcolor="white" text_color="green"/>
+      </div>
+
       <img
-        src={companyUrl}
-        alt=""
-        className="w-[40px] h-[40px] md:w-[60px] md:h-[60px] absolute top-10 right-5 lg:right-10  rounded-lg border-gray job-card-img"
+        src={provider_info?.img}
+        alt="profile"
+        className="w-[40px] h-[40px] md:w-[60px] md:h-[60px] absolute top-10 right-5 lg:right-10  rounded-lg border-gray job-card-img text-img"
       />
       <h3 className="w-full text-[0.9rem] font-semibold text-ellipsis text-nowrap overflow-hidden mt-3 ">
         {name}
       </h3>
       <h2 className=" max-w-[90%] overflow-hidden text-ellipsis text-nowrap text-gray-600 font-roboto">
-        {companyName}
+        {provider_info?.name}
       </h2>
       <h1 className="mt-2 flex justify-start items-center  gap-1">
-        Price : {
-            cost
-        }
+        Price : {cost.amount}
       </h1>
-      <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1>
+      {/* <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1> */}
     </div>
+    
   );
 };
 

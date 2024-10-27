@@ -29,6 +29,7 @@ const SearchFilterPage = () => {
   const [openLocationDrawer, setLocationDrawer] = useState(false);
   const [openWorkTypeDrawer, setWorkTypeDrawer] = useState(false);
 
+
   const handleDrawerClose = () => {
     setLocationDrawer(false);
     setWorkTypeDrawer(false);
@@ -155,7 +156,6 @@ const SearchFilterPage = () => {
   })
 
 
-
   const handlePageChange = (val) => {
     setCurrentPage(val);
     window.scrollTo({
@@ -276,8 +276,7 @@ const SearchFilterPage = () => {
                     disabled={searchLoading || searchFetching}
                     className={
                       "hidden md:flex " +
-                      ((currentPage * pageSize === totalData ||
-                        totalData < pageSize) &&
+                      ((currentPage >= Math.ceil(totalData / pageSize)) &&
                         " !hidden ")
                     }
                     style={{ border: "none", background: "none" }}

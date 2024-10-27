@@ -17,7 +17,7 @@ const CompanyCard = ({ data }) => {
         className="h-full w-full mx-auto border rounded-md p-1"
       />
       </div>
-      <h5 className="max-w-[80%] text-center text-nowrap mt-5">
+      <h5 className="max-w-[80%] text-center text-nowrap mt-5 overflow-hidden text-ellipsis">
         {company_name}
       </h5>
       <h1 className="text-orange-600 text-[1rem] font-medium font-fredoka">
