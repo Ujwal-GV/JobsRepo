@@ -50,6 +50,21 @@ function MainPage() {
   };
 
 
+  const fetchProjects  = async () => {
+    const res = await axiosInstance.get("projects/",{params:{limit:10,suggestion:false}});
+    return res.data.pageData;
+  };
+
+
+
+  const { data: fetchedProjectsData, isLoading: projectsDataLoading ,isError:projectsDataError ,isSuccess:projectsDataSuccess  } = useQuery({
+    queryKey: ["projectsData"],
+    queryFn: fetchProjects,
+    staleTime: 300000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: 300000,
+  });
 
 
   const { data: jobsData, isLoading: jobsDataLoading ,isError:jobDataError ,isSuccess:jobDataSuccess  } = useQuery({
@@ -75,6 +90,7 @@ function MainPage() {
       toast.error("Something went wrong while fetching jobs");
     },
   });
+
 
 
   return (
@@ -108,7 +124,7 @@ function MainPage() {
         >
           <AdvancedSwiper key={"jobs"}>
             {jobsDataLoading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
+              [...Array(5)].map((d) => (
                 <SwiperSlide key={d}>
                   <JobCardSkeleton id={d} />
                 </SwiperSlide>
@@ -133,7 +149,7 @@ function MainPage() {
         >
           <AdvancedSwiper>
             {companyDataLoading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((data) => (
+              [...Array(5)].map((data) => (
                 <SwiperSlide key={data}>
                   <CompanyCardSkeleton id={data} />
                 </SwiperSlide>
@@ -156,11 +172,23 @@ function MainPage() {
           onViewClick={() => alert("Project  List")}
         >
           <AdvancedSwiper>
-            {projectData.map((data) => (
-              <SwiperSlide key={data.id}>
-                <ProjectCard key={data.id} data={data} />
-              </SwiperSlide>
-            ))}
+
+            {
+              projectsDataLoading ?
+              (
+                [...Array(5)].map((data) => (
+                  <SwiperSlide key={data}>
+                    <CompanyCardSkeleton id={data} />
+                  </SwiperSlide>
+                ))
+              )
+                 : (fetchedProjectsData && fetchedProjectsData?.length >0 ? fetchedProjectsData.map((data) => (
+                  <SwiperSlide key={data._id}>
+                    <ProjectCard key={data.id} data={data} />
+                  </SwiperSlide>
+                )) : <h2>No projects Found</h2>)
+            }
+            
           </AdvancedSwiper>
         </SwiperWrapper>
       </MainContext>

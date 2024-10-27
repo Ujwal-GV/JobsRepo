@@ -155,8 +155,7 @@ const FollowingCompanies = () => {
                           disabled={isLoading || isFetching}
                           className={
                             "hidden md:flex " +
-                            ((currentPage * pageSize === totalData ||
-                              totalData < pageSize) &&
+                            (currentPage >= Math.ceil(totalData / pageSize) &&
                               "!hidden")
                           }
                           style={{ border: "none", background: "none" }}

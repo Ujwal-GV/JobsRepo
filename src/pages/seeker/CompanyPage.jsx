@@ -181,10 +181,10 @@ const CompanyPage = () => {
                 />
                 <h1 className="text-[1.3rem] md:text-2xl font-semibold mt-2 md:mt-0">
                   {company_name}{" "}
-                  <span className="text-sm">
+                  {/* <span className="text-sm">
                     <Rate count={1} disabled value={1} />
                     {4.5}
-                  </span>
+                  </span> */}
                 </h1>
                 {
                   (company_links?.length>0 && company_links[0]?.url) &&  <h3 className="font-light mt-7">

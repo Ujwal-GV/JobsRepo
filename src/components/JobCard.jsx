@@ -30,13 +30,13 @@ const JobCard = ({ data }) => {
       className="job-card relative w-[180px] md:w-[200px]  h-[160px] md:h-[180px]  bg-white border-gray  rounded-lg m-3 p-3 cursor-pointer duration-800 "
       onClick={() => navigate(`/user/job-post/${job_id}`)}
     >
-      {postedSince && (
+      {postedSince >=0 ? (
         <div className="absolute top-2 right-2">
           {
-            postedSince <=2 ? <NewBadge /> : <CustomBadge text={postedSince+" days ago"} bgcolor="white" text_color="blue"/>
+            postedSince <=1 ? <NewBadge /> : <CustomBadge text={postedSince+" days ago"} bgcolor="white" text_color="blue"/>
           }
         </div>
-      )}
+      ) : <></>}
       <img
         src={provider_info?.img?.url}
         alt={provider_info?.company_name}
@@ -52,7 +52,7 @@ const JobCard = ({ data }) => {
         location ? <div className="mt-2 flex justify-start items-center  gap-1">
         <IoLocationOutline />
         <span className=" font-extralight text-sm w-full overflow-hidden text-ellipsis text-nowrap">
-          {location?.length > 1 ? location[0]+" /..." : location}
+          {location?.length > 1 ? location[0]+".."  : location}
         </span>
       </div> :<></>
       }
