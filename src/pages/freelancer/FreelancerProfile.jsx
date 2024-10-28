@@ -221,7 +221,7 @@ const FreelancerProfile = () => {
               <div className="w-[100%] mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
               <DeatilsBadge
                 icon={<BiSolidBadgeCheck className="text-green-600" />}
-                title="Projects Posted"
+                title="Projects Posted By You"
                 val={profileData?.project_details?.projects?.length || 0}
                 // onClick={() => navigate(`/freelancer/projects-posted/${freelancerId}`)}
               />
