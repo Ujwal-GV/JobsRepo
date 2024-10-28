@@ -174,7 +174,7 @@ const AllPostedJobs = () => {
                   <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-1">{projectTitle}</h1>
                   {/* <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-3">{providerName}</h2> */}
                   <h3 className="text-sm md:text-base text-gray-600">Project-Id: {project_id}</h3>
-                  <h3 className="text-sm md:text-base text-gray-600 mt-1">Posted by: {providerName}</h3>
+                  <h3 className="text-sm md:text-base text-gray-600 mt-1">Posted by  : {providerName}</h3>
                 </div>
 
                 {/* Skills Section */}
