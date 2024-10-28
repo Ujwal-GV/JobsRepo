@@ -983,10 +983,8 @@ const ProfileSkillModal = ({
     setSelectSkills(skillsAfterDelete);
   };
 
-  // Handle selecting a skill from the AutoComplete dropdown
   const handleSelect = (value) => {
-    // Check if the skill is already selected
-    const alreadySelected = selectSkills.some((skill) => skill.value === value);
+   const alreadySelected = selectSkills.some((skill) => skill.value === value);
 
     if (alreadySelected) {
       message.error("Skill already selected");

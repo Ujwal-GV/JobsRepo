@@ -169,7 +169,7 @@ function MainPage() {
         <SwiperWrapper
           key={"projects"}
           title="Suggested projects"
-          onViewClick={() => alert("Project  List")}
+          onViewClick={() => navigate("/user/projects")}
         >
           <AdvancedSwiper>
 
