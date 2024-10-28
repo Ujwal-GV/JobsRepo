@@ -7,7 +7,6 @@ import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AnimatePresence } from "framer-motion";
 
 const ProviderNavbar = () => {
   const menuItem = [
@@ -33,92 +32,87 @@ const ProviderNavbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/provider")}>
-        {/* <img src={`${import.meta.env.BASE_URL}/EmploezLogo.png`} alt="Logo" /> */}
-        <img src="/EmploezLogo.png" alt="Logo" className="text-sm ml-0 lg:w-[8rem] w-[6rem]" />
-        <span className="-ml-[1rem] mt-1 font-bold text-2xl md:text-3xl">
-          <span className="font-emploez text-orange-600">Emploez</span>
-          <span>.in</span>
-        </span>
+      <div className="center gap-1 cursor-pointer" onClick={()=>navigate("/provider")}>
+        <PiSealCheckFill className="text-2xl text-orange-500" />
+        <span className="font-bold text-2xl md:text-3xl"><span className="font-emploez text-orange-600">Emploez</span><span>.in</span></span>
       </div>
 
-      {/* <div className="center gap-1 cursor-pointer" onClick={() => navigate("/provider")}>
-        <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">
-          <span className="font-emploez text-orange-600">Emploez</span>
-          <span>.in</span>
-        </span>
-      </div> */}
-
-        <div className="flex justify-center items-center gap-2 p-1 hidden md:flex bg-black rounded-full text-white relative">
-        {authToken ? (
-            menuItem.map((d, idx) => (
-            <motion.div
+      <div className="justify-center items-center gap-1 hidden md:flex ">
+        {menuItem.map(
+          (d, idx) =>
+            d.title !== "Profile" && d.title !== "Logout" && (
+              <div
                 key={idx}
-                className={`cursor-pointer titleBg px-4 py-2 relative rounded-full ${
-                selectedMenu === d.label ? "bg-black shadow-lg" : ""
-                }`}
+                className="p-1 cursor-pointer relative flex center "
                 onClick={() => {
-                setSelectedMenu(d.label);
-                navigate(d.nav);
+                  setSelectedMenu(d.label);
+                  navigate(d.nav);
                 }}
-            >
-                <span
-                className={`titleNav transition-opacity duration-300 relative z-10 ${
-                    selectedMenu === d.label ? "text-black opacity-100" : "opacity-70"
-                }`}
-                >
+              >
                 {d.title}
-                </span>
-                <AnimatePresence>
                 {selectedMenu === d.label && (
-                    <motion.div
-                    layoutId="underline"
-                    className="absolute inset-0 bg-white rounded-full shadow-md z-0"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 250,
-                        damping: 25,
-                        duration: 0.5,
-                        ease: [0.25, 0.1, 0.25, 1],
-                    }}
-                    />
+                  <motion.div
+                    layoutId="underline_nav"
+                    className={"absolute -bottom-1 h-1 w-full bg-orange-600  "}
+                  />
                 )}
-                </AnimatePresence>
-            </motion.div>
-            ))
-        ) : (
-            <div className="flex gap-2">
-            {/* Sign In Button */}
-              <div className="relative cursor-pointer">
-                <button
-                  className="px-4 py-2 bg-white text-black rounded-full relative overflow-hidden"
-                  onClick={() => navigate("/login")}
-                >
-                  <span className="titleNav transition-opacity duration-300 relative z-10 opacity-100">Sign In</span>
-                </button>
               </div>
-              
-              {/* Sign Up Button */}
-              <div className="relative cursor-pointer">
-                <button
-                  className="px-4 py-2 bg-orange-500 text-white rounded-full relative overflow-hidden"
-                  onClick={() => navigate("/signup")}
-                >
-                  <span className="titleNav transition-opacity duration-300 relative z-10 opacity-100">Sign Up</span>
-                </button>
-              </div>
-            </div>
+            )
         )}
-        </div>
+      </div>
+      <div className="hidden md:flex gap-2 items-center justify-center font-outfit">
+        {!authToken ? (
+          <>
+            <a href="/signup">
+              <button className="btn-dark px-3 py-1 rounded-lg hidden md:flex">
+                SignUp
+              </button>
+            </a>
+            <a href="/login">
+              <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
+                SignIn
+              </button>{" "}
+            </a>
+          </>
+        ) : (
+          <div className="flex justify-center items-center gap-2">
+            <button
+              className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+              onClick={() => {
+                // localStorage.removeItem("authToken");
+                // navigate("/login");
+                setLogoutModalOpen(true);
+              }}
+            >
+              Logout
+            </button>
+            <div
+              className={
+                "flex center gap-1 text-[1rem] cursor-pointer p-1 primary-shadow rounded-md " +
+                (selectedMenu === "profile" ? " text-orange-600" : "")
+              }
+              onClick={() => {
+                navigate("/provider/profile");
+                setSelectedMenu("profile");
+              }}
+            >
+              <BiSolidUserCircle className="w-6 h-6 md:w-8 md:h-8 hover:text-orange-600" />
+              Profile
+            </div>
+          </div>
+        )}
+      </div>
 
-        <div className="flex justify-center items-center gap-2">
-        {authToken && (
+      <div className="flex md:hidden justify-center items-center gap-2">
+        {!authToken ? (
+          <a href="/login">
+            <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
+              SignIn
+            </button>
+          </a>
+        ) : (
           <button
-            className="px-4 py-2 bg-black text-white rounded-full relative overflow-hidden"
+            className="bg-white shadow-sm shadow-black px-3 py-[1px] rounded-lg"
             onClick={() => {
               setLogoutModalOpen(true);
             }}
@@ -126,26 +120,16 @@ const ProviderNavbar = () => {
             Logout
           </button>
         )}
-        <FaBars className="md:hidden w-6 h-6" onClick={() => showDrawer()} />
+        <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
-
-      {/* Logout Button */}
-      {/* {authToken && (
-        <button
-        className="px-4 py-2 bg-black text-white rounded-full relative overflow-hidden"
-          onClick={() => setLogoutModalOpen(true)}
-        >
-          Logout
-        </button>
-      )} */}
 
       <Drawer
         title="Menu"
-        placement="left"
+        placement={"left"}
         closable={true}
         onClose={onClose}
         open={open}
-        key="menu"
+        key={"menu"}
         width={"300px"}
       >
         <MobileNavBar
@@ -153,29 +137,29 @@ const ProviderNavbar = () => {
           selectedMenu={selectedMenu}
           setSelectedMenu={setSelectedMenu}
           onClick={onClose}
-          authToken={authToken}
         />
       </Drawer>
 
-      {/* Logout Confirmation Modal */}
+      {/* logout confirm modal */}
+
       <Modal
-        title="Confirm Logout"
+        title="Comfirm Logout"
         open={logoutModalOpen}
         onCancel={() => setLogoutModalOpen(false)}
         footer={
           <div className="flex justify-end items-start gap-2">
             <button
-              className="border border-black rounded-lg px-2 py-1"
+              className="border border-orange-600 rounded-lg px-1"
               onClick={() => setLogoutModalOpen(false)}
             >
               Cancel
             </button>
             <button
-              className="border bg-black text-white rounded-lg px-2 py-1"
+              className="border bg-orange-600 text-white rounded-lg px-1"
               onClick={() => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
-                toast.success("Logout Successful!");
+                toast.success("Logout Successfull!!")
                 navigate("/login");
               }}
             >
@@ -184,7 +168,7 @@ const ProviderNavbar = () => {
           </div>
         }
       >
-        Are you sure you want to logout?
+        Are you sure want to logout ?
       </Modal>
     </div>
   );
