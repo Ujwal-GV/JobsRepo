@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Steps } from "antd";
-import { useGetProfileData } from "./queries/ProfileQuery";
 import { CustomSkeleton } from "./CompanyAllPosts";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
 

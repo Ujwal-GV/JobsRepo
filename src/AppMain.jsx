@@ -24,10 +24,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { JobProvider } from './contexts/JobContext';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 const queryClient = new QueryClient();
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
 import ScrollToTop from './components/ScrollToTop'
 import NewsPage from './pages/NewsPage'
 import ProviderMainWrapper from './pages/provider/components/ProviderMainWrapper'
@@ -44,8 +42,11 @@ import UserLogin from './pages/UserLogin'
 import FreelancerProfile from './pages/freelancer/FreelancerProfile'
 import ProjectsPostedByFreelancer from './pages/freelancer/ProjectsPostedByFreelancer'
 import ProjectDetails from './pages/freelancer/ProjectDetails'
+import ListOfProjects from './pages/seeker/ListOfProjects'
+
 
 const AppMain = () => {
+
   return (
     <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -64,7 +65,7 @@ const AppMain = () => {
           <Route path="/" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
               <Route path = "/user/job-post/:id/:applied?" element={ <JobApplicatioWithSimilarApplication/> } />
-              <Route path = "/user/project-apply" element={ <ProjectApplication/> } />
+              <Route path = "/user/project-apply/:id" element={ <ProjectApplication /> } />
               <Route path = "/user/company/:id" element={ <CompanyPage/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
@@ -72,7 +73,8 @@ const AppMain = () => {
               <Route path='/user/company/following' element={<FollowingCompanies/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
-              <Route path='/user/companies' element={<ListOfCompanies/>}/> 
+              <Route path='/user/companies' element={<ListOfCompanies/>}/>
+              <Route path='/user/projects' element={<ListOfProjects/>}/> 
               
           </Route>
           <Route path="/provider" element={<ProviderMainWrapper/>}>
@@ -96,7 +98,7 @@ const AppMain = () => {
         </Routes> 
       </BrowserRouter>
       </JobProvider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </AuthProvider>
     </QueryClientProvider>
   ) 
