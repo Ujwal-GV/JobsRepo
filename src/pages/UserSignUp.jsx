@@ -1,57 +1,32 @@
 import React, { useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { MdEmail } from "react-icons/md";
-import { FaKey, FaUser, FaBuilding } from "react-icons/fa"; // Added FaBuilding icon for company
+import { FaKey, FaUser } from "react-icons/fa";
 import { signupValidationSchema } from "../formikYup/ValidationSchema";
 import { useNavigate } from "react-router-dom";
 import InputBox from "../components/InputBox";
-import RoleChecker from "../components/RoleChecker";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../utils/axiosInstance";
 import { LuLoader2 } from "react-icons/lu";
 
-function SignUp() {
-  const roleData = ["Job Provider", "Freelancer"];
-  const [role, setRole] = useState("Job Provider");
+function UserSignUp() {
   const navigate = useNavigate();
 
-  // Mutation for Freelancer SignUp
-  const FreelancerSignUpMutation = useMutation({
-    mutationKey: "freelancer-signup",
+  // Mutation for Job Seeker SignUp
+  const SeekerSignUpMutation = useMutation({
+    mutationKey: "seeker-signup",
     mutationFn: async (values) => {
-      const res = await axiosInstance.post("/freelancer/create", values);
-      return res.data;
-    },
-    onSuccess: (data) => {
-      toast.success("Registration successful!");
-      localStorage.setItem("authToken" ,data?.authToken)
-      navigate("/freelancer");
-    },
-    onError: (error) => {
-      const { message } = error.response.data;
-      toast.error(message || "Signup failed. Please try again.");
-    },
-  });
-
-  // Mutation for Job Provider SignUp
-  const ProviderSignUpMutation = useMutation({
-    mutationKey: "provider-signup",
-    mutationFn: async (values) => {
-      const res = await axiosInstance.post("/provider/create", values);
-      console.log(res.data);
-      
+      const res = await axiosInstance.post("/user/register", values);
       return res.data;
     },
     onSuccess: (data) => {
       alert(response);
       toast.success("Registration successful!");
-      localStorage.setItem("authToken" ,data?.authToken)
-      navigate("/provider");
+      localStorage.setItem("authToken", data?.authToken);
+      navigate("/");
     },
     onError: (error) => {
-      console.log("Err:", error);
-      
       const { message } = error.response.data;
       toast.error(message || "Signup failed. Please try again.");
     },
@@ -63,54 +38,33 @@ function SignUp() {
         initialValues={{ email: "", password: "", name: "" }}
         validationSchema={signupValidationSchema}
         onSubmit={(values) => {
-          const updatedValues = role === "Freelancer" 
-            ? { ...values, name: values.name } 
-            : { ...values, company_name: values.name, name: undefined };
-
-          if (role === "Freelancer") {
-            FreelancerSignUpMutation.mutate(updatedValues);
-          } else {
-            ProviderSignUpMutation.mutate(updatedValues);
-          }
+          SeekerSignUpMutation.mutate(values);
         }}
       >
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
-          <Form className="bg-white w-[90%] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 px-4 md:px-6 ">
+          <Form className="bg-white w-[90%] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 px-4 md:px-6">
             <div className="mt-4 flex justify-center items-center">
+                <span className="text-2xl text-white bg-black p-1 px-3 rounded-lg md:text-2xl uppercase font-bold">
+                    User
+                </span>
               <span className="text-2xl md:text-2xl uppercase font-bold">
-                Register
+                Registeration
               </span>
             </div>
 
+            {/* Full Name Field */}
             <div className="mb-4 w-full">
-              <hr className="m-4" />
-              <label className="text-center block mb-2">Register As:</label>
-              <div className="flex items-center justify-center mb-2 font-outfit">
-                {/* Set Selected Role */}
-                <RoleChecker
-                  data={roleData}
-                  onChange={({ selectedData }) => setRole(selectedData)}
-                  indicatorClassName="!bg-black rounded-full"
-                />
-              </div>
-            </div>
-
-            {/* Dynamic Name/Company Name Field */}
-            <div className="mb-4 w-full">
+                <hr className="m-4" />
               <InputBox
                 key={"name"}
                 name={"name"}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                placeholder={
-                  role === "Freelancer"
-                    ? "Enter Full Name"
-                    : "Enter Company Name"
-                }
+                placeholder="Enter Full Name"
                 type="text"
                 customClass={touched.name && errors.name ? "input-error" : ""}
                 value={values.name}
-                icon={role === "Freelancer" ? <FaUser /> : <FaBuilding />}
+                icon={<FaUser />}
               />
               <ErrorMessage
                 name="name"
@@ -163,10 +117,7 @@ function SignUp() {
 
             {/* Submit Button */}
             <button
-              disabled={
-                FreelancerSignUpMutation.isPending ||
-                ProviderSignUpMutation.isPending
-              }
+              disabled={SeekerSignUpMutation.isPending}
               type="submit"
               className={
                 "mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base " +
@@ -174,15 +125,14 @@ function SignUp() {
               }
             >
               Register
-              {(FreelancerSignUpMutation.isPending ||
-                ProviderSignUpMutation.isPending) && (
-                  <LuLoader2 className="animate-spin-slow " />
+              {SeekerSignUpMutation.isPending && (
+                <LuLoader2 className="animate-spin-slow ml-2" />
               )}
             </button>
             <hr />
             <p className="m-2 text-center text-gray-400 text-sm">
-              Already have an account?
-              <a href="/login" className="text-black text-[1rem] hover:underline">
+              Already have an account?{" "}
+              <a href="/user/login" className="text-black text-[1rem] hover:underline">
                 Login
               </a>
             </p>
@@ -193,4 +143,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default UserSignUp;
