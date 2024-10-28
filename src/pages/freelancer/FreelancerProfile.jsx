@@ -225,11 +225,6 @@ const FreelancerProfile = () => {
                 val={profileData?.project_details?.projects?.length || 0}
                 // onClick={() => navigate(`/freelancer/projects-posted/${freelancerId}`)}
               />
-              {/* <DeatilsBadge
-                icon={<BiGroup className="text-orange-600" />}
-                title="No. of Employees"
-                val={2001}
-              /> */}
               <DeatilsBadge
                 icon={<BiGroup className="text-orange-600" />}
                 title="Followers"
