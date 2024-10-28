@@ -7,9 +7,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CustomSkeleton, NoPostFound } from "./CompanyAllPosts";
 import CustomBadge from "../../components/badges/CustomBadge";
 import { useNavigate } from "react-router-dom";
+import { formatTimestampToDate } from "../../utils/CommonUtils";
 
-const ListOfCompanies = () => {
-  const pageSize = 8;
+const ListOfProjects = () => {
+  const pageSize = 10;
   const [totalData, setTotalData] = useState(pageSize || 8);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
@@ -23,35 +24,36 @@ const ListOfCompanies = () => {
     });
   };
 
-  const fetchCompanies = async () => {
-    const res = await axiosInstance.get("/provider/allcompany", {
+  const fetchProjects = async () => {
+    const res = await axiosInstance.get("/projects/project/search", {
       params: { limit: pageSize, page: currentPage, q: searchText },
     });
     if (res.data) {
-      setTotalData(res.data.totalDatas);
+      setTotalData(res.data.totalData);
     }
     return res.data.pageData;
   };
 
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
-    queryKey: ["search-company", currentPage],
-    queryFn: fetchCompanies,
+    queryKey: ["search-projects", currentPage],
+    queryFn: fetchProjects,
     keepPreviousData: true,
     staleTime: 1000 * 60,
     cacheTime: 10000,
   });
 
   const fetchSearchSuggestions = async () => {
-    const res = await axiosInstance.get(`/provider/searchCompany/${searchText}`);
-    return res.data.map((sdata) => ({ value: sdata.company_name }));
+    const res = await axiosInstance.get(`projects/search/${searchText}`);
+    return res.data.map((sdata) => ({ value: sdata }));
   };
 
   const {
     data: searchData,
     isLoading: searchLoading,
-    isFetching:searchfetching
+    isFetching:searchFetching,
+    isSuccess:searchSuccess
   } = useQuery({
-    queryKey: ["autocomplete-suggestions-companies", searchText],
+    queryKey: ["autocomplete-suggestions-projects", searchText],
     queryFn: fetchSearchSuggestions,
     enabled: !!searchText, // Only fetch when there's search text
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -64,8 +66,14 @@ const ListOfCompanies = () => {
   const queryClient = useQueryClient()
 
   useEffect(()=>{
-  return ()=>{ queryClient.removeQueries(["autocomplete-suggestions-comapnies"])}
+   return ()=>{
+    queryClient.removeQueries(["autocomplete-suggestions-projects"])
+   }
   },[])
+
+
+  console.log(searchData)
+
 
   return (
     <MainContext>
@@ -89,8 +97,8 @@ const ListOfCompanies = () => {
                 onFocus={() => setSuggestionOpen(true)}
                 value={searchText}
                 onChange={handleSearchTextChange}
-                placeholder="Search Company By Name"
-                notFoundContent={(searchLoading || searchfetching) ? <Spin size="small" /> : null}
+                placeholder="Search by name or skills"
+                notFoundContent={(searchLoading || searchFetching) ? <Spin size="small" /> : ((searchSuccess && !searchData)? "No Results Found" : null)}
                 onSelect={(e) => setSearchText(e)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -120,10 +128,10 @@ const ListOfCompanies = () => {
               }
             >
               {isLoading || isFetching
-                ? [...Array(pageSize)].map((i) => <CompanySearchCardSkeleton />)
+                ? [...Array(pageSize)].map((i) => <ProjectSearchCardSkeleton />)
                 : data?.length > 0
-                ? data.map((cData, idx) => <CompanySearchCard key={idx} data={cData} />)
-                : <NoPostFound title={"No companies found"} />}
+                ? data.map((cData, idx) => <ProjectSearchCard key={idx} data={cData} />)
+                : <NoPostFound title={"No Projects found"} />}
             </div>
             <div className="mt-2 w-full flex center">
               {totalData > pageSize ? (
@@ -166,9 +174,9 @@ const ListOfCompanies = () => {
   );
 };
 
-export default ListOfCompanies;
+export default ListOfProjects;
 
-export const CompanySearchCard = ({ data ,showFollowing = true }) => {
+export const ProjectSearchCard = ({ data ,showApplied = true }) => {
   const [userId, setUserId] = useState("");
   const { profileData } = useContext(AuthContext);
 
@@ -179,22 +187,22 @@ export const CompanySearchCard = ({ data ,showFollowing = true }) => {
   }, [profileData]);
 
   const {
-    company_name,
-    img,
-    job_details,
-    followers,
-    project_details,
-    company_id,
-  } = data;
+    provider_info,
+    name,
+    cost,
+    dueTime,
+    applied_ids
+  } = data || {};
+
   return (
     <div
       className="w-full h-[130px] md:h-[150px] rounded-lg flex justify-between items-center cursor-pointer border border-gray-300 p-4 primary-shadow-hover relative hover:scale-[1.0002] "
-      onClick={() => navigate(`/user/company/${company_id}`)}
+      onClick={() => navigate(`/user/project-apply/${data.project_id}`)}
     >
       {
-        showFollowing ? followers?.find((uid) => uid === userId) ? (
+        showApplied ? applied_ids?.find((uid) => uid === userId) ? (
           <div className="absolute top-2 right-2">
-            <CustomBadge text="Following" bgcolor="#1E5BF0" text_color="white" />
+            <CustomBadge text="Applied" bgcolor="white" text_color="green" />
           </div>
         ) : (
           <></>
@@ -202,25 +210,21 @@ export const CompanySearchCard = ({ data ,showFollowing = true }) => {
       }
       <div>
         <h1 className="text-[1rem] md:text-[1.1rem] font-light">
-          {company_name}
+          {name}
         </h1>
        {
-        job_details &&  <h6 className="text-[0.8rem] font-extralight mb-0">
-        No of Post :{" "}
-        {job_details.jobs
-          ? job_details?.jobs?.length +
-            (project_details?.projects?.length || 0)
-          : 0}
+        cost?.amount &&  <h6 className="text-[0.8rem] font-extralight mb-0">
+        Price : {cost?.amount}
       </h6>
        }
         <h6 className="text-[0.8rem] font-extralight mb-0">
-          Followers : {followers ? followers?.length : 0}
+          Due Time : {checkoutDatePass(dueTime) === 1 ? <strike>{formatTimestampToDate(dueTime)}</strike> : formatTimestampToDate(dueTime) }
         </h6>
       </div>
       <div>
         <img
-          src={img?.url || ""}
-          alt={company_name}
+          src={provider_info?.img || ""}
+          alt={"project"}
           className="h-[60px] md:h-[70px] w-[60px] md:w-[70px] rounded-md border border-gray-300"
         />
       </div>
@@ -228,7 +232,7 @@ export const CompanySearchCard = ({ data ,showFollowing = true }) => {
   );
 };
 
-const CompanySearchCardSkeleton = () => {
+const ProjectSearchCardSkeleton = () => {
   return (
     <div className="w-full h-[130px] md:h-[150px] rounded-lg flex justify-between items-center cursor-pointer border border-gray-300 p-4 primary-shadow-hover">
       <div>
@@ -248,3 +252,20 @@ const CompanySearchCardSkeleton = () => {
     </div>
   );
 };
+
+
+const checkoutDatePass = (val)=>{
+  const givenTimestamp = new Date(val).getTime(); 
+  const currentTimestamp = Date.now(); 
+  if(currentTimestamp > givenTimestamp)
+  {
+    return 1
+  } else if(currentTimestamp < givenTimestamp)
+  {
+    return -1
+  }
+  else {
+    return 0
+  }
+
+}

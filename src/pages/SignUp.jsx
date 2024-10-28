@@ -12,21 +12,21 @@ import { axiosInstance } from "../utils/axiosInstance";
 import { LuLoader2 } from "react-icons/lu";
 
 function SignUp() {
-  const roleData = ["Job Provider", "Freelancer"];
-  const [role, setRole] = useState("Job Provider");
+  const roleData = ["Job Seeker", "Job Provider"];
+  const [role, setRole] = useState("Job Seeker");
   const navigate = useNavigate();
 
-  // Mutation for Freelancer SignUp
-  const FreelancerSignUpMutation = useMutation({
-    mutationKey: "freelancer-signup",
+  // Mutation for Job Seeker SignUp
+  const SeekerSignUpMutation = useMutation({
+    mutationKey: "seeker-signup",
     mutationFn: async (values) => {
-      const res = await axiosInstance.post("/freelancer/create", values);
+      const res = await axiosInstance.post("/user/register", values);
       return res.data;
     },
     onSuccess: (data) => {
       toast.success("Registration successful!");
       localStorage.setItem("authToken" ,data?.authToken)
-      navigate("/freelancer");
+      navigate("/user");
     },
     onError: (error) => {
       const { message } = error.response.data;
@@ -44,10 +44,9 @@ function SignUp() {
       return res.data;
     },
     onSuccess: (data) => {
-      alert(response);
       toast.success("Registration successful!");
       localStorage.setItem("authToken" ,data?.authToken)
-      navigate("/provider");
+      navigate("/select-role");
     },
     onError: (error) => {
       console.log("Err:", error);
@@ -63,12 +62,12 @@ function SignUp() {
         initialValues={{ email: "", password: "", name: "" }}
         validationSchema={signupValidationSchema}
         onSubmit={(values) => {
-          const updatedValues = role === "Freelancer" 
+          const updatedValues = role === "Job Seeker" 
             ? { ...values, name: values.name } 
             : { ...values, company_name: values.name, name: undefined };
 
-          if (role === "Freelancer") {
-            FreelancerSignUpMutation.mutate(updatedValues);
+          if (role === "Job Seeker") {
+            SeekerSignUpMutation.mutate(updatedValues);
           } else {
             ProviderSignUpMutation.mutate(updatedValues);
           }
@@ -103,14 +102,14 @@ function SignUp() {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 placeholder={
-                  role === "Freelancer"
+                  role === "Job Seeker"
                     ? "Enter Full Name"
                     : "Enter Company Name"
                 }
                 type="text"
                 customClass={touched.name && errors.name ? "input-error" : ""}
                 value={values.name}
-                icon={role === "Freelancer" ? <FaUser /> : <FaBuilding />}
+                icon={role === "Job Seeker" ? <FaUser /> : <FaBuilding />}
               />
               <ErrorMessage
                 name="name"
@@ -164,7 +163,7 @@ function SignUp() {
             {/* Submit Button */}
             <button
               disabled={
-                FreelancerSignUpMutation.isPending ||
+                SeekerSignUpMutation.isPending ||
                 ProviderSignUpMutation.isPending
               }
               type="submit"
@@ -174,7 +173,7 @@ function SignUp() {
               }
             >
               Register
-              {(FreelancerSignUpMutation.isPending ||
+              {(SeekerSignUpMutation.isPending ||
                 ProviderSignUpMutation.isPending) && (
                   <LuLoader2 className="animate-spin-slow " />
               )}

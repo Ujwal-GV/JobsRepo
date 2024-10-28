@@ -15,14 +15,14 @@ import { LuLoader2 } from "react-icons/lu";
 
 function Login() {
   const { setUserRole } = useContext(AuthContext);
-  const roleData = ["Job Provider", "Freelancer"];
-  const [role, setRole] = useState("Job Provider");
+  const roleData = ["Job Seeker", "Job Provider"];
+  const [role, setRole] = useState("Job Seeker");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
 
-  const loginFreelancer = async (values) => {
-    const res = await axiosInstance.post("/freelancer/login", values);
+  const loginJobSeeker = async (values) => {
+    const res = await axiosInstance.post("/user/login", values);
     return res.data;
   };
   const loginJobProvider = async (values) => {
@@ -30,13 +30,13 @@ function Login() {
     return res.data;
   };
 
-  const FreelancerLoginMutation = useMutation({
-    mutationKey: "freelancer-login",
-    mutationFn: loginFreelancer,
+  const SeekerLoginMutation = useMutation({
+    mutationKey: "seeker-login",
+    mutationFn: loginJobSeeker,
     onSuccess: (response) => {
       alert(response);
       localStorage.setItem("authToken", response);
-      navigate(sessionStorage.getItem("location") || "/freelancer" , {replace:true})
+      navigate(sessionStorage.getItem("location") || "/user" , {replace:true})
     },
     onError: (error) => {
       const { message } = error.response.data;
@@ -51,6 +51,7 @@ function Login() {
       alert(response);
       localStorage.setItem("authToken", response);
       navigate(sessionStorage.getItem("location") || "/provider" , {replace:true})
+      navigate('/select-role')
     },
     onError: (error) => {
       console.log(error);
@@ -87,10 +88,10 @@ function Login() {
           initialValues={{ email: "", password: "" }}
           validationSchema={loginValidationSchema}
           onSubmit={(val) => {
-            if (role === "Job Provider") {
-              ProviderLoginMutation.mutate(val);
+            if (role === "Job Seeker") {
+              SeekerLoginMutation.mutate(val);
             } else {
-              FreelancerLoginMutation.mutate(val);
+              ProviderLoginMutation.mutate(val);
             }
           }}
         >
@@ -154,7 +155,7 @@ function Login() {
 
               <button
                 disabled={
-                  FreelancerLoginMutation.isPending ||
+                  SeekerLoginMutation.isPending ||
                   ProviderLoginMutation.isPending
                 }
                 type="submit"
@@ -164,7 +165,7 @@ function Login() {
                 }
               >
                 <span>Login</span>
-                {(FreelancerLoginMutation.isPending ||
+                {(SeekerLoginMutation.isPending ||
                   ProviderLoginMutation.isPending) && (
                   <LuLoader2 className="animate-spin-slow " />
                 )}

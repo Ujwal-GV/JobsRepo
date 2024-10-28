@@ -10,7 +10,6 @@ import { Checkbox } from "antd";
 import { CiFilter } from "react-icons/ci";
 import { Popover, Drawer } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Loading from "../Loading";
 import { NoPostFound } from "./CompanyPage";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { LuLoader2 } from "react-icons/lu";
@@ -28,6 +27,7 @@ const SearchFilterPage = () => {
 
   const [openLocationDrawer, setLocationDrawer] = useState(false);
   const [openWorkTypeDrawer, setWorkTypeDrawer] = useState(false);
+
 
   const handleDrawerClose = () => {
     setLocationDrawer(false);
@@ -155,7 +155,6 @@ const SearchFilterPage = () => {
   })
 
 
-
   const handlePageChange = (val) => {
     setCurrentPage(val);
     window.scrollTo({
@@ -276,8 +275,7 @@ const SearchFilterPage = () => {
                     disabled={searchLoading || searchFetching}
                     className={
                       "hidden md:flex " +
-                      ((currentPage * pageSize === totalData ||
-                        totalData < pageSize) &&
+                      ((currentPage >= Math.ceil(totalData / pageSize)) &&
                         " !hidden ")
                     }
                     style={{ border: "none", background: "none" }}
