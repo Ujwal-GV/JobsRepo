@@ -60,12 +60,12 @@ const Navbar = () => {
       <div className="hidden md:flex gap-2 items-center justify-center font-outfit">
         {!localStorage.getItem("authToken") ? (
           <>
-            <a href="/signup">
+            <a href="/user/signup">
               <button className="btn-dark px-3 py-1 rounded-lg hidden md:flex">
                 SignUp
               </button>
             </a>
-            <a href="/login">
+            <a href="/user/login">
               <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
                 SignIn
               </button>{" "}
@@ -102,7 +102,7 @@ const Navbar = () => {
 
       <div className="flex md:hidden justify-center items-center gap-2">
         {!localStorage.getItem("authToken") ? (
-          <a href="/login">
+          <a href="/user/login">
             <button className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg">
               SignIn
             </button>
@@ -157,7 +157,7 @@ const Navbar = () => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
                 toast.success("Logout Successfully!!")
-                navigate("/login");
+                navigate("/user/login");
               }}
             >
               OK

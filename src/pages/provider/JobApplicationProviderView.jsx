@@ -807,7 +807,7 @@ const JobApplicationProviderView = () => {
                       }
                     }}
                     noOptionsMessage={() => "Type to add a new Job Type"}
-                    className="sm:w-[12rem] lg:w-[12rem] md:w-[12rem] xsl:w-[12rem] h-10 bg-black text-black focus:shadow-none border rounded-md"
+                    className="sm:w-[12rem] lg:w-[12rem] md:w-[12rem] xsl:w-[12rem] w-[12rem] h-10 bg-black text-black focus:shadow-none border rounded-md"
                     styles={{
                       placeholder: (provided) => ({
                         ...provided,
