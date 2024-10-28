@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
-import { BiSolidUserCircle } from "react-icons/bi";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AnimatePresence } from "framer-motion";
 
-const ProviderNavbar = () => {
+const NavbarFreelancer = () => {
   const menuItem = [
-    { title: "Home", nav: "/provider", label: "home" },
-    { title: "Post Job", nav: "/provider/post-job", label: "postJob" },
-    { title: "Profile", nav: "/provider/profile", label: "profile" },
+    { title: "Home", nav: "/freelancer", label: "home" },
+    { title: "Post Project", nav: "/freelancer/post-project", label: "postProject" },
+    { title: "Profile", nav: "/freelancer/profile", label: "profile" },
   ];
   const [selectedMenu, setSelectedMenu] = useState("home");
-  const [open, setOpen] = useState(false); //for drawer
+  const [open, setOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
-  const authToken = localStorage.getItem("authToken");
-
   const navigate = useNavigate();
+  const authToken = localStorage.getItem("authToken");
 
   const showDrawer = () => {
     setOpen(true);
@@ -33,16 +30,16 @@ const ProviderNavbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/provider")}>
+        <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/freelancer")}>
         {/* <img src={`${import.meta.env.BASE_URL}/EmploezLogo.png`} alt="Logo" /> */}
-        <img src="/EmploezLogo.png" alt="Logo" className="text-sm ml-0 lg:w-[8rem] w-[6rem]" />
-        <span className="-ml-[1rem] mt-1 font-bold text-2xl md:text-3xl">
-          <span className="font-emploez text-orange-600">Emploez</span>
-          <span>.in</span>
-        </span>
-      </div>
+            <img src="/EmploezLogo.png" alt="Logo" className="text-sm ml-0 lg:w-[8rem] w-[6rem]" />
+            <span className="-ml-[1rem] mt-1 font-bold text-2xl md:text-3xl">
+            <span className="font-emploez text-orange-600">Emploez</span>
+            <span>.in</span>
+            </span>
+        </div>
 
-      {/* <div className="center gap-1 cursor-pointer" onClick={() => navigate("/provider")}>
+      {/* <div className="center gap-1 cursor-pointer" onClick={() => navigate("/freelancer")}>
         <PiSealCheckFill className="text-2xl text-orange-500" />
         <span className="font-bold text-2xl md:text-3xl">
           <span className="font-emploez text-orange-600">Emploez</span>
@@ -165,13 +162,13 @@ const ProviderNavbar = () => {
         footer={
           <div className="flex justify-end items-start gap-2">
             <button
-              className="border border-black rounded-lg px-2 py-1"
+              className="border border-black rounded-lg px-2 py-"
               onClick={() => setLogoutModalOpen(false)}
             >
               Cancel
             </button>
             <button
-              className="border bg-black text-white rounded-lg px-2 py-1"
+              className="border bg-black text-white rounded-lg px-2 py-"
               onClick={() => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
@@ -190,7 +187,7 @@ const ProviderNavbar = () => {
   );
 };
 
-export default ProviderNavbar;
+export default NavbarFreelancer;
 
 const MobileNavBar = ({
   menuItem = [],
@@ -208,7 +205,7 @@ const MobileNavBar = ({
          if (
           (
             d.title === "Logout" 
-            || d.title == "Post Job" 
+            || d.title == "Post Project" 
             || d.title == "Profile") 
             && !authToken) 
             return null;
