@@ -34,8 +34,10 @@ import BusinessPost from './pages/provider/BusinessPost'
 import SomethingWentWrong from './components/SomethingWentWrong'
 import JobPostedByCompany from './pages/provider/JobPostedByCompany'
 import FollowingCompanies from './pages/seeker/appliedList/FollowingCompanies'
+import ListOfProjects from './pages/seeker/ListOfProjects'
 
 const AppMain = () => {
+
   return (
     <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -52,7 +54,7 @@ const AppMain = () => {
           <Route path="/user" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
               <Route path = "/user/job-post/:id/:applied?" element={ <JobApplicatioWithSimilarApplication/> } />
-              <Route path = "/user/project-apply/:id" element={ <ProjectApplication/> } />
+              <Route path = "/user/project-apply/:id" element={ <ProjectApplication /> } />
               <Route path = "/user/company/:id" element={ <CompanyPage/> } />
               <Route path='/user/profile' element={<UserProfile/>}/>
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
@@ -60,7 +62,8 @@ const AppMain = () => {
               <Route path='/user/company/following' element={<FollowingCompanies/>}/>
               <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
-              <Route path='/user/companies' element={<ListOfCompanies/>}/> 
+              <Route path='/user/companies' element={<ListOfCompanies/>}/>
+              <Route path='/user/projects' element={<ListOfProjects/>}/> 
               
           </Route>
           <Route path="/provider" element={<ProviderMainWrapper/>}>

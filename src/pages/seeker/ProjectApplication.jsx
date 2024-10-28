@@ -2,16 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../components/MainContext";
 import KeyHighlightsListItem from "../../components/KeyHighlightsListItem";
 import ProjectSuggestionCard from "../../components/ProjectSuggestionCard";
-import { useParams } from "react-router-dom";
+import {  useLocation, useParams } from "react-router-dom";
 import { axiosInstance, getError } from "../../utils/axiosInstance";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../Loading";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
 import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
 import { AuthContext } from "../../contexts/AuthContext";
-
-
+import { formatTimestampToDate } from "../../utils/CommonUtils";
 
 
 const ProjectApplication = () => {
@@ -20,18 +19,17 @@ const ProjectApplication = () => {
   const { profileData } = useContext(AuthContext);
   const [applied, setApplied] = useState(false);
 
+
   useEffect(() => {
+    setApplied(false)
     if (profileData && profileData !== null) {
-      if (
-        profileData?.application_applied_info?.projects?.find(
-          (id) => id.projectId === projectId
-        )
-      ) {
+      if (profileData?.application_applied_info?.projects?.find((id) => id.projectId === projectId)) {
         setApplied(true);
       }
     }
-    
-  }, [profileData]);
+  }, [profileData,projectId]);
+
+
 
   const fetchprojectData = async (id) => {
     const res = await axiosInstance.get(`/projects/${projectId}`, {
@@ -46,11 +44,15 @@ const ProjectApplication = () => {
     return res.data;
   };
 
+
+  const queryClient = useQueryClient()
+
   const applyMutate = useMutation({
     mutationKey: ["apply_project", projectId],
     mutationFn: ProjectApply,
     onSuccess: (data, varibles) => {
       setApplied(true);
+      queryClient.invalidateQueries(["profile"])
       toast.success("Applied Successfully");
     },
     onError: (error) => {
@@ -66,7 +68,7 @@ const ProjectApplication = () => {
   const { isLoading, isFetching, isSuccess, isError, error, data } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => fetchprojectData(),
-    staleTime: 0,
+    staleTime: 60*1000,
     gcTime: 0,
     refetchOnWindowFocus: false,
     retry: 2,
@@ -82,6 +84,7 @@ const ProjectApplication = () => {
 
   const { provider_info, similarPost } = data || {};
 
+  const location = useLocation()
   return (
     <MainContext>
       <div className="w-full min-h-screen bg-gray-100 pt-5 px-3 md:pt-12 md:px-6 lg:px-10 ">
@@ -179,12 +182,5 @@ const ProjectApplication = () => {
 export default ProjectApplication;
 
 
-export const formatTimestampToDate=(timestamp)=> {
-  const date = new Date(timestamp);
 
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-  const year = String(date.getFullYear()).slice(-2); // Get last two digits of year
 
-  return `${day}/${month}/${year}`;
-}

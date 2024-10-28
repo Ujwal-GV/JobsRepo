@@ -10,7 +10,6 @@ import { Checkbox } from "antd";
 import { CiFilter } from "react-icons/ci";
 import { Popover, Drawer } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Loading from "../Loading";
 import { NoPostFound } from "./CompanyPage";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { LuLoader2 } from "react-icons/lu";

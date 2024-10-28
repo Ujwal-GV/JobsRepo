@@ -2,18 +2,17 @@ import React from "react";
 import NewBadge from "./badges/NewBadge";
 import { useNavigate } from "react-router-dom";
 import CustomBadge from "./badges/CustomBadge";
-import { formatTimestampToDate } from "../pages/seeker/ProjectApplication";
+import { formatTimestampToDate } from "../utils/CommonUtils";
 
 const ProjectSuggestionCard = ({ data }) => {
   const {
     name,provider_info,cost
   } = data;
 
-  console.log(data)
   const navigate = useNavigate()
 
   return (
-    <div onClick={()=>navigate(`/user/project-apply/${data.project_id}`)} className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover">
+    <div onClick={()=>{navigate(`/user/project-apply/${data.project_id}`)}} className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover">
       
       <div className="absolute top-1 right-1">
         <CustomBadge text={"Due "+formatTimestampToDate(data?.dueTime)} bgcolor="white" text_color="green"/>
