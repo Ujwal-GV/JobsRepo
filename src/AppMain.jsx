@@ -43,6 +43,7 @@ import FreelancerProfile from './pages/freelancer/FreelancerProfile'
 import ProjectsPostedByFreelancer from './pages/freelancer/ProjectsPostedByFreelancer'
 import ProjectDetails from './pages/freelancer/ProjectDetails'
 import ListOfProjects from './pages/seeker/ListOfProjects'
+import ViewProjectCandidate from './pages/freelancer/ViewProjectCandidate'
 
 const AppMain = () => {
 
@@ -92,6 +93,7 @@ const AppMain = () => {
             <Route path = "/freelancer/project/:id" element={ <ProjectDetails /> } />
             <Route path = '/freelancer/projects-posted/:freelancer_id' element = { <ProjectsPostedByFreelancer /> } />
             <Route path = "/freelancer/post-project" element={ <ProjectApplicationPost/> } />
+            <Route path = '/freelancer/view-candidate/:project_id/:user_id' element = { <ViewProjectCandidate /> } />
           </Route>
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>
         </Routes> 
