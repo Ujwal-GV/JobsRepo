@@ -166,6 +166,7 @@ const DueDateTimePicker = ({ dueDate, setDueDate }) => {
         <DatePicker
           selected={selectedDate}
           onChange={handleDateChange}
+          minDate={new Date()}
           dateFormat="dd/MM/yyyy"
           className="react-datepicker font-outfit"
           placeholderText="Select due date"
@@ -309,7 +310,7 @@ const ProjectApplicationPost = () => {
                 />
               </h1>
 
-              <h1 className="text-[1.3rem] w-3/4 md:text-2xl font-bold border-b-2 rounded-b-md border-y-gray-200">
+              <h1 className="text-[1.3rem] w-3/4 md:text-2xl font-bold">
               <KeyHighlightsListItem key={"1"} title="Project title" value={null} />
               <input
                   type="text"
@@ -317,7 +318,7 @@ const ProjectApplicationPost = () => {
                   placeholder="Enter Project Title"
                   value={jobDetails.name}
                   onChange={handleChange}
-                  className="w-full border mb-4 rounded-lg p-2"
+                  className="w-full inputs p-4"
                   required
                 />
               </h1>

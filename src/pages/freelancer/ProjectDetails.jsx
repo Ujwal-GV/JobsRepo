@@ -47,6 +47,8 @@ const AllPostedJobs = () => {
         limit,
       }
     });
+    setTotalData(res.data.applied_ids.length);
+    // console.log("TotalData", totalData);
     console.log("Project Response:", res.data);
     return res.data;
   };
@@ -93,9 +95,7 @@ const AllPostedJobs = () => {
       });
 
       if (response.data) {
-        setTotalData(response.data);
         console.log("Applicants_Data:", response.data);
-        
         return response.data;
       } else {
         throw new Error("No applicants found");
@@ -106,7 +106,7 @@ const AllPostedJobs = () => {
   };
 
   const handleViewClick = (userId) => {
-    // navigate(`/freelancer/view-candidate/${jobApplicationId}/${userId}`);
+    navigate(`/freelancer/view-candidate/${projectId}/${userId}`);
   };
 
   const handlePageChange = (val) => {
