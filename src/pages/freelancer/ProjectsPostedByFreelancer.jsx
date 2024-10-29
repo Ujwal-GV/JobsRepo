@@ -29,7 +29,7 @@ const ProjectsPostedByFreelancer = () => {
     }, [freelancerId, queryClient]);
 
     const fetchFreelancerData = async () => {
-        const res = await axiosInstance.get(`/freelancer/all-post`,{
+        const res = await axiosInstance.get("/freelancer/all-post",{
             params: { 
                 freelancer_id: freelancerId 
             }
@@ -38,11 +38,11 @@ const ProjectsPostedByFreelancer = () => {
             item.projects.map((project) => project.projectData)
         );
       
-        console.log("Project_Details:", projectDetails);
+        // console.log("Project_Details:", projectDetails);
         return projectDetails;
     };
 
-    const { data: freelancerData, isLoading: freelancerDataLoading, error  } = useQuery({
+    const { data: freelancerData = [], isLoading: freelancerDataLoading, error  } = useQuery({
         queryKey: ["freelancer_data", freelancerId],
         queryFn: fetchFreelancerData,
         staleTime: 20000,
@@ -67,19 +67,19 @@ const ProjectsPostedByFreelancer = () => {
         navigate(`/freelancer/project/${project_id}`)
     };
 
-    const filteredProjects = freelancerData.filter((project) => {
+    const filteredProjects = (freelancerData || []).filter((project) => {
         return (
-            project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            project.dueTime.includes(searchQuery)
+            project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            project.dueTime?.includes(searchQuery)
         );
-    });
+    });    
 
     if (freelancerDataLoading) {
         return (
             <div className="flex flex-col w-full min-h-screen bg-gray-100 py-3 px-3 md:py-3 md:px-6 lg:px-3 gap-10">
                 <div className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
                     <div className="w-full rounded-xl h-fit bg-white p-5">
-                        <h1 className="text-2xl font-bold mb-5 text-gray-800">Projects Posted ({freelancerDetails?.length})</h1>
+                        <h1 className="text-2xl font-bold mb-5 text-gray-800">Projects Posted ({freelancerData?.length})</h1>
                             <hr className='mt-2 mb-4' />
                         {[1, 2, 3].map((d) => (
                             <div
@@ -113,7 +113,7 @@ const ProjectsPostedByFreelancer = () => {
 
                 <div className="w-full rounded-xl h-fit bg-white hover: cursor-pointer p-7 font-outfit">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-3">
-                    <h1 className="text-2xl font-bold text-gray-800">Jobs Posted ({freelancerDetails?.length})</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">Projects Posted ({freelancerData?.length})</h1>
 
                     {/* Search Bar */}
                     <div className="relative w-full md:w-[60%] lg:w-[40%]">

@@ -223,17 +223,7 @@ const FreelancerProfile = () => {
                 icon={<BiSolidBadgeCheck className="text-green-600" />}
                 title="Projects Posted"
                 val={profileData?.project_details?.projects?.length || 0}
-                // onClick={() => navigate(`/freelancer/projects-posted/${freelancerId}`)}
-              />
-              {/* <DeatilsBadge
-                icon={<BiGroup className="text-orange-600" />}
-                title="No. of Employees"
-                val={2001}
-              /> */}
-              <DeatilsBadge
-                icon={<BiGroup className="text-orange-600" />}
-                title="Followers"
-                val={profileData?.followers?.length || 0}
+                onClick={() => navigate(`/freelancer/projects-posted/${personalDetails?.freelancer_id}`)}
               />
             </div>
             </div>
