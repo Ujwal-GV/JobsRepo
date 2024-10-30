@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
 import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 
@@ -15,13 +15,16 @@ const ProviderNavbar = () => {
     { title: "Post Job", nav: "/provider/post-job", label: "postJob" },
     { title: "Profile", nav: "/provider/profile", label: "profile" },
   ];
-  const [selectedMenu, setSelectedMenu] = useState("home");
+  const [selectedMenu, setSelectedMenu] = useState(
+    sessionStorage.getItem("location") || "home"
+  );
   const [open, setOpen] = useState(false); //for drawer
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const authToken = localStorage.getItem("authToken");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const showDrawer = () => {
     setOpen(true);
@@ -30,6 +33,29 @@ const ProviderNavbar = () => {
   const onClose = () => {
     setOpen(false);
   };
+
+  const handleNavigate = (nav, label) => {
+    sessionStorage.setItem("location", label);
+    // console.log("Set location in sessionStorage:", label);
+    setSelectedMenu(label);
+    navigate(nav);
+  };
+
+  useEffect (() => {
+    const lastLocation = sessionStorage.getItem("location") || "home";
+    // console.log("Initial location from sessionStorage:", lastLocation);
+    setSelectedMenu(lastLocation);
+  }, []);
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const currentMenuItem = menuItem.find((item) => item.nav === currentPath);
+    if(currentMenuItem) {
+      setSelectedMenu(currentMenuItem.label);
+    } else {
+      setSelectedMenu(null);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
@@ -55,12 +81,12 @@ const ProviderNavbar = () => {
             menuItem.map((d, idx) => (
             <motion.div
                 key={idx}
-                className={`cursor-pointer titleBg px-4 py-2 relative rounded-full ${
-                selectedMenu === d.label ? "bg-black shadow-lg" : ""
+                  className={`cursor-pointer titleBg px-4 py-2 relative rounded-full ${
+                  selectedMenu === d.label ? "bg-black shadow-lg" : ""
                 }`}
                 onClick={() => {
-                setSelectedMenu(d.label);
-                navigate(d.nav);
+                  console.log(d.nav, d.label);
+                  handleNavigate(d.nav, d.label);
                 }}
             >
                 <span

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const NavbarFreelancer = () => {
@@ -13,11 +13,14 @@ const NavbarFreelancer = () => {
     { title: "Post Project", nav: "/freelancer/post-project", label: "postProject" },
     { title: "Profile", nav: "/freelancer/profile", label: "profile" },
   ];
-  const [selectedMenu, setSelectedMenu] = useState("home");
+  const [selectedMenu, setSelectedMenu] = useState(
+    sessionStorage.getItem("location") || "home"
+  );
   const [open, setOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const authToken = localStorage.getItem("authToken");
 
   const showDrawer = () => {
@@ -27,6 +30,27 @@ const NavbarFreelancer = () => {
   const onClose = () => {
     setOpen(false);
   };
+
+  const handleNavigate = (nav, label) => {
+    sessionStorage.setItem("location", label);
+    setSelectedMenu(label);
+    navigate(nav);
+  };
+
+  useEffect(() => {
+    const lastLocation = sessionStorage.getItem("location") || "home";
+    setSelectedMenu(lastLocation);
+  }, []);
+
+  useEffect(() =>{
+    const currentPath = location.pathname;
+    const currentMenuItem = menuItem.find((item) => item.nav === currentPath);
+    if(currentMenuItem) {
+      setSelectedMenu(currentMenuItem.label);
+    } else {
+      setSelectedMenu(null);
+    }
+  });
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
@@ -52,12 +76,11 @@ const NavbarFreelancer = () => {
             menuItem.map((d, idx) => (
             <motion.div
                 key={idx}
-                className={`cursor-pointer titleBg px-4 py-2 relative rounded-full ${
-                selectedMenu === d.label ? "bg-black shadow-lg" : ""
+                  className={`cursor-pointer titleBg px-4 py-2 relative rounded-full ${
+                  selectedMenu === d.label ? "bg-black shadow-lg" : ""
                 }`}
                 onClick={() => {
-                setSelectedMenu(d.label);
-                navigate(d.nav);
+                  handleNavigate(d.nav, d.label);
                 }}
             >
                 <span
@@ -162,13 +185,13 @@ const NavbarFreelancer = () => {
         footer={
           <div className="flex justify-end items-start gap-2">
             <button
-              className="border border-black rounded-lg px-2 py-"
+              className="border border-black rounded-lg px-2 py-1"
               onClick={() => setLogoutModalOpen(false)}
             >
               Cancel
             </button>
             <button
-              className="border bg-black text-white rounded-lg px-2 py-"
+              className="border bg-black text-white rounded-lg px-2 py-1"
               onClick={() => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");

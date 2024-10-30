@@ -190,13 +190,13 @@ const AllPostedJobs = () => {
 
                 {/* Company and Job Info */}
                 <div className="w-full rounded-xl h-fit bg-white p-6 shadow-lg font-outfit relative">
-                  <img 
+                  {/* <img 
                     src={img?.url} 
                     alt={company_name} 
                     className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
-                  />
-                  <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-1">{jobTitle}</h1>
-                  <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-3">{company_name}</h2>
+                  /> */}
+                  <h1 title={jobTitle} className="text-lg md:text-3xl font-bold text-gray-900 mb-1 pr-2 truncate">{jobTitle}</h1>
+                  <h2 className="text-md md:text-xl font-semibold text-gray-700 mb-3">{company_name}</h2>
                   <h3 className="text-sm md:text-base text-gray-600">Job-Id: {job_id}</h3>
                   <h3 className="text-sm md:text-base text-gray-600 mt-1">Posted by: {postedBy}</h3>
                   {experience && (
@@ -299,9 +299,9 @@ const AllPostedJobs = () => {
                 </div>
 
                 {/* Job Description */}
-                <div className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="bg-white p-6 rounded-xl shadow-lg max-w-full overflow-hidden">
                   <strong className="text-lg font-semibold">Job Description:</strong>
-                  <div dangerouslySetInnerHTML={{ __html: job_description }} className="mt-2 text-justify text-gray-700" />
+                  <div dangerouslySetInnerHTML={{ __html: job_description }} className="mt-2 text-justify text-gray-700 overflow-auto whitespace-normal break-words" />
                 </div>
               </div>
             </MainContext>

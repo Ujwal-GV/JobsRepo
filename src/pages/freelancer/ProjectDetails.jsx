@@ -171,7 +171,7 @@ const AllPostedJobs = () => {
                     alt={providerName} 
                     className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
                   />
-                  <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-1">{projectTitle}</h1>
+                  <h1 title={projectTitle} className="text-lg md:text-2xl font-bold text-gray-900 mb-1 pr-2 truncate">{projectTitle}</h1>
                   {/* <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-3">{providerName}</h2> */}
                   <h3 className="text-sm md:text-base text-gray-600">Project-Id: {project_id}</h3>
                   <h3 className="text-sm md:text-base text-gray-600 mt-1">Posted by  : {providerName}</h3>
@@ -206,11 +206,11 @@ const AllPostedJobs = () => {
                 </div>
 
                 {/* Project  Description */}
-                <div className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="bg-white p-6 rounded-xl shadow-lg  max-w-full overflow-hidden">
                     <KeyHighlightsListItem
-                        title='Job Description'
-                      />
-                  <div dangerouslySetInnerHTML={{ __html: description }} className="mt-2 text-justify text-gray-700" />
+                      title='Job Description'
+                    />
+                  <div dangerouslySetInnerHTML={{ __html: description }} className="mt-2 text-justify text-gray-700 overflow-auto whitespace-normal break-words" />
                 </div>
               </div>
             </MainContext>
