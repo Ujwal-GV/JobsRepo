@@ -116,6 +116,7 @@ const CompanyPage = () => {
     mutationFn: followCompany,
     onSuccess: () => {
       toast.success("Started Following");
+      queryClient.invalidateQueries(["notifications"])
       setFollowing(true);
     },
     onError: (error) => {
@@ -159,7 +160,6 @@ const CompanyPage = () => {
     description,
     followers,
   } = data?.accountData || {};
-  console.log(data)
 
  if(!companyDataLoading && data?.accountData)
  {
