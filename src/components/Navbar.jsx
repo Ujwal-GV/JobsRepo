@@ -475,6 +475,7 @@ const NotificationCard = ({ item }) => {
         onClick={(e) => {
           e.stopPropagation();
           alert(data?.navigate_link);
+          
         }}
       >
         <div className="flex justify-start items-center gap-2">
