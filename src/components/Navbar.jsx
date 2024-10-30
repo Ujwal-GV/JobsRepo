@@ -1,17 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
 import { ConfigProvider, Drawer, Dropdown, Menu, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
-import { FaBars } from "react-icons/fa6";
+import { FaBars, FaBell } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CiLogout } from "react-icons/ci";
 import { LuLoader2 } from "react-icons/lu";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "../utils/axiosInstance";
+import { AuthContext } from "../contexts/AuthContext";
+import { MdDeleteOutline } from "react-icons/md";
+
+
 const Navbar = () => {
+  const queryClient = useQueryClient();
+
   const menuItem = [
-    { title: "Home", nav: "/user", label: "home" },
+    { title: "Home", nav: "/", label: "home" },
     { title: "News", nav: "/user/news", label: "news" },
     { title: "Profile", nav: "/user/profile", label: "profile" },
   ];
@@ -168,6 +176,7 @@ const Navbar = () => {
             <button
               className="border bg-orange-600 text-white rounded-lg px-1"
               onClick={() => {
+                queryClient.clear();
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
                 toast.success("Logout Successfully!!");
@@ -263,14 +272,19 @@ const MobileNavBar = ({
 };
 
 const Notification = () => {
-  const [loading, setLoading] = useState(true);
+  const { profileData } = useContext(AuthContext);
+
   const [openNotification, setOpenNotiication] = useState(false);
+  const [unRead, setUnread] = useState(0);
+  const [user_id, setuser_id] = useState(null);
 
   // Dummy delay to simulate data loading (useEffect to clear loader)
-  React.useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000); // Adjust time as needed
-    return () => clearTimeout(timer);
-  }, []);
+
+  useEffect(() => {
+    if (profileData && profileData != null) {
+      setuser_id(profileData?.user_id);
+    }
+  }, [profileData]);
 
   const notificationLoader = () => (
     <div className="w-[400px] h-[300px] flex justify-center items-center">
@@ -278,78 +292,49 @@ const Notification = () => {
     </div>
   );
 
-  const items = [
-    {
-      label: "Notification 1",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "0",
-    },
-    {
-      label: "Notification 2",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "1",
-    },
-    {
-      label: "Notification 3",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "2",
-    },
-    {
-      label: "Notification 1",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "3",
-    },
-    {
-      label: "Notification 2",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "4",
-    },
-    {
-      label: "Notification 3",
-      data: {
-        name: "Shivu",
-        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
-      },
-      key: "5",
-    },
-  ];
+  const fetchNotification = async () => {
+    const res = await axiosInstance.get("/notifications", {
+      params: { receiver_id: user_id },
+    });
+    const sortedData = res.data?.sort((a, b) => {
+      return a.read === b.read ? 0 : a.read ? 1 : -1;
+    });
+    const unreadCount = res.data?.reduce((count, noti) => {
+      return noti?.read === false ? count + 1 : count;
+    }, 0);
+
+    setUnread(unreadCount);
+    return sortedData;
+  };
+
+  const { isLoading, isFetching, data, isSuccess } = useQuery({
+    queryKey: ["notifications", user_id],
+    queryFn: fetchNotification,
+    staleTime: 5 * 60 * 1000,
+    gcTime: Infinity,
+    enabled: user_id !== null ? true : false,
+  });
 
   // Dropdown menu render
   const dropdownMenu = (
-    <div className="w-[400px] h-fit max-h-[400px] custom-scroll-nowidth overflow-y-auto bg-white border border-gray-300 rounded-xl ">
-      {loading ? (
+    <div className="w-[280px] md:w-[400px] h-fit max-h-[400px] custom-scroll-nowidth overflow-y-auto bg-white border border-gray-300 rounded-xl ">
+      {isLoading || isFetching ? (
         notificationLoader()
       ) : (
         <Menu>
-          {items.map((item) => (
-            <Menu.Item key={item.key}>
-              <div
-                className="p-4 border-b border-gray-200 w-full"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert(item.data.link);
-                }}
-              >
-                <h4 className="text-lg font-medium">{item.label}</h4>
-                <p className="text-gray-600">{`Name: ${item.data.name}`}</p>
-              </div>
-            </Menu.Item>
-          ))}
+          {data?.length === 0 ? (
+            <>
+              <Menu.Item key={"NoNotification"}>
+                <div className="p-4 text-gray-500 text-[0.9rem]  w-full h-[380px] flex center">
+                  No Notification
+                </div>
+              </Menu.Item>
+            </>
+          ) : (
+            data?.map((item) => (
+              <NotificationCard item={item} key={item.notification_id} />
+            ))
+          )}
         </Menu>
       )}
     </div>
@@ -357,13 +342,175 @@ const Notification = () => {
 
   return (
     <Dropdown
-      className="cursor-pointer"
+      className="cursor-pointer me-2"
       open={openNotification}
       dropdownRender={() => dropdownMenu}
       trigger={["click"]}
+      placement="top"
       onOpenChange={(val) => setOpenNotiication(val)}
     >
-      <a onClick={(e) => setOpenNotiication(true)}>Click me</a>
+      <a onClick={(e) => setOpenNotiication(true)}>
+        <span className="relative flex center">
+          <span className="absolute -top-2 -right-2">
+            {isLoading || isFetching ? (
+              <NotificationBadge
+                text={"..."}
+                bgcolor="white"
+                text_color="red"
+              />
+            ) : (
+              unRead !== 0 && (
+                <NotificationBadge
+                  text={unRead}
+                  bgcolor="white"
+                  text_color="red"
+                />
+              )
+            )}
+          </span>
+          <FaBell className="text-[1rem] sm:text-[1.2rem]" />
+        </span>
+      </a>
     </Dropdown>
+  );
+};
+
+const NotificationBadge = ({
+  text = "",
+  bg_color = "white",
+  text_color = "black",
+}) => {
+  return (
+    <div className="w-[17px] h-[17px] bg-white rounded-full relative">
+      <div
+        className="w-full h-full absolute top-0 left-0 rounded-full text-[0.7rem] bg-red-600 flex center"
+        style={{
+          backgroundColor: bg_color,
+          color: text_color,
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: text_color,
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+};
+
+const NotificationCard = ({ item }) => {
+  const [data, setData] = useState(item);
+
+  const markAsRead = async () => {
+    const res = await axiosInstance.put("/notifications/read", {
+      notification_id: data?.notification_id,
+    });
+    return res.data;
+  };
+
+  const readMutation = useMutation({
+    mutationFn: () => markAsRead(),
+    mutationKey: ["read-notification", data?.notification_id],
+    onSuccess: () => {
+      handleMarkAsRead();
+    },
+    onError: (error) => {
+      console.log(error);
+      alert("Something Went Wrong");
+    },
+  });
+
+  const handleMarkAsRead = () => {
+    setData((prev) => {
+      return { ...prev, read: true };
+    });
+  };
+
+  const formatDateOrDaysDifference = (dateString) => {
+    const inputDate = new Date(dateString);
+    const currentDate = new Date();
+
+    // Normalize dates to only consider the date part (ignoring time)
+    const inputDateString = inputDate.toISOString().split('T')[0];
+    const currentDateString = currentDate.toISOString().split('T')[0];
+
+    // Calculate difference in milliseconds
+    const differenceInTime = currentDate - inputDate;
+    const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+
+    // Check if the input date is today
+    if (inputDateString === currentDateString) {
+        const differenceInMinutes = Math.floor(differenceInTime / (1000 * 60));
+        if (differenceInMinutes === 0) {
+            return "Just now";
+        } else if (differenceInMinutes === 1) {
+            return "1 minute ago";
+        } else {
+            return `${differenceInMinutes} minutes ago`;
+        }
+    } 
+    // Check if the input date is yesterday
+    else if (differenceInDays === 1) {
+        return "Yesterday";
+    } 
+    // If within 10 days
+    else if (differenceInDays <= 10) {
+        return `${differenceInDays} day(s) ago`;
+    } 
+    // If more than 10 days
+    else {
+        const day = String(inputDate.getDate()).padStart(2, "0");
+        const month = String(inputDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+        const year = String(inputDate.getFullYear()).slice(-2); // Get last two digits of the year
+        return `${day}/${month}/${year}`;
+    }
+};
+
+
+
+  return (
+    <Menu.Item key={data?.createdAt} className="!p-[2px] md:!p-2">
+      <div
+        className="p-1 md:px-4 md:py-1  border-b border-gray-200 w-full bg-white rounded-lg"
+        onClick={(e) => {
+          e.stopPropagation();
+          alert(data?.navigate_link);
+          
+        }}
+      >
+        <div className="flex justify-start items-center gap-2">
+          <img src={data?.img} alt="noti" className="w-[15px] h-full" />
+          <h4 className="text-lg font-medium mb-0 !text-[0.8rem] md:!text-[0.95rem]">
+            {data?.title}
+          </h4>
+        </div>
+        <p className="text-gray-600 text-[0.67rem] md:text-[0.9rem]">
+          {data?.description?.length > 50
+            ? new String(data?.description).substring(0, 50) + "..."
+            : data?.description}
+        </p>
+        <div className="w-full flex justify-end items-center gap-2">
+          {!data?.read && (
+            <button
+              className="p-[2px] text-[0.7rem] md:text-[0.8rem] bg-white text-orange-600 border-none hover:text-orange-700 rounded-lg flex center gap-[2px]"
+              onClick={(e) => {
+                e.stopPropagation();
+                readMutation.mutate();
+              }}
+            >
+              Mark as read{" "}
+              {readMutation.isPending ? (
+                <LuLoader2 className="animate-spin-slow" />
+              ) : (
+                <></>
+              )}
+            </button>
+          )}
+          <span className="text-gray-400 text-[0.6rem]">
+            {formatDateOrDaysDifference(data?.createdAt)}
+          </span>
+        </div>
+      </div>
+    </Menu.Item>
   );
 };
