@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { PiSealCheckFill } from "react-icons/pi";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { motion } from "framer-motion";
-import { ConfigProvider, Drawer, Modal } from "antd";
+import { ConfigProvider, Drawer, Dropdown, Menu, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { CiLogout } from "react-icons/ci";
+import { LuLoader2 } from "react-icons/lu";
 const Navbar = () => {
   const menuItem = [
     { title: "Home", nav: "/user", label: "home" },
@@ -63,6 +65,7 @@ const Navbar = () => {
             )
         )}
       </div>
+
       <div className="hidden md:flex gap-2 items-center justify-center font-outfit">
         {!localStorage.getItem("authToken") ? (
           <>
@@ -79,15 +82,17 @@ const Navbar = () => {
           </>
         ) : (
           <div className="flex justify-center items-center gap-2">
+            <Notification />
             <button
-              className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg"
+              className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg flex center"
               onClick={() => {
                 // localStorage.removeItem("authToken");
                 // navigate("/login");
                 setLogoutModalOpen(true);
               }}
             >
-              Logout
+              <span className="flex center ">Logout</span>
+              <CiLogout className="flex" />
             </button>
             <div
               className={
@@ -114,14 +119,17 @@ const Navbar = () => {
             </button>
           </a>
         ) : (
-          <button
-            className="bg-white shadow-sm shadow-black px-3 py-[1px] rounded-lg"
-            onClick={() => {
-              setLogoutModalOpen(true);
-            }}
-          >
-            Logout
-          </button>
+          <>
+            <Notification />
+            <button
+              className="bg-white shadow-sm shadow-black px-1 py-[2px] rounded-lg flex center"
+              onClick={() => {
+                setLogoutModalOpen(true);
+              }}
+            >
+              <CiLogout className="flex text-[1rem] sm:text-[1.1rem] " />
+            </button>
+          </>
         )}
         <FaBars className="w-6 h-6" onClick={() => showDrawer()} />
       </div>
@@ -162,7 +170,7 @@ const Navbar = () => {
               onClick={() => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
-                toast.success("Logout Successfully!!")
+                toast.success("Logout Successfully!!");
                 navigate("/user/login");
               }}
             >
@@ -251,5 +259,111 @@ const MobileNavBar = ({
         }
       })}
     </div>
+  );
+};
+
+const Notification = () => {
+  const [loading, setLoading] = useState(true);
+  const [openNotification, setOpenNotiication] = useState(false);
+
+  // Dummy delay to simulate data loading (useEffect to clear loader)
+  React.useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Adjust time as needed
+    return () => clearTimeout(timer);
+  }, []);
+
+  const notificationLoader = () => (
+    <div className="w-[400px] h-[300px] flex justify-center items-center">
+      <LuLoader2 className="animate-spin-slow" />
+    </div>
+  );
+
+  const items = [
+    {
+      label: "Notification 1",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "0",
+    },
+    {
+      label: "Notification 2",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "1",
+    },
+    {
+      label: "Notification 3",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "2",
+    },
+    {
+      label: "Notification 1",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "3",
+    },
+    {
+      label: "Notification 2",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "4",
+    },
+    {
+      label: "Notification 3",
+      data: {
+        name: "Shivu",
+        link: "https://chatgpt.com/c/6720580f-dca0-8008-867a-36a07ed6538a",
+      },
+      key: "5",
+    },
+  ];
+
+  // Dropdown menu render
+  const dropdownMenu = (
+    <div className="w-[400px] h-fit max-h-[400px] custom-scroll-nowidth overflow-y-auto bg-white border border-gray-300 rounded-xl ">
+      {loading ? (
+        notificationLoader()
+      ) : (
+        <Menu>
+          {items.map((item) => (
+            <Menu.Item key={item.key}>
+              <div
+                className="p-4 border-b border-gray-200 w-full"
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert(item.data.link);
+                }}
+              >
+                <h4 className="text-lg font-medium">{item.label}</h4>
+                <p className="text-gray-600">{`Name: ${item.data.name}`}</p>
+              </div>
+            </Menu.Item>
+          ))}
+        </Menu>
+      )}
+    </div>
+  );
+
+  return (
+    <Dropdown
+      className="cursor-pointer"
+      open={openNotification}
+      dropdownRender={() => dropdownMenu}
+      trigger={["click"]}
+      onOpenChange={(val) => setOpenNotiication(val)}
+    >
+      <a onClick={(e) => setOpenNotiication(true)}>Click me</a>
+    </Dropdown>
   );
 };
