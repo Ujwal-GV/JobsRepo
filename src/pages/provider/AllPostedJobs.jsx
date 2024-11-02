@@ -46,7 +46,6 @@ const AllPostedJobs = () => {
         limit,
       }
     });
-    console.log("Job Response:", res.data);
     return res.data;
   };
 
@@ -95,9 +94,7 @@ const AllPostedJobs = () => {
       });
 
       if (response.data) {
-        console.log("Applicants_Response:", response.data.job);
         setTotalData(response.data.job.applied_ids.length);
-        console.log(totalData);
         
         return response.data;
       } else {
@@ -129,9 +126,7 @@ const AllPostedJobs = () => {
     return <Loading />;
   }
   if (isError) {
-    console.log(error);
-    
-    // toast.error(error.response.data.message);
+    toast.error(error.response.data.message);
   }
 
   const {

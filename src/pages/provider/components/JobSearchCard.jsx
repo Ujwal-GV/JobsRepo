@@ -5,8 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import SomethingWentWrong from "../../../components/SomethingWentWrong";
 import MainContext from "../../../components/MainContext";
 import { FaSearch } from "react-icons/fa";
-import AdvancedSwiper from "../../../components/AdvanceSwiper";
-import { SwiperSlide } from "swiper/react";
 
 const JobSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState(""); // State to handle the search input

@@ -185,7 +185,6 @@ export const JobPostContainer = ({ cardClassname, companyId }) => {
     });
   };
 
-  console.log(data)
 
   return (
     <>
@@ -242,7 +241,6 @@ export const FreelanePostContainer = ({ cardClassname, companyId }) => {
   // Fetch Jobs
   const fetchJobs = async () => {
     const res = await axiosInstance.get(`/projects/?providerId=${companyId}&page=1&limit=10`);
-    console.log(res.data);
     if (res.data) {
       setTotalDatas(res.data.totalResults);
     }
@@ -257,7 +255,6 @@ export const FreelanePostContainer = ({ cardClassname, companyId }) => {
     staleTime: 300000,
   });
 
-  console.log(data);
 
   // Handle page change
   const handlePageChange = (val) => {

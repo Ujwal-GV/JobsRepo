@@ -415,7 +415,6 @@ const NotificationCard = ({ item }) => {
       handleMarkAsRead();
     },
     onError: (error) => {
-      console.log(error);
       alert("Something Went Wrong");
     },
   });

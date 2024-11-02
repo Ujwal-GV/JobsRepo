@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -53,7 +53,6 @@ function Login() {
       navigate(sessionStorage.getItem("location") || "/provider" , {replace:true})
     },
     onError: (error) => {
-      console.log(error);
       
       const { message } = error.response.data;
       toast.error(message);
@@ -61,10 +60,6 @@ function Login() {
   });
 
   const location = useLocation()
-
-  useEffect(()=>{
-    console.log(location.pathname)
-  },[])
 
   return (
     <div className="w-full h-screen max-w-[1600px] flex items-center justify-center font-outfit">

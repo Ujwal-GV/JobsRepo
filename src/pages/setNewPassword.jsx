@@ -3,7 +3,6 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import { setNewPasswordValidationSchema } from '../formikYup/ValidationSchema';
 import InputBox from '../components/InputBox';
 import { FaKey } from 'react-icons/fa';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { axiosInstance } from '../utils/axiosInstance';
 import toast from 'react-hot-toast';

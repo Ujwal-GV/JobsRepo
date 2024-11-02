@@ -39,8 +39,6 @@ function SignUp() {
     mutationKey: "provider-signup",
     mutationFn: async (values) => {
       const res = await axiosInstance.post("/provider/create", values);
-      console.log(res.data);
-      
       return res.data;
     },
     onSuccess: (data) => {
@@ -50,8 +48,6 @@ function SignUp() {
       navigate("/provider");
     },
     onError: (error) => {
-      console.log("Err:", error);
-      
       const { message } = error.response.data;
       toast.error(message || "Signup failed. Please try again.");
     },

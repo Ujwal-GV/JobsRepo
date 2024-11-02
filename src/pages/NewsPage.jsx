@@ -42,7 +42,7 @@ const NewsPage = () => {
     refetch();
   }, [selectedNewsCategory]);
 
-  console.log(isLoading, isFetching);
+
 
   if (isError) {
     const { message } = error;

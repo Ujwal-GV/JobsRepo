@@ -242,20 +242,16 @@ const ProjectApplicationPost = () => {
 
   const submitProjectApplication = async (projectData) => {
     const response = await axiosInstance.post('/projects/create', projectData);
-    console.log("RESPONSE:", response.data);
     return response.data;
   };
 
   const mutation = useMutation({
     mutationFn: submitProjectApplication,
     onSuccess: (data) => {
-      console.log("Data:", data);
       toast.success('Project posted successfully!');
       navigate('/freelancer', { replace: true });
     },
     onError: (error) => {
-        console.log(error);
-        
       const { message } = error.response.data;
       console.error(message);
       toast.error(message);

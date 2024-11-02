@@ -579,7 +579,6 @@ const JobApplicationProviderView = () => {
     }
   
     if(salaryDisclosure.value === 'true') {
-      console.log("Salary dis:", salaryDisclosure);
       
       if (Number(salaryMin) >= Number(salaryMax)) {
         message.error("Minimum salary must be less than maximum salary");
@@ -615,20 +614,17 @@ const JobApplicationProviderView = () => {
 
   const submitJobApplication = async (jobData) => {
     const response = await axiosInstance.post('/jobs/create', jobData);
-    console.log("RESPONSE:", response.data);
     return response.data;
   };
 
   const mutation = useMutation({
     mutationFn: submitJobApplication,
     onSuccess: (data) => {
-      console.log("Data:", data);
       toast.success('Job posted successfully!');
       navigate('/provider', { replace: true });
     },
     onError: (error) => {
       const { message } = error.response.data;
-      console.error(message);
       toast.error(message);
     },
   });
