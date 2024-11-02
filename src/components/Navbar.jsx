@@ -12,8 +12,6 @@ import { LuLoader2 } from "react-icons/lu";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../utils/axiosInstance";
 import { AuthContext } from "../contexts/AuthContext";
-import { MdDeleteOutline } from "react-icons/md";
-
 
 const Navbar = () => {
   const queryClient = useQueryClient();
@@ -41,7 +39,10 @@ const Navbar = () => {
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
       <div
         className="center gap-1 cursor-pointer"
-        onClick={() => navigate("/user")}
+        onClick={() => {
+          navigate("/");
+          setSelectedMenu("home");
+        }}
       >
         <PiSealCheckFill className="text-2xl text-orange-500" />
         <span className="font-bold text-2xl md:text-3xl">
@@ -277,6 +278,7 @@ const Notification = () => {
   const [openNotification, setOpenNotiication] = useState(false);
   const [unRead, setUnread] = useState(0);
   const [user_id, setuser_id] = useState(null);
+  const [notifications, setNotitifcations] = useState([]);
 
   // Dummy delay to simulate data loading (useEffect to clear loader)
 
@@ -304,6 +306,7 @@ const Notification = () => {
     }, 0);
 
     setUnread(unreadCount);
+    setNotitifcations(sortedData);
     return sortedData;
   };
 
@@ -315,6 +318,41 @@ const Notification = () => {
     enabled: user_id !== null ? true : false,
   });
 
+  const handleNotificationSort = ({
+    notification_id,
+    readNotification = false,
+    deleteNotitification = false,
+  }) => {
+    let modifyNotifications = [];
+
+    if (readNotification) {
+      modifyNotifications = notifications.map((noti) => {
+        if (noti.notification_id !== notification_id) {
+          return noti;
+        } else {
+          const readedNotification = { ...noti, read: true };
+          return readedNotification;
+        }
+      });
+    }
+    if (deleteNotitification) {
+      modifyNotifications = notifications?.filter(
+        (noti) => noti?.notification_id !== notification_id
+      );
+    }
+    const sortedData = modifyNotifications?.sort((a, b) => {
+      return a.read === b.read ? 0 : a.read ? 1 : -1;
+    });
+
+    const unreadCount = sortedData?.reduce((count, noti) => {
+      return noti?.read === false ? count + 1 : count;
+    }, 0);
+
+    setUnread(unreadCount);
+
+    setNotitifcations((prev) => [...sortedData]);
+  };
+
   // Dropdown menu render
   const dropdownMenu = (
     <div className="w-[280px] md:w-[400px] h-fit max-h-[400px] custom-scroll-nowidth overflow-y-auto bg-white border border-gray-300 rounded-xl ">
@@ -322,7 +360,7 @@ const Notification = () => {
         notificationLoader()
       ) : (
         <Menu>
-          {data?.length === 0 ? (
+          {notifications?.length === 0 ? (
             <>
               <Menu.Item key={"NoNotification"}>
                 <div className="p-4 text-gray-500 text-[0.9rem]  w-full h-[380px] flex center">
@@ -331,8 +369,12 @@ const Notification = () => {
               </Menu.Item>
             </>
           ) : (
-            data?.map((item) => (
-              <NotificationCard item={item} key={item.notification_id} />
+            notifications?.map((item) => (
+              <NotificationCard
+                item={item}
+                key={item.notification_id}
+                onRead={handleNotificationSort}
+              />
             ))
           )}
         </Menu>
@@ -398,7 +440,8 @@ const NotificationBadge = ({
   );
 };
 
-const NotificationCard = ({ item }) => {
+const NotificationCard = ({ item, onRead = () => {} }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState(item);
 
   const markAsRead = async () => {
@@ -412,71 +455,98 @@ const NotificationCard = ({ item }) => {
     mutationFn: () => markAsRead(),
     mutationKey: ["read-notification", data?.notification_id],
     onSuccess: () => {
-      handleMarkAsRead();
+      // handleMarkAsRead();
+      onRead({
+        notification_id: data?.notification_id,
+        readNotification: true,
+      });
     },
     onError: (error) => {
-      alert("Something Went Wrong");
+      toast.error("Something Went Wrong");
     },
   });
 
-  const handleMarkAsRead = () => {
-    setData((prev) => {
-      return { ...prev, read: true };
+  const deleteNotitification = async () => {
+    const res = await axiosInstance.delete("/notifications", {
+      params: {
+        notification_id: data?.notification_id,
+      },
     });
+    return res.data;
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteNotitification(),
+    mutationKey: ["delete-notification", data?.notification_id],
+    onSuccess: () => {
+      // handleMarkAsRead();
+      onRead({
+        notification_id: data?.notification_id,
+        deleteNotitification: true,
+      });
+    },
+    onError: (error) => {
+      toast.error("Something Went Wrong");
+    },
+  });
 
   const formatDateOrDaysDifference = (dateString) => {
     const inputDate = new Date(dateString);
     const currentDate = new Date();
 
     // Normalize dates to only consider the date part (ignoring time)
-    const inputDateString = inputDate.toISOString().split('T')[0];
-    const currentDateString = currentDate.toISOString().split('T')[0];
+    const inputDateString = inputDate.toISOString().split("T")[0];
+    const currentDateString = currentDate.toISOString().split("T")[0];
 
     // Calculate difference in milliseconds
     const differenceInTime = currentDate - inputDate;
-    const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+    const differenceInDays = Math.floor(
+      differenceInTime / (1000 * 60 * 60 * 24)
+    );
 
     // Check if the input date is today
     if (inputDateString === currentDateString) {
-        const differenceInMinutes = Math.floor(differenceInTime / (1000 * 60));
-        if (differenceInMinutes === 0) {
-            return "Just now";
-        } else if (differenceInMinutes === 1) {
-            return "1 minute ago";
-        } else {
-            return `${differenceInMinutes} minutes ago`;
-        }
-    } 
+      const differenceInMinutes = Math.floor(differenceInTime / (1000 * 60));
+      if (differenceInMinutes === 0) {
+        return "Just now";
+      } else if (differenceInMinutes === 1) {
+        return "1 minute ago";
+      } else {
+        return `${differenceInMinutes} minutes ago`;
+      }
+    }
     // Check if the input date is yesterday
     else if (differenceInDays === 1) {
-        return "Yesterday";
-    } 
+      return "Yesterday";
+    }
     // If within 10 days
     else if (differenceInDays <= 10) {
-        return `${differenceInDays} day(s) ago`;
-    } 
+      return `${differenceInDays} day(s) ago`;
+    }
     // If more than 10 days
     else {
-        const day = String(inputDate.getDate()).padStart(2, "0");
-        const month = String(inputDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-        const year = String(inputDate.getFullYear()).slice(-2); // Get last two digits of the year
-        return `${day}/${month}/${year}`;
+      const day = String(inputDate.getDate()).padStart(2, "0");
+      const month = String(inputDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+      const year = String(inputDate.getFullYear()).slice(-2); // Get last two digits of the year
+      return `${day}/${month}/${year}`;
     }
-};
-
-
+  };
 
   return (
     <Menu.Item key={data?.createdAt} className="!p-[2px] md:!p-2">
       <div
-        className="p-1 md:px-4 md:py-1  border-b border-gray-200 w-full bg-white rounded-lg"
+        className="p-1 md:px-4 md:py-1  border-b border-gray-200 w-full relative bg-white rounded-lg"
         onClick={(e) => {
-          e.stopPropagation();
-          alert(data?.navigate_link);
-          
+          // e.stopPropagation();
+          readMutation.mutate();
+          if (data?.navigate_link) {
+            navigate(data?.navigate_link);
+          }
         }}
       >
+        <span className="text-gray-400 text-[0.6rem] absolute top-1 right-1">
+          {formatDateOrDaysDifference(data?.createdAt)}
+        </span>
         <div className="flex justify-start items-center gap-2">
           <img src={data?.img} alt="noti" className="w-[15px] h-full" />
           <h4 className="text-lg font-medium mb-0 !text-[0.8rem] md:!text-[0.95rem]">
@@ -491,7 +561,7 @@ const NotificationCard = ({ item }) => {
         <div className="w-full flex justify-end items-center gap-2">
           {!data?.read && (
             <button
-              className="p-[2px] text-[0.7rem] md:text-[0.8rem] bg-white text-orange-600 border-none hover:text-orange-700 rounded-lg flex center gap-[2px]"
+              className="text-[0.7rem] md:text-[0.8rem] bg-white text-orange-600 border-none hover:text-orange-700 rounded-lg flex center gap-[2px]"
               onClick={(e) => {
                 e.stopPropagation();
                 readMutation.mutate();
@@ -505,9 +575,20 @@ const NotificationCard = ({ item }) => {
               )}
             </button>
           )}
-          <span className="text-gray-400 text-[0.6rem]">
-            {formatDateOrDaysDifference(data?.createdAt)}
-          </span>
+          <button
+            className="text-[0.7rem] md:text-[0.8rem] bg-white text-orange-700 border-none hover:text-orange-700 rounded-lg flex center gap-[2px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteMutation.mutate();
+            }}
+          >
+            Delete
+            {deleteMutation.isPending ? (
+              <LuLoader2 className="animate-spin-slow" />
+            ) : (
+              <></>
+            )}
+          </button>
         </div>
       </div>
     </Menu.Item>

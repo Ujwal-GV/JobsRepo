@@ -71,7 +71,7 @@ const AppMain = () => {
               <Route path='/user/applied-job-list' element={<JobAppliedList/>}/>
               <Route path='/user/saved-job-list' element={<AppSavedListPage/>}/>
               <Route path='/user/company/following' element={<FollowingCompanies/>}/>
-              <Route path='/user/find-jobs' element={<SearchFilterPage/>}/>
+              <Route path='/user/find-jobs/:q?' element={<SearchFilterPage/>}/>
               <Route  path='/user/news' element={<NewsPage/>}/>
               <Route path='/user/companies' element={<ListOfCompanies/>}/>
               <Route path='/user/projects' element={<ListOfProjects/>}/> 

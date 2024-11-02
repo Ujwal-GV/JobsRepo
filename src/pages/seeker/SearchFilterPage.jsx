@@ -14,9 +14,15 @@ import { NoPostFound } from "./CompanyPage";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { LuLoader2 } from "react-icons/lu";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
+import { useParams } from "react-router-dom";
 
 const SearchFilterPage = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const { q = "" } = useParams();
+
+
+  const [searchText,setSearchText] = useState(q)
 
   // All About Filters
   const [allFilters, setAllFilters] = useState({});
@@ -27,7 +33,6 @@ const SearchFilterPage = () => {
 
   const [openLocationDrawer, setLocationDrawer] = useState(false);
   const [openWorkTypeDrawer, setWorkTypeDrawer] = useState(false);
-
 
   const handleDrawerClose = () => {
     setLocationDrawer(false);
@@ -57,7 +62,7 @@ const SearchFilterPage = () => {
     // Haryana
   ];
 
-  const workTypes = ["Full Time", "Part Time", "Hybrid","Remote"];
+  const workTypes = ["Full Time", "Part Time", "Hybrid", "Remote"];
 
   const handleLocationFilter = (val) => {
     setLocationFilter((prev) => {
@@ -117,7 +122,7 @@ const SearchFilterPage = () => {
       setFirstLoading(false);
     }
     const res = await axiosInstance.get(
-      `/jobs?page=${page}&limit=${pageSize}&type=${Object.keys(
+      `/jobs?q=${searchText}&page=${page}&limit=${pageSize}&type=${Object.keys(
         workTypeFilter
       ).join(",")}&location=${Object.keys(locationFilter).join(",")}`
     );
@@ -130,10 +135,10 @@ const SearchFilterPage = () => {
     isLoading: searchLoading,
     refetch,
     isFetching: searchFetching,
-    isError:searchError,
-    isSuccess:searchSuccess
+    isError: searchError,
+    isSuccess: searchSuccess,
   } = useQuery({
-    queryKey: ["search", currentPage],
+    queryKey: ["search", searchText,currentPage],
     queryFn: () => fetchSearchData(currentPage),
     keepPreviousData: true,
     staleTime: 300000,
@@ -141,18 +146,31 @@ const SearchFilterPage = () => {
   });
 
 
-  const fetchLocationData = async()=>{
-    const res= await axiosInstance.get("/locations")
-    return res.data
-  }
+  useEffect(()=>{
+     return ()=>{
+      queryClient.removeQueries(["search"])
+     }
+  },[])
 
-  const {data:locationData ,isLoading:locationLoading,isFetching:locationFetching,isError,error} = useQuery({
-    queryKey:["location"],
-    queryFn:()=>fetchLocationData(),
-    gcTime:Infinity,
-    staleTime:Infinity,
-  })
 
+
+  const fetchLocationData = async () => {
+    const res = await axiosInstance.get("/locations");
+    return res.data;
+  };
+
+  const {
+    data: locationData,
+    isLoading: locationLoading,
+    isFetching: locationFetching,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["location"],
+    queryFn: () => fetchLocationData(),
+    gcTime: Infinity,
+    staleTime: Infinity,
+  });
 
   const handlePageChange = (val) => {
     setCurrentPage(val);
@@ -166,239 +184,252 @@ const SearchFilterPage = () => {
     refetch();
   };
 
-  if(searchError)
-  {
-    return <SomethingWentWrong/>
+  if (searchError) {
+    return <SomethingWentWrong />;
   }
 
-    return (
-      <MainContext>
-        <div
-          className={
-            `w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] pb-10 flex-col md:flex-row pt-5 md:pt-10 ` +
-            "min-h-screen"
-          }
-        >
-          {/* Search Filter  */}
-  
-          <div className="w-[30%] hidden md:block h-fit bg-white primary-shadow py-3 px-2 ms-4">
-            <h2 className="mb-4 flex justify-between items-center px-2">
-              <span>All Filters</span>
-              <span className="relative">
-                {indicateFilter && (
-                  <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
-                )}
-                <CiFilter
-                  className="text-xl"
-                />
-              </span>
-            </h2>
-            <FilterItem
-              title={"Location"}
-              data={locationData || []}
-              defaultSelect={locationFilter}
-              key={"location"}
-              maxData={10}
-              loading={locationLoading}
-              onChange={handleLocationFilter}
-              onApplyClick={handleSearchApplyButton}
-            />
-            <FilterItem
-              title={"Employement Type"}
-              data={workTypes}
-              key={"emp_type"}
-              onChange={handleWorkTypeFilter}
-              defaultSelect={workTypeFilter}
-              onApplyClick={handleSearchApplyButton}
-            />
-          </div>
-  
-          <div className="flex md:hidden justify-start items-center px-1 bg-white ">
-            <h5 className="mr-2 text-sm lg:text-xl text-nowrap">All Filters</h5>
-            <div className="max-w-full overflow-x-auto flex justify-start items-center flex-nowrap custom-scroll-nowidth  h-10">
-              <span
-                className="mx-1 flex-shrink-0 w-fit h-fit bg-gray-200 px-2 py-1 rounded-full text-sm"
-                onClick={() => setLocationDrawer(true)}
-              >
-                Location
-              </span>
-              <span
-                className="mx-1 flex-shrink-0 w-fit h-fit bg-gray-200 px-2 py-1 rounded-full text-sm"
-                onClick={() => setWorkTypeDrawer(true)}
-              >
-                Work Type
-              </span>
-            </div>
-          </div>
-  
-          {/* Search data */}
-  
-          <div className="flex w-full  md:w-[70%] me-0 flex-col ">
-            <div className="w-[95%] mx-auto gap-2 flex  flex-col px-2  pt-0">
-              <h4 className="lg:ps-24">Search Results :</h4>
-              {searchLoading || searchFetching
-                ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d, idx) => (
-                    <SearchJobCardSkeleton key={idx} />
-                  ))
-                : searchData?.length > 0 &&
-                  searchData?.map((d, idx) => (
-                    <SearchJobCard data={d} key={idx} />
-                  ))}
-            </div>
-            {searchData?.length > 0 ? (
-              <Pagination
-                disabled={searchLoading || searchFetching}
-                defaultCurrent={1}
-                current={currentPage}
-                className="w-fit mx-auto mb-5 mt-3"
-                total={totalData}
-                showSizeChanger={false}
-                pageSize={pageSize}
-                onChange={(e) => handlePageChange(e)}
-                prevIcon={
-                  <button
-                    disabled={
-                      searchLoading || searchFetching || currentPage === 1
-                    }
-                    className={
-                      "hidden md:flex " + (currentPage === 1 && " !hidden")
-                    }
-                    style={{ border: "none", background: "none" }}
-                  >
-                    ← Prev
-                  </button>
-                }
-                nextIcon={
-                  <button
-                    disabled={searchLoading || searchFetching}
-                    className={
-                      "hidden md:flex " +
-                      ((currentPage >= Math.ceil(totalData / pageSize)) &&
-                        " !hidden ")
-                    }
-                    style={{ border: "none", background: "none" }}
-                  >
-                    Next →
-                  </button>
-                }
-              />
-            ) : (
-              !searchFetching && <NoPostFound />
-            )}
+  return (
+    <MainContext>
+      <div
+        className={
+          `w-full gap-2 bg-slate-50 lg:gap-5 flex md:w-[95%] mx-auto lg:w-[80%] pb-10 flex-col md:flex-row pt-5 md:pt-10 ` +
+          "min-h-screen"
+        }
+      >
+        {/* Search Filter  */}
+
+        <div className="w-[30%] hidden md:block h-fit bg-white primary-shadow py-3 px-2 ms-4">
+          <h2 className="mb-4 flex justify-between items-center px-2">
+            <span>All Filters</span>
+            <span className="relative">
+              {indicateFilter && (
+                <span className="absolute w-2 h-2 bg-black rounded-full top-0 right-0 border border-white" />
+              )}
+              <CiFilter className="text-xl" />
+            </span>
+          </h2>
+          <FilterItem
+            title={"Location"}
+            data={locationData || []}
+            defaultSelect={locationFilter}
+            key={"location"}
+            maxData={10}
+            loading={locationLoading}
+            onChange={handleLocationFilter}
+            onApplyClick={handleSearchApplyButton}
+          />
+          <FilterItem
+            title={"Employement Type"}
+            data={workTypes}
+            key={"emp_type"}
+            onChange={handleWorkTypeFilter}
+            defaultSelect={workTypeFilter}
+            onApplyClick={handleSearchApplyButton}
+          />
+        </div>
+
+        <div className="flex md:hidden justify-start items-center px-1 bg-white ">
+          <h5 className="mr-2 text-sm lg:text-xl text-nowrap">All Filters</h5>
+          <div className="max-w-full overflow-x-auto flex justify-start items-center flex-nowrap custom-scroll-nowidth  h-10">
+            <span
+              className="mx-1 flex-shrink-0 w-fit h-fit bg-gray-200 px-2 py-1 rounded-full text-sm"
+              onClick={() => setLocationDrawer(true)}
+            >
+              Location
+            </span>
+            <span
+              className="mx-1 flex-shrink-0 w-fit h-fit bg-gray-200 px-2 py-1 rounded-full text-sm"
+              onClick={() => setWorkTypeDrawer(true)}
+            >
+              Work Type
+            </span>
           </div>
         </div>
-  
-        <Drawer
-          id="location-drawer"
-          open={openLocationDrawer}
-          title={
-            <div className="w-full flex justify-between items-center px-2">
-              <span>Location</span>
-              <span
-                className="text-sm"
-                onClick={() => {
-                  handleSearchApplyButton();
-                  setLocationDrawer(false);
-                }}
-              >
-                Apply
-              </span>
-            </div>
-          }
-          onClose={handleDrawerClose}
-          placement="bottom"
-        >
-          {
-               locationLoading &&  <div className="w-full flex center"><LuLoader2 className="text-black animate-spin-slow"/> </div>
-          }
-          {
-            locationData && <div className="w-full grid grid-cols-2 gap-1">
-            
-            {
-              (locationData?.map((d, idx) => (
-                <Checkbox
-                  key={idx}
-                  className="font-outfit max-w-fit"
-                  checked={
-                    locationFilter[`${d}`] === null
-                      ? false
-                      : locationFilter[`${d}`]
-                      ? true
-                      : false
+
+        {/* Search data */}
+
+        <div className="flex w-full  md:w-[70%] me-0 flex-col ">
+          <div className="w-[95%] mx-auto gap-2 flex  flex-col px-2  pt-0">
+            <h4 className="lg:ps-24 flex w-fit center gap-1">
+              Search Results : <span>{searchText ? `"${searchText}"`:""}</span>{" "}
+            </h4>
+            <div className="w-full lg:ps-24 mb-2">
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e)=>{setSearchText(e.target.value)}}
+                onKeyDown={(e)=>{
+                  if(e.key === "Enter")
+                  {
+                    refetch()
                   }
-                  name={d}
-                  onChange={(e) => {
-                    const { name, checked } = e.target;
-                    let updatedFilter = { ...locationFilter };
-                    if (!checked) {
-                      delete updatedFilter[`${name}`];
-                    } else {
-                      updatedFilter = { ...updatedFilter, [`${name}`]: checked };
-                    }
-                    handleLocationFilter(updatedFilter);
-                  }}
-                >
-                  {d}
-                </Checkbox>
-              )) )
-            }
-          </div>
-          }
-        </Drawer>
-  
-        <Drawer
-          id="workType-drawer"
-          open={openWorkTypeDrawer}
-          title={
-            <div className="w-full flex justify-between items-center px-2">
-              <span>Work Type</span>{" "}
-              <span
-                className="text-sm"
-                onClick={() => {
-                  handleSearchApplyButton();
-                  setWorkTypeDrawer(false);
                 }}
-              >
-                Apply
-              </span>
+                placeholder="Seach Jobs"
+                className="w-full  h-[30px] !border-[1px] max-w-[80%] !border-gray-600 border-solid  rounded-lg px-3 !bg-white py-1"
+                style={{borderColor:"#ededed",borderStyle:"solid"}}
+              />
             </div>
-          }
-          height={"40vh"}
-          onClose={handleDrawerClose}
-          placement="bottom"
-        >
+            {searchLoading || searchFetching
+              ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d, idx) => (
+                  <SearchJobCardSkeleton key={idx} />
+                ))
+              : searchData?.length > 0 &&
+                searchData?.map((d, idx) => (
+                  <SearchJobCard data={d} key={idx} />
+                ))}
+          </div>
+          {searchData?.length > 0 ? (
+            <Pagination
+              disabled={searchLoading || searchFetching}
+              defaultCurrent={1}
+              current={currentPage}
+              className="w-fit mx-auto mb-5 mt-3"
+              total={totalData}
+              showSizeChanger={false}
+              pageSize={pageSize}
+              onChange={(e) => handlePageChange(e)}
+              prevIcon={
+                <button
+                  disabled={
+                    searchLoading || searchFetching || currentPage === 1
+                  }
+                  className={
+                    "hidden md:flex " + (currentPage === 1 && " !hidden")
+                  }
+                  style={{ border: "none", background: "none" }}
+                >
+                  ← Prev
+                </button>
+              }
+              nextIcon={
+                <button
+                  disabled={searchLoading || searchFetching}
+                  className={
+                    "hidden md:flex " +
+                    (currentPage >= Math.ceil(totalData / pageSize) &&
+                      " !hidden ")
+                  }
+                  style={{ border: "none", background: "none" }}
+                >
+                  Next →
+                </button>
+              }
+            />
+          ) : (
+            !searchFetching && <NoPostFound />
+          )}
+        </div>
+      </div>
+
+      <Drawer
+        id="location-drawer"
+        open={openLocationDrawer}
+        title={
+          <div className="w-full flex justify-between items-center px-2">
+            <span>Location</span>
+            <span
+              className="text-sm"
+              onClick={() => {
+                handleSearchApplyButton();
+                setLocationDrawer(false);
+              }}
+            >
+              Apply
+            </span>
+          </div>
+        }
+        onClose={handleDrawerClose}
+        placement="bottom"
+      >
+        {locationLoading && (
+          <div className="w-full flex center">
+            <LuLoader2 className="text-black animate-spin-slow" />{" "}
+          </div>
+        )}
+        {locationData && (
           <div className="w-full grid grid-cols-2 gap-1">
-            {workTypes.map((d, idx) => (
+            {locationData?.map((d, idx) => (
               <Checkbox
-                className="font-outfit max-w-fit"
                 key={idx}
+                className="font-outfit max-w-fit"
                 checked={
-                  workTypeFilter[`${d}`] === null
+                  locationFilter[`${d}`] === null
                     ? false
-                    : workTypeFilter[`${d}`]
+                    : locationFilter[`${d}`]
                     ? true
                     : false
                 }
                 name={d}
                 onChange={(e) => {
                   const { name, checked } = e.target;
-                  let updatedFilter = { ...workTypeFilter };
+                  let updatedFilter = { ...locationFilter };
                   if (!checked) {
                     delete updatedFilter[`${name}`];
                   } else {
                     updatedFilter = { ...updatedFilter, [`${name}`]: checked };
                   }
-                  handleWorkTypeFilter(updatedFilter);
+                  handleLocationFilter(updatedFilter);
                 }}
               >
                 {d}
               </Checkbox>
             ))}
           </div>
-        </Drawer>
-      </MainContext>
-    );
-  
+        )}
+      </Drawer>
+
+      <Drawer
+        id="workType-drawer"
+        open={openWorkTypeDrawer}
+        title={
+          <div className="w-full flex justify-between items-center px-2">
+            <span>Work Type</span>{" "}
+            <span
+              className="text-sm"
+              onClick={() => {
+                handleSearchApplyButton();
+                setWorkTypeDrawer(false);
+              }}
+            >
+              Apply
+            </span>
+          </div>
+        }
+        height={"40vh"}
+        onClose={handleDrawerClose}
+        placement="bottom"
+      >
+        <div className="w-full grid grid-cols-2 gap-1">
+          {workTypes.map((d, idx) => (
+            <Checkbox
+              className="font-outfit max-w-fit"
+              key={idx}
+              checked={
+                workTypeFilter[`${d}`] === null
+                  ? false
+                  : workTypeFilter[`${d}`]
+                  ? true
+                  : false
+              }
+              name={d}
+              onChange={(e) => {
+                const { name, checked } = e.target;
+                let updatedFilter = { ...workTypeFilter };
+                if (!checked) {
+                  delete updatedFilter[`${name}`];
+                } else {
+                  updatedFilter = { ...updatedFilter, [`${name}`]: checked };
+                }
+                handleWorkTypeFilter(updatedFilter);
+              }}
+            >
+              {d}
+            </Checkbox>
+          ))}
+        </div>
+      </Drawer>
+    </MainContext>
+  );
 };
 
 export default SearchFilterPage;
@@ -410,13 +441,13 @@ const FilterItem = ({
   maxData = 4,
   defaultSelect,
   onApplyClick = () => {},
-  loading = false
+  loading = false,
 }) => {
   const [maxHeight, setMaxHeight] = useState(0); // State to store maxHeight
   const contentRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState(defaultSelect);
-  const [openPopup,setPopupOpen] = useState(false)
+  const [openPopup, setPopupOpen] = useState(false);
 
   const handleFilterChnage = ({ name, checked }) => {
     let upadtedFilter = { ...selectedFilter };
@@ -453,19 +484,22 @@ const FilterItem = ({
       <h1 className="flex justify-between px-2 font-outfit font-light">
         {title}
         <div className="flex center gap-[2px]">
-        {data.length > 0  && (
-          <FaChevronCircleDown
-            className={
-              "cursor-pointer duration-500 " + (!collapse && "rotate-180")
-            }
-            onClick={() =>{ setCollapse((prev) => !prev); setPopupOpen(false)}}
-          />
-        )}
-        {
-          loading && <div className="w-full flex center h-7">
-            <LuLoader2 className="text-black animate-spin-slow"/> 
-          </div>
-        }
+          {data.length > 0 && (
+            <FaChevronCircleDown
+              className={
+                "cursor-pointer duration-500 " + (!collapse && "rotate-180")
+              }
+              onClick={() => {
+                setCollapse((prev) => !prev);
+                setPopupOpen(false);
+              }}
+            />
+          )}
+          {loading && (
+            <div className="w-full flex center h-7">
+              <LuLoader2 className="text-black animate-spin-slow" />
+            </div>
+          )}
         </div>
       </h1>
       <div
@@ -477,8 +511,6 @@ const FilterItem = ({
           overflow: "hidden",
         }}
       >
-        
-        
         {data.slice(0, maxData).map((item, idx) => (
           <Checkbox
             checked={
@@ -507,14 +539,17 @@ const FilterItem = ({
                   data={data}
                   onChange={handleFilterChnage}
                   selectedFilter={selectedFilter}
-                  onClickApply={()=>{onApplyClick();setPopupOpen(false)}}
-                  handleClose={()=>setPopupOpen(false)}
+                  onClickApply={() => {
+                    onApplyClick();
+                    setPopupOpen(false);
+                  }}
+                  handleClose={() => setPopupOpen(false)}
                 />
               }
               trigger={"click"}
-              onOpenChange={()=>setPopupOpen(false)}
+              onOpenChange={() => setPopupOpen(false)}
             >
-              <button onClick={()=>setPopupOpen(true)}> View more+ </button>
+              <button onClick={() => setPopupOpen(true)}> View more+ </button>
             </Popover>
           </p>
         )}
@@ -526,7 +561,13 @@ const FilterItem = ({
   );
 };
 
-const FilterMorePopOverContent = ({ data, onChange, selectedFilter , onClickApply=()=>{} , handleClose=()=>{} }) => {
+const FilterMorePopOverContent = ({
+  data,
+  onChange,
+  selectedFilter,
+  onClickApply = () => {},
+  handleClose = () => {},
+}) => {
   return (
     <>
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -543,8 +584,18 @@ const FilterMorePopOverContent = ({ data, onChange, selectedFilter , onClickAppl
         ))}
       </div>
       <div className="w-full flex gap-1 justify-end items-center mt-1 text-sm">
-      <button className="px-2 py-1 bg-slate-200 rounded-full" onClick={handleClose}>Back</button>
-        <button className="px-2 py-1 bg-slate-200 rounded-full" onClick={onClickApply}>Apply</button>
+        <button
+          className="px-2 py-1 bg-slate-200 rounded-full"
+          onClick={handleClose}
+        >
+          Back
+        </button>
+        <button
+          className="px-2 py-1 bg-slate-200 rounded-full"
+          onClick={onClickApply}
+        >
+          Apply
+        </button>
       </div>
     </>
   );

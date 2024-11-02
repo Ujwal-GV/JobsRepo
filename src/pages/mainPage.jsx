@@ -1,7 +1,7 @@
-import React  from "react";
+import React, { useState } from "react";
 import MainContext from "../components/MainContext";
 import SeachInput from "../components/SeachInput";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaSearch } from "react-icons/fa";
 import AdvancedSwiper from "../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard, { JobCardSkeleton } from "../components/JobCard";
@@ -10,7 +10,7 @@ import ProjectCard from "../components/ProjectCard";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance, getError } from "../utils/axiosInstance";
+import { axiosInstance} from "../utils/axiosInstance";
 
 const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
   return (
@@ -36,8 +36,12 @@ const SwiperWrapper = ({ title = "", onViewClick = () => {}, children }) => {
 function MainPage() {
   const navigate = useNavigate();
 
+  const [searchText, setSearchText] = useState();
+
   const fetchJobs = async () => {
-    const res = await axiosInstance.get("/jobs?limit=10",{params:{suggestion:true}});
+    const res = await axiosInstance.get("/jobs?limit=10", {
+      params: { suggestion: true },
+    });
     return res.data.pageData;
   };
 
@@ -46,15 +50,19 @@ function MainPage() {
     return res.data.pageData;
   };
 
-
-  const fetchProjects  = async () => {
-    const res = await axiosInstance.get("projects/",{params:{limit:10,suggestion:false}});
+  const fetchProjects = async () => {
+    const res = await axiosInstance.get("projects/", {
+      params: { limit: 10, suggestion: false },
+    });
     return res.data.pageData;
   };
 
-
-
-  const { data: fetchedProjectsData, isLoading: projectsDataLoading ,isError:projectsDataError ,isSuccess:projectsDataSuccess  } = useQuery({
+  const {
+    data: fetchedProjectsData,
+    isLoading: projectsDataLoading,
+    isError: projectsDataError,
+    isSuccess: projectsDataSuccess,
+  } = useQuery({
     queryKey: ["projectsData"],
     queryFn: fetchProjects,
     staleTime: 300000,
@@ -63,8 +71,12 @@ function MainPage() {
     cacheTime: 300000,
   });
 
-
-  const { data: jobsData, isLoading: jobsDataLoading ,isError:jobDataError ,isSuccess:jobDataSuccess  } = useQuery({
+  const {
+    data: jobsData,
+    isLoading: jobsDataLoading,
+    isError: jobDataError,
+    isSuccess: jobDataSuccess,
+  } = useQuery({
     queryKey: ["jobsData"],
     queryFn: fetchJobs,
     staleTime: 300000,
@@ -76,7 +88,12 @@ function MainPage() {
     },
   });
 
-  const { data: companiesData, isLoading: companyDataLoading ,isError:companyDataError ,isSuccess:companyDataSuccess} = useQuery({
+  const {
+    data: companiesData,
+    isLoading: companyDataLoading,
+    isError: companyDataError,
+    isSuccess: companyDataSuccess,
+  } = useQuery({
     queryKey: ["companyData"],
     queryFn: fetchCompanies,
     staleTime: 300000,
@@ -88,8 +105,6 @@ function MainPage() {
     },
   });
 
-
-
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
       <MainContext>
@@ -98,7 +113,27 @@ function MainPage() {
           <div className="orange-bubble absolute top-[100px] left-[100px]" />
           {/* search input */}
           <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
-            <SeachInput placeholder="Search a job / project....." />
+            <div className="bg-white p-2 flex items-center  justify-between rounded-full shadow-sm shadow-black">
+              <input
+                type="text"
+                className="w-full me-2"
+                value={searchText}
+                placeholder={"Search a job / project....."}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyDown={(e)=>{
+                  if(e.key === "Enter")
+                  {
+                    navigate(`/user/find-jobs/${searchText}`)
+                  }
+                }}
+              />
+              <div
+                className="h-7 w-7 center rounded-full bg-orange-500"
+                onClick={() => navigate(`/user/find-jobs/${searchText}`)}
+              >
+                <FaSearch className="cursor-pointer hover:text-white" />
+              </div>
+            </div>
           </div>
           {/* prime header  */}
           <div className="mt-10 mx-auto w-fit font-outfit">
@@ -117,7 +152,7 @@ function MainPage() {
         <SwiperWrapper
           key={"jobs"}
           title="Recomended jobs for you"
-          onViewClick={() => navigate("find-jobs")}
+          onViewClick={() => navigate(`/user/find-jobs/`)}
         >
           <AdvancedSwiper key={"jobs"}>
             {jobsDataLoading ? (
@@ -169,29 +204,26 @@ function MainPage() {
           onViewClick={() => navigate("/user/projects")}
         >
           <AdvancedSwiper>
-
-            {
-              projectsDataLoading ?
-              (
-                [...Array(5)].map((data) => (
-                  <SwiperSlide key={data}>
-                    <CompanyCardSkeleton id={data} />
-                  </SwiperSlide>
-                ))
-              )
-                 : (fetchedProjectsData && fetchedProjectsData?.length >0 ? fetchedProjectsData.map((data) => (
-                  <SwiperSlide key={data._id}>
-                    <ProjectCard key={data.id} data={data} />
-                  </SwiperSlide>
-                )) : <h2>No projects Found</h2>)
-            }
-            
+            {projectsDataLoading ? (
+              [...Array(5)].map((data) => (
+                <SwiperSlide key={data}>
+                  <CompanyCardSkeleton id={data} />
+                </SwiperSlide>
+              ))
+            ) : fetchedProjectsData && fetchedProjectsData?.length > 0 ? (
+              fetchedProjectsData.map((data) => (
+                <SwiperSlide key={data._id}>
+                  <ProjectCard key={data.id} data={data} />
+                </SwiperSlide>
+              ))
+            ) : (
+              <h2>No projects Found</h2>
+            )}
           </AdvancedSwiper>
         </SwiperWrapper>
       </MainContext>
     </div>
   );
-  
 }
 
 export default MainPage;

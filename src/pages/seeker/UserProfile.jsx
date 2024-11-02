@@ -415,7 +415,7 @@ const UserProfile = () => {
               <CustomBreadCrumbs
                 items={[
                   {
-                    path: "/user",
+                    path: "/",
                     icon: <CiHome />,
                     title: "Home",
                   },
