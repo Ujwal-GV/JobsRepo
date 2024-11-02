@@ -3,9 +3,6 @@ import MainContext from "../components/MainContext";
 import SeachInput from "../components/SeachInput";
 import { FaArrowRight } from "react-icons/fa";
 import AdvancedSwiper from "../components/AdvanceSwiper";
-import {
-  projectData,
-} from "../../assets/dummyDatas/Data";
 import { SwiperSlide } from "swiper/react";
 import JobCard, { JobCardSkeleton } from "../components/JobCard";
 import CompanyCard, { CompanyCardSkeleton } from "../components/CompanyCard";

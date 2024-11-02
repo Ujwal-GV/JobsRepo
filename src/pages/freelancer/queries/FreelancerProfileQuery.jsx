@@ -11,7 +11,6 @@ export const useGetFreelancerProfileData = ()=>{
       const res = await axiosInstance.get("/freelancer/profile");
       if(res.data)
       {
-        // console.log("Freelancer_Data:", res.data);
         setProfileData(res.data);
       }
       return res.data;

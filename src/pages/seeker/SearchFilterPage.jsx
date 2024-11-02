@@ -69,7 +69,6 @@ const SearchFilterPage = () => {
   };
 
   const handleWorkTypeFilter = (val) => {
-    console.log(val);
     setWorkTypeFilter((prev) => {
       return { ...val };
     });
@@ -191,7 +190,6 @@ const SearchFilterPage = () => {
                 )}
                 <CiFilter
                   className="text-xl"
-                  onClick={() => console.log(JSON.stringify(allFilters))}
                 />
               </span>
             </h2>
@@ -337,7 +335,6 @@ const SearchFilterPage = () => {
                     } else {
                       updatedFilter = { ...updatedFilter, [`${name}`]: checked };
                     }
-                    console.log(updatedFilter);
                     handleLocationFilter(updatedFilter);
                   }}
                 >
@@ -391,7 +388,6 @@ const SearchFilterPage = () => {
                   } else {
                     updatedFilter = { ...updatedFilter, [`${name}`]: checked };
                   }
-                  console.log(updatedFilter);
                   handleWorkTypeFilter(updatedFilter);
                 }}
               >

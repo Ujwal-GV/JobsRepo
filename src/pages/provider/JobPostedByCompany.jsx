@@ -42,8 +42,6 @@ const JobPostedByCompany = () => {
     useEffect(() => {
         if (companyData) {
             const companyDetails = companyData?.accountData?.Applications_info;
-            console.log(companyData?.accountData?.Applications_info);
-            
             setCompanyDetails(companyDetails);
         }
     }, [companyData]);

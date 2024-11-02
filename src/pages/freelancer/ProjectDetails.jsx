@@ -48,8 +48,6 @@ const AllPostedJobs = () => {
       }
     });
     setTotalData(res.data.applied_ids.length);
-    // console.log("TotalData", totalData);
-    console.log("Project Response:", res.data);
     return res.data;
   };
 
@@ -95,7 +93,6 @@ const AllPostedJobs = () => {
       });
 
       if (response.data) {
-        console.log("Applicants_Data:", response.data);
         return response.data;
       } else {
         throw new Error("No applicants found");
@@ -127,9 +124,8 @@ const AllPostedJobs = () => {
     return <Loading />;
   }
   if (isError) {
-    console.log(error);
-    
-    // toast.error(error.response.data.message);
+      
+    toast.error(error.response.data.message);
   }
 
   const {

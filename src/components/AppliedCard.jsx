@@ -5,7 +5,6 @@ import { LiaRupeeSignSolid } from "react-icons/lia";
 
 const AppliedCard = ({ data   }) => {
   
-  console.log(data)
 
   const {
     jobData = {},

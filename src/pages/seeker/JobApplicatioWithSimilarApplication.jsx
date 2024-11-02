@@ -96,7 +96,6 @@ const JobApplicatioWithSimilarApplication = () => {
         });
       }
       
-      console.log(modifyStatus)
 
       setApplicationStatus((prev) => {
         return [ ...modifyStatus ]
@@ -146,7 +145,6 @@ const JobApplicatioWithSimilarApplication = () => {
       setSaved(true);
     },
     onError: (error) => {
-      console.log(error);
       const { message } = getError(error); // Error handling function
       if (message) {
         toast.error(message);
@@ -242,7 +240,6 @@ const JobApplicatioWithSimilarApplication = () => {
   } = jobApplicationData?.company || {};
 
 
-  console.log(jobApplicationData?.company)
 
   if (jobApplicationData && isSuccess) {
     return (

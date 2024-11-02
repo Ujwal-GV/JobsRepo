@@ -221,7 +221,6 @@ const UserProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -274,7 +273,6 @@ const UserProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -308,7 +306,6 @@ const UserProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -345,7 +342,6 @@ const UserProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -390,7 +386,6 @@ const UserProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {

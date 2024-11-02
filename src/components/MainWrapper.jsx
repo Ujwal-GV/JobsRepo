@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, {  useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import { useGetProfileData } from '../pages/seeker/queries/ProfileQuery'

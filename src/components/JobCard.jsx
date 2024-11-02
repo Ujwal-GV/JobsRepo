@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import img from "../../assets/images/p4.png";
+import React from "react";
 import NewBadge from "./badges/NewBadge";
 import { IoLocationOutline } from "react-icons/io5";
 import Skeleton from "react-loading-skeleton";

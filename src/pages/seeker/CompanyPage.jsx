@@ -69,7 +69,6 @@ const CompanyPage = () => {
 
   const fetchCompanyData = async () => {
     const res = await axiosInstance.get(`/provider/${companyId}`);
-    console.log(res.data)
     return res.data;
   };
 

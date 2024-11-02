@@ -39,7 +39,6 @@ const ProviderProfile = () => {
 
   const { profileData, setProfileData } = useContext(AuthContext);
 
-  console.log("Provider_Details:", profileData);
   
   useEffect(() => {
     if(profileData!==null){
@@ -99,7 +98,6 @@ const ProviderProfile = () => {
     isSuccess,
     isError,error
   } = useGetProviderProfileData();
-  console.log(profileDataLoading,isFetching);
 
 
   const updateProviderProfile = async (val) => {
@@ -129,7 +127,6 @@ const ProviderProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -225,7 +222,6 @@ const ProviderProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
       if (message) {
         toast.error(message);
       } else {

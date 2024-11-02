@@ -61,13 +61,11 @@ function MainPageFreelancer() {
       params: {
         freelancer_id: freelancerId
       }});
-    // console.log("Freelancer_Details:", res.data);
 
     const projectDetails = res.data.flatMap((item) => 
       item.projects.map((project) => project.projectData)
     );
 
-    // console.log("Project_Details:", projectDetails);
     return projectDetails;
   };
 
@@ -79,7 +77,6 @@ function MainPageFreelancer() {
     refetchOnMount: false,
     cacheTime: 300000,
     onError: () => {
-      console.log(error);
       toast.error("Something went wrong while fetching projects");
     },
   });

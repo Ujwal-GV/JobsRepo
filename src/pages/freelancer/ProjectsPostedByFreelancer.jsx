@@ -21,9 +21,6 @@ const ProjectsPostedByFreelancer = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    console.log("Provider:", profileData);
-    console.log("Id:", freelancerId)
-
     useEffect(() => {
         queryClient.invalidateQueries(["freelancer_data", freelancerId]);
     }, [freelancerId, queryClient]);
@@ -37,8 +34,6 @@ const ProjectsPostedByFreelancer = () => {
         const projectDetails = res.data.flatMap((item) => 
             item.projects.map((project) => project.projectData)
         );
-      
-        // console.log("Project_Details:", projectDetails);
         return projectDetails;
     };
 
@@ -48,7 +43,7 @@ const ProjectsPostedByFreelancer = () => {
         staleTime: 20000,
         cacheTime: 0,
         onError: () => {
-            console.log(error);
+        
             toast.error("Something went wrong while fetching jobs");
         }
     });

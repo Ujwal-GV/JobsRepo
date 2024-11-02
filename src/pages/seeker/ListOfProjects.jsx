@@ -72,7 +72,6 @@ const ListOfProjects = () => {
   },[])
 
 
-  console.log(searchData)
 
 
   return (
