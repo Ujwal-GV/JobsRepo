@@ -32,7 +32,7 @@ const JobCard = ({ data }) => {
       {postedSince >=0 ? (
         <div className="absolute top-2 right-2">
           {
-            postedSince <=1 ? <NewBadge /> : <CustomBadge text={postedSince+" days ago"} bgcolor="white" text_color="blue"/>
+            postedSince <=1 ? <NewBadge /> : <CustomBadge text={postedSince+"d ago"} bgcolor="white" text_color="#B3B3B3"/>
           }
         </div>
       ) : <></>}

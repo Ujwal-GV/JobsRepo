@@ -1,16 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import MainContext from "../../components/MainContext";
-import { jobData } from "../../../assets/dummyDatas/Data";
 import { CiSearch } from "react-icons/ci";
 import AdvancedSwiper from "../../components/AdvanceSwiper";
 import { SwiperSlide } from "swiper/react";
 import JobCard from "../../components/JobCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Loading from "../Loading";
 import { HiPlus } from "react-icons/hi";
-import { Rate } from "antd";
 import { FaCheck } from "react-icons/fa6";
 import { FreelanePostContainer, JobPostContainer } from "./CompanyAllPosts";
 import { axiosInstance, getError } from "../../utils/axiosInstance";
@@ -47,7 +44,7 @@ const CompanyPage = () => {
   const {profileData}  = useContext(AuthContext)
 
   const { id: companyId } = useParams();
-  const PostedSections = [" Job Posts", "Freelance Post"];
+  const PostedSections = [" Job Posts"];
   const [posttype, setPostType] = useState(0);
   const [following, setFollowing] = useState(false);
   const navigate = useNavigate()
@@ -259,7 +256,6 @@ const CompanyPage = () => {
                 return (
                   <div
                     key={idx}
-                    onClick={() => setPostType(idx)}
                     className={
                       "rounded-full  cursor-pointer center gap-1 bg-slate-50 h-10 border hover:border-gray-950  px-3 text-sm " +
                       (posttype === idx && "border-gray-950")
@@ -271,21 +267,20 @@ const CompanyPage = () => {
               })}
             </div>
 
-            {posttype === 0 ? (
+        
               <JobPostContainer
                 cardClassname={" mx-auto lg:!mx-0 "}
                 companyId={companyId}
               />
-            ) : (
-              <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} companyId={companyId}/>
-            )}
+           
+              {/* <FreelanePostContainer cardClassname={" mx-auto lg:!mx-0 "} companyId={companyId}/> */}
+           
           </div>
         </div>
 
         {/* Jobs Posted by You */}
-        <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 flex flex-col">
-          {/* Business Posts */}
-
+        {/* <div className="w-full rounded-xl h-fit bg-white p-2 md:p-10 flex flex-col">
+         
           <div className="border-t border-gray-100 pt-4">
             <h1 className="text-xl md:text-2xl font-semibold mb-4 flex justify-between items-center">
               Business Post
@@ -296,7 +291,7 @@ const CompanyPage = () => {
             <h1>All Post in grid design</h1>
           </div>
           <div></div>
-        </div>
+        </div> */}
       </div>
     </MainContext>
   );
