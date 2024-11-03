@@ -140,8 +140,8 @@ const JobPostedByCompany = () => {
                                             <h1 className="w-[90%] overflow-hidden text-ellipsis text-nowrap text-xl font-semibold">
                                                 {title}
                                             </h1>
-                                            <span className='absolute right-7 top-7 text-xs md:text-sm'>Applicants: ({applied_ids.length})</span>
-                                            <hr className='mt-2 mb-2' />
+                                            <span className='absolute right-4 top-11 mt-2 mb-2 lg:right-7 lg:top-7 md:right-7 md:top-7 text-xs md:text-sm'>Applicants: ({applied_ids.length})</span>
+                                            <hr className='mt-5 mb-2 sm:mt-5' />
                                             <div className="w-full flex justify-start items-start gap-2 my-3">
                                                 <span className="w-fit block"> Skills : </span>
                                                 <div className="flex-1 w-full flex text-wrap overflow-hidden text-ellipsis max-h-9">

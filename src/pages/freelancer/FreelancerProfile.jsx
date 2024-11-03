@@ -32,7 +32,7 @@ const FreelancerProfile = () => {
 
   const { profileData, setProfileData } = useContext(AuthContext);
   const [freelancerId, setFreelancerId] = useState(null);
-  console.log("Freelancer_Details:", profileData);
+  // console.log("Freelancer_Details:", profileData);
   
   useEffect(() => {
     if(profileData!==null){
@@ -80,15 +80,15 @@ const FreelancerProfile = () => {
     isSuccess,
     isError,error
   } = useGetFreelancerProfileData();
-  console.log(profileDataLoading,isFetching);
+  // console.log(profileDataLoading,isFetching);
 
 
   const updateFreelancerProfile = async (val) => {
-    console.log("Values:", val);
+    // console.log("Values:", val);
     const data ={"email":val.email,"mobile":val.mobile}
-    console.log("Data_Update:", data);
+    // console.log("Data_Update:", data);
     const res = await axiosInstance.put("/freelancer/update", data);
-    console.log("Response_Data", res.data);
+    // console.log("Response_Data", res.data);
     return res.data;
   };
 
@@ -110,7 +110,7 @@ const FreelancerProfile = () => {
     },
     onError: (error) => {
       const { message } = getError(error);
-      console.log(error);
+      // console.log(error);
       if (message) {
         toast.error(message);
       } else {
@@ -133,7 +133,7 @@ const FreelancerProfile = () => {
        toast.success("Profile Photo Updated Sucessfully");
        setProfileData(val);
        queryClient.invalidateQueries({ queryKey: ["freelancer_profile"] });
-       console.log(val , variables)
+      //  console.log(val , variables)
        setFreelancerProfileImg(variables);
     },
     onError:(error)=>{

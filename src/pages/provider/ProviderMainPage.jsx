@@ -158,17 +158,20 @@ function ProviderMainPage() {
                   className="px-3 py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
                   onClick={() => handlePostDelete(job?.job_id)}
                 >
-                  <IoTrash className="mr-1" />
-                  {
-                    mutation.isLoading && mutation.variables === job.job_id && (
+                  {mutation && mutation.variables === job.job_id ? (
+                    <>
                       <LuLoader2 className="animate-spin-slow" />
-                    )
-                  }
+                      Deleting
+                    </>
+                  ) : (
+                    <>
+                      <IoTrash className="mr-1" />
+                      Delete
+                    </>
+                  )}
                   {
-                    deletedJobs[job.job_id] ? (
+                    deletedJobs[job.job_id] && (
                       <FaCheckCircle className="text-black" />
-                    ) : (
-                      "Delete"
                     )
                   }
                 </button>
