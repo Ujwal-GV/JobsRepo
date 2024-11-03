@@ -85,7 +85,7 @@ const ProviderNavbar = () => {
                   selectedMenu === d.label ? "bg-black shadow-lg" : ""
                 }`}
                 onClick={() => {
-                  console.log(d.nav, d.label);
+                  // console.log(d.nav, d.label);
                   handleNavigate(d.nav, d.label);
                 }}
             >

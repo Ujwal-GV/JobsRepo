@@ -34,6 +34,14 @@ function MainPageFreelancer() {
 
   const mutation = useMutation({
     mutationFn: deleteProject,
+    onMutate: async (project_id) => {
+      await queryClient.invalidateQueries(["freelancer", freelancerId]);
+      const previousProjects = queryClient.getQueryData(["freelancer", freelancerId]);
+      queryClient.setQueryData(["freelancer", freelancerId], (oldData) => 
+      oldData.filter((project) => project.project_id !== project_id)
+    );
+    return { previousProjects };
+    },
     onSuccess: (data, variables) => {
       toast.success("Project deleted successfully!");
       setDeletedProjects((prev) => ({ ...prev, [variables]: true }));
@@ -42,6 +50,9 @@ function MainPageFreelancer() {
     onError: (error) => {
       toast.error("Error deleting job post: " + error.message);
     },
+    onSettled: () => {
+      queryClient.invalidateQueries(["freelancer", freelancerId]);
+    }
   });
 
   const handleProjectDelete = (project_id) => {
@@ -178,19 +189,22 @@ function MainPageFreelancer() {
                     className="px-3 py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
                     onClick={() => handleProjectDelete(project_id)}
                   >
-                    <IoTrash className="mr-1" />
-                    {
-                      mutation.isLoading && mutation.variables === project_id && (
-                        <LuLoader2 className="animate-spin-slow" />
-                      )
-                    }
-                    {
-                      deletedprojects[project_id] ? (
-                        <FaCheckCircle className="text-black" />
-                      ) : (
-                        "Delete"
-                      )
-                    }
+                    {mutation.isPending && mutation.variables === project_id ? (
+                    <>
+                      <LuLoader2 className="animate-spin-slow" />
+                      Deleting
+                    </>
+                  ) : (
+                    <>
+                      <IoTrash className="mr-1" />
+                      Delete
+                    </>
+                  )}
+                  {
+                    deletedprojects[project_id] && (
+                      <FaCheckCircle className="text-black" />
+                    )
+                  }
                   </button>
                 </div>
               </div>
