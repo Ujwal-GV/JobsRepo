@@ -408,6 +408,8 @@ input::placeholder{
   
 }
 
+
+
 .astronut-img{
   filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.6));
 }
@@ -466,4 +468,20 @@ input::placeholder{
   border-bottom: 1px solid #bfbfbf;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
+}
+
+
+.animatespin-slow-reverse{
+  animation:rotateReverseAnimation 1s ease-in-out infinite ;
+} 
+
+@keyframes rotateReverseAnimation {
+
+  0%{
+    transform:rotate(0deg);
+  }
+  100%{
+    transform:rotate(-360deg);
+  }
+  
 }
