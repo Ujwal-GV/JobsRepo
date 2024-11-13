@@ -79,7 +79,8 @@ const ProjectApplication = () => {
   }
 
   if (isError && error) {
-    return <SomethingWentWrong />;
+    const {message} = error.response.data
+    return <SomethingWentWrong title={message}/>;
   }
 
   const { provider_info, similarPost } = data || {};

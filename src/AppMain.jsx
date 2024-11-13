@@ -44,6 +44,7 @@ import ProjectsPostedByFreelancer from './pages/freelancer/ProjectsPostedByFreel
 import ProjectDetails from './pages/freelancer/ProjectDetails'
 import ListOfProjects from './pages/seeker/ListOfProjects'
 import ViewProjectCandidate from './pages/freelancer/ViewProjectCandidate'
+import Loading from './pages/Loading'
 
 const AppMain = () => {
 

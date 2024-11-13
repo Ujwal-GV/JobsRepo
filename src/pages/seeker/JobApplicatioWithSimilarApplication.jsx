@@ -212,7 +212,8 @@ const JobApplicatioWithSimilarApplication = () => {
     return <Loading />;
   }
   if (isError || error) {
-    return <SomethingWentWrong />
+    const {message} = error.response.data
+    return <SomethingWentWrong  title={message}/>
   }
 
   const {
