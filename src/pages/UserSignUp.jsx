@@ -21,7 +21,6 @@ function UserSignUp() {
       return res.data;
     },
     onSuccess: (data) => {
-      alert(response);
       toast.success("Registration successful!");
       localStorage.setItem("authToken", data?.authToken);
       navigate("/");
