@@ -157,7 +157,7 @@ const AllPostedJobs = () => {
         <div className="w-full lg:w-1/2 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll relative bg-gray-50">
           {projectApplicationData ? (
             <MainContext>
-              <h1 className="text-2xl font-bold mb-5 text-gray-800">Job Details</h1>
+              <h1 className="text-2xl font-bold mb-5 text-gray-800">Project Details</h1>
               <div className="w-full flex flex-col gap-6">
 
                 {/* Project Info */}
