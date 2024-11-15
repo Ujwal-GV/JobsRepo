@@ -73,14 +73,14 @@ function ProviderMainPage() {
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
-      <div className="h-[600px] w-full bg-slate-50 relative py-10">
+      <div className="h-[400px] w-full bg-slate-50 relative py-10">
         {/* Blue bubble */}
         <div className="orange-bubble absolute top-[100px] left-[100px]" />
-        <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
+        {/* <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
           <SeachInput placeholder="Search posted job......" />
-        </div>
-        <div className="mt-10 mx-auto w-fit font-outfit">
-          <h1 className="text-center text-xl md:text-5xl font-semibold">
+        </div> */}
+        <div className="mt-20 mx-auto w-fit font-outfit">
+          <h1 className="text-center text-2xl md:text-5xl font-semibold">
             Welcome, Job Provider!
           </h1>
           <h1 className="mt-6 text-center text-xl md:text-5xl font-semibold text-orange-500">
@@ -96,7 +96,7 @@ function ProviderMainPage() {
       {/* Posted Jobs List */}
       <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
         <div className="my-5 flex flex-col gap-4 items-center justify-center text-center relative">
-          <h2 className="text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
+          <h2 className="text-xl lg:text-2xl md:text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
           <button
             onClick={handlePostJobClick}
             className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
@@ -181,6 +181,11 @@ function ProviderMainPage() {
         )}
       </div>
       </div>
+      <footer className="bg-orange-500 text-sm">
+        <div className="text-white text-center py-1">
+          <p className="pt-4">&copy; {new Date().getFullYear()} Emploez.in. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
