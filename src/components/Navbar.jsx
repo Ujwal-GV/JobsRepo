@@ -37,15 +37,10 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div
-        className="center gap-1 cursor-pointer"
-        onClick={() => {
-          navigate("/");
-          setSelectedMenu("home");
-        }}
-      >
-        <PiSealCheckFill className="text-2xl text-orange-500" />
-        <span className="font-bold text-2xl md:text-3xl">
+      <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/provider")}>
+        {/* <img src={`${import.meta.env.BASE_URL}/EmploezLogo.png`} alt="Logo" /> */}
+        <img src="/EmploezLogo.png" alt="Logo" className="text-sm ml-0 lg:w-[8rem] w-[6rem]" />
+        <span className="-ml-[1rem] mt-1 font-bold text-2xl md:text-3xl">
           <span className="font-emploez text-orange-600">Emploez</span>
           <span>.in</span>
         </span>
