@@ -1059,7 +1059,7 @@ const ProfileSkillModal = ({
                 setSelectSkills(defaulsSkills);
               }}
             >
-              Cancle
+              Cancel
             </button>
           </div>
         
