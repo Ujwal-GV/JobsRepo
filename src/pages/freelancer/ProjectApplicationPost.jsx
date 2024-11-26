@@ -227,6 +227,11 @@ const ProjectApplicationPost = () => {
       return;
     }
 
+    if (Number(amount) < 0) {
+      message.error("Please enter a valid amount");
+      return;
+    }
+
     const projectData = {
       description,
       cost: {
@@ -329,6 +334,7 @@ const ProjectApplicationPost = () => {
                       placeholder="Enter the Cost"
                       value={jobDetails.amount}
                       onChange={handleChange}
+                      min="0"
                       className="cost-input w-[12rem] border mt-4 ml-4 rounded-lg p-3"
                   />
               </li>

@@ -428,10 +428,8 @@ const LocationSelector = ({ defaultLocations = [], onChange = () => {}, title = 
               key={data}
               val={data}
               close={true}
-              onClose={() => handleDelete(data)}
-            >
-              {data}
-            </Tag>
+              onClick={() => handleDelete(data)}
+            />
           ))}
         </div>
 
@@ -577,6 +575,18 @@ const JobApplicationProviderView = () => {
       message.error("Minimum experience must be less than maximum experience");
       return;
     }
+
+    if 
+    (
+      Number(experienceMin) < 0 || 
+      Number(experienceMax) < 0 || 
+      Number(vacancy) < 0 ||
+      Number(salaryMin) < 0 ||
+      Number(salaryMax) < 0 
+    ) {
+      message.error("Values cannot be negative");
+      return;
+    }
   
     if(salaryDisclosure.value === 'true') {
       
@@ -717,6 +727,7 @@ const JobApplicationProviderView = () => {
                     placeholder="Min Experience"
                     value={jobDetails.experienceMin}
                     onChange={handleChange}
+                    min="0"
                     className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-2 md:mb-0 md:mr-3"
                   />
                   <input
@@ -725,6 +736,7 @@ const JobApplicationProviderView = () => {
                     placeholder="Max Experience"
                     value={jobDetails.experienceMax}
                     onChange={handleChange}
+                    min="0"
                     className="w-full md:w-1/2 lg:w-full border rounded-lg p-2 mb-2 md:mb-0"
                   />
                 </div>
@@ -740,6 +752,7 @@ const JobApplicationProviderView = () => {
                       placeholder="Enter the vacancies"
                       value={jobDetails.vacancy}
                       onChange={handleChange}
+                      min="0"
                       className="border rounded-lg p-2"
                   />
                 </div>
@@ -909,6 +922,7 @@ const JobApplicationProviderView = () => {
                               placeholder="Min Salary"
                               value={jobDetails.salaryMin}
                               onChange={handleChange}
+                              min="0"
                               className="w-[10rem] lg:w-full border-b-2 border-gray-200 !border-solid rounded-lg p-2 mb-3 md:mb-0 ml-2"
                             />
                             <input
@@ -917,6 +931,7 @@ const JobApplicationProviderView = () => {
                               placeholder="Max Salary"
                               value={jobDetails.salaryMax}
                               onChange={handleChange}
+                              min="0"
                               className="w-[10rem] lg:w-full border-b-2 border-gray-200 !border-solid rounded-lg p-2 mb-3 md:mb-0 ml-2"
                             />
                           </div>
