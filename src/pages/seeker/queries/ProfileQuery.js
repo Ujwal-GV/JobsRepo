@@ -12,7 +12,6 @@ export const useGetProfileData = ()=>{
         if(res.data)
         {
           setProfileData(res.data)
-          console.log("User_Data:", res.data);
           
         }
         return res.data
