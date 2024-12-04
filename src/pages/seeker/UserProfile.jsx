@@ -1257,14 +1257,13 @@ const ProfileEducationModal = ({
           <button
             className="btn-orange px-3 border py-1 border-transparent tracking-widest flex center gap-1"
             onClick={() => {
-              onChange({
+              const updatedData = {
                 ...data,
-                percentage: (
-                  data["percentage"]?.replace(/%|cgpa/gi, "") +
-                  " " +
-                  (data["percentage"] !=="" ? marksTypeItems[marksType].symbol : "")
-                ).trim(),
-              });
+                percentage: data["percentage"]
+                  ? `${data["percentage"].replace(/%|cgpa/gi, "").trim()} ${marksTypeItems[marksType].symbol}`
+                  : "",
+              };
+              onChange(updatedData);
             }}
           >
             {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
@@ -1378,8 +1377,12 @@ const ProfilePersonalDetailsModal = ({
                       customClass="mt-4"
                       value={field.value}
                       onChange={(e) => {
-                        field.onChange(e); // Formik's handleChange
+                        const value = e.target.value;
+                        if (/^\d{0,10}$/.test(value)) {
+                          field.onChange(e); // Formik's handleChange
+                        }
                       }}
+                      maxLength={10}
                     />
                     {/* Error message for Mobile */}
                     {meta.touched && meta.error && (
