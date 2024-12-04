@@ -22,6 +22,7 @@ import { useGetFreelancerProfileData } from "../freelancer/queries/FreelancerPro
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getError } from '../../utils/axiosInstance';
 import SomethingWentWrong from "../../components/SomethingWentWrong";
+import { mobileValidation } from "../../formikYup/ValidationSchema";
 
 
 const { TextArea } = Input;
@@ -326,6 +327,7 @@ export default FreelancerProfile;
   
           <Formik
             initialValues={value}
+            validationSchema={mobileValidation}
             enableReinitialize={true} // Ensure form resets when modal opens again with new values
             onSubmit={(data, { resetForm }) => {
               onChange(data);
@@ -334,7 +336,7 @@ export default FreelancerProfile;
               resetForm();
             }}
           >
-            {({ setFieldValue, resetForm, values }) => (
+            {({ errors, touched, setFieldValue, resetForm, values }) => (
               <Form>
                 {/* Email with Icon */}
                 <Field name="email">
@@ -352,17 +354,26 @@ export default FreelancerProfile;
   
                 {/* Mobile with Icon */}
                 <Field name="mobile">
-                  {({ field }) => (
-                    <InputBox
-                      {...field}
-                      icon={<FaPhoneAlt />} // Icon for mobile
-                      placeholder="Enter Mobile"
-                      customClass="mt-4"
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e); // Formik's handleChange
-                      }}
-                    />
+                  {({ field, form }) => (
+                    <>
+                      <InputBox
+                        {...field}
+                        icon={<FaPhoneAlt />} // Icon for mobile
+                        placeholder="Enter Mobile"
+                        customClass="mt-4"
+                        value={field.value}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d{0,10}$/.test(value)) {
+                            field.onChange(e); // Formik's handleChange
+                          }
+                        }}
+                        maxLength={10}
+                      />
+                      {errors.mobile && touched.mobile && (
+                        <div className="mt-1 text-[0.7rem] text-red-500">{errors.mobile}</div>
+                      )}
+                    </>
                   )}
                 </Field>
   

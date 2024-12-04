@@ -45,6 +45,13 @@ export const userPersonalDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full Name is required"),
   email: Yup.string().email("Invalid email format").required("Email is required"),
   mobile: Yup.string()
-    .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits"),
+    .matches(/^\d{10}$/, "Mobile must be a 10-digit number")
+    .required("Mobile number is required"),
   gender: Yup.string(),
+});
+
+export const mobileValidation = Yup.object().shape({
+  mobile: Yup.string()
+    .matches(/^\d{10}$/, "Mobile must be a 10-digit number")
+    .required("Mobile number is required"),
 });

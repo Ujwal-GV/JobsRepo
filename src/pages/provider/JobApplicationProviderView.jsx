@@ -718,7 +718,7 @@ const JobApplicationProviderView = () => {
 
               <div className="flex flex-col md:flex-row items-start">
                 <div className="flex flex-col mt-4 w-full lg:w-[45%]">
-                  <KeyHighlightsListItem key={"1"} title="Experience" value={null} />
+                  <KeyHighlightsListItem key={"1"} title="Experience (in years)" value={null} />
                 </div>
                 <div className="flex flex-col md:flex-row w-full p-2 lg:w-[55%]">
                   <input
@@ -752,7 +752,7 @@ const JobApplicationProviderView = () => {
                       placeholder="Enter the vacancies"
                       value={jobDetails.vacancy}
                       onChange={handleChange}
-                      min="0"
+                      min="1"
                       className="border rounded-lg p-2"
                   />
                 </div>
@@ -901,7 +901,7 @@ const JobApplicationProviderView = () => {
                 <li className="flex flex-col md:flex-row items-start mb-4">
                   <div className="w-full lg:w-full flex flex-col lg:flex-row gap-4 md:gap-2">
                     <div className="flex flex-col mt-4 w-full lg:w-[45%]">
-                      <KeyHighlightsListItem key={"1-3"} title="Salary" value={null} />
+                      <KeyHighlightsListItem key={"1-3"} title="Salary (in lakhs)" value={null} />
                     </div>
                     <div className="flex flex-col md:flex-row w-full p-2 lg:w-[85%]">
                       <div className="flex flex-col md:flex-row w-full gap-2">
