@@ -21,7 +21,7 @@ function SignUp() {
   const sendOtpMutation = useMutation({
     mutationKey: "send-otp",
     mutationFn: async (email) => {
-      const res = await axiosInstance.post(`/${role.toLowerCase()}/send-otp`, { email });
+      const res = await axiosInstance.post(`/${role.toLowerCase() === "job provider" ? "provider" : "freelancer"}/send-otp`, { email });
       return res.data;
     },
     onSuccess: () => {
