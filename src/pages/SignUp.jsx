@@ -37,7 +37,7 @@ function SignUp() {
   const verifyOtpMutation = useMutation({
     mutationKey: "verify-otp",
     mutationFn: async ({ email, otp }) => {
-      const res = await axiosInstance.post(`/${role.toLowerCase()}/verify-otp`, { email, otp });
+      const res = await axiosInstance.post(`/${role.toLowerCase() === "job provider" ? "provider" : "freelancer"}/verify-otp`, { email, otp });
       return res.data;
     },
     onSuccess: () => {
