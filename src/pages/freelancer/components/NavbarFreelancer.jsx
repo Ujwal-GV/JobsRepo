@@ -6,8 +6,11 @@ import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const NavbarFreelancer = () => {
+  const queryClient = useQueryClient();
+
   const menuItem = [
     { title: "Home", nav: "/freelancer", label: "home" },
     { title: "Post Project", nav: "/freelancer/post-project", label: "postProject" },
@@ -22,6 +25,13 @@ const NavbarFreelancer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const authToken = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    if (!authToken) {
+      toast.error("Session expired. Please login again.");
+      navigate("/login", { replace: true });
+    }
+  }, [authToken, navigate]);
 
   const showDrawer = () => {
     setOpen(true);
@@ -193,9 +203,10 @@ const NavbarFreelancer = () => {
             <button
               className="border bg-black text-white rounded-lg px-2 py-1"
               onClick={() => {
+                queryClient.clear();
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
-                toast.success("Logout Successful!");
+                toast.success("Logout Successfull!");
                 navigate("/login");
               }}
             >

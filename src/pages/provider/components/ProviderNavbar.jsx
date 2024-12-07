@@ -5,11 +5,14 @@ import { motion } from "framer-motion";
 import { ConfigProvider, Drawer, Modal } from "antd";
 import { RiArrowLeftSFill } from "react-icons/ri";
 import { FaBars } from "react-icons/fa6";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProviderNavbar = () => {
+  const queryClient = useQueryClient();
+
   const menuItem = [
     { title: "Home", nav: "/provider", label: "home" },
     { title: "Post Job", nav: "/provider/post-job", label: "postJob" },
@@ -25,6 +28,13 @@ const ProviderNavbar = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (!authToken) {
+      toast.error("Session expired. Please login again.");
+      navigate("/login", { replace: true });
+    }
+  }, [authToken, navigate]);
 
   const showDrawer = () => {
     setOpen(true);
@@ -199,6 +209,7 @@ const ProviderNavbar = () => {
             <button
               className="border bg-black text-white rounded-lg px-2 py-1"
               onClick={() => {
+                queryClient.clear();
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
                 toast.success("Logout Successful!");

@@ -46,7 +46,7 @@ const JobApplicatioWithSimilarApplication = () => {
           (id) => id.jobId === jobApplicationId
         )
       ) {
-        setApplied(true);
+        setApplied(!applied);
       }
 
       if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
@@ -209,20 +209,33 @@ const JobApplicatioWithSimilarApplication = () => {
         } else {
           unsavePostMutation.mutate(job_id);
         }
-      } else {
-        navigate("/login");
       }
     } else {
-      toast.error("Please complete your profile to save or unsave this post.");
-      navigate("/user/profile");
+      if(profileData?.user_id) {
+        toast.error("Please complete your profile to save or unsave this post.");
+        navigate("/user/profile");
+      } else {
+        toast.error("Please log in to save this job.")
+        navigate("/user/login");
+      }
     }
   };
 
   const handleApplyClick = () => {
-    if (profileData?.user_id) {
-      jobApplyMutation.mutate(job_id);
+    if (!isProfileIncomplete) {
+      if (profileData?.user_id) {
+        jobApplyMutation.mutate(job_id);
+      } else {
+        navigate("/user/login");
+      }
     } else {
-      navigate("/login");
+      if(profileData?.user_id) {
+        toast.error("Please complete your profile to save or unsave this post.");
+        navigate("/user/profile");
+      } else {
+        toast.error("Please log in to apply for this job.");
+        navigate("/user/login");
+      }
     }
   };
 

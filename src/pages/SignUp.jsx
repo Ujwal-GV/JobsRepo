@@ -13,7 +13,7 @@ import { LuLoader2 } from "react-icons/lu";
 
 function SignUp() {
   const roleData = ["Job Provider", "Freelancer"];
-  const [role, setRole] = useState("Provider");
+  const [role, setRole] = useState("Job Provider");
   const [otpSent, setOtpSent] = useState(false);
   const [otpValidated, setOtpValidated] = useState(false);
   const navigate = useNavigate();
