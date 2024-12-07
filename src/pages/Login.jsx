@@ -59,6 +59,14 @@ function Login() {
     },
   });
 
+  const handleForgotPasswordPage = () => {    
+    if(role === "Freelancer") {
+      navigate("/freelancer/forgot-password");
+    } else if (role === "Job Provider") {
+      navigate("/provider/forgot-password");
+    }
+  };
+
   const location = useLocation()
 
   return (
@@ -135,7 +143,7 @@ function Login() {
               <p className="mb-4 text-end">
                 <span
                   className="text-sm cursor-pointer hover:underline me-3"
-                  onClick={() => navigate("/forgotpassword")}
+                  onClick={handleForgotPasswordPage}
                 >
                   Forgot Password?
                 </span>

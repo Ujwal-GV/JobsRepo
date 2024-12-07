@@ -45,6 +45,10 @@ import ProjectDetails from './pages/freelancer/ProjectDetails'
 import ListOfProjects from './pages/seeker/ListOfProjects'
 import ViewProjectCandidate from './pages/freelancer/ViewProjectCandidate'
 import Loading from './pages/Loading'
+import ProviderForgotPassword from './pages/provider/components/ProviderForgotPassword'
+import FreelancerForgotPassword from './pages/freelancer/components/FreelancerForgotPassword'
+import ProviderSetNewPassword from './pages/provider/components/ProviderSetNewPassword'
+import FreelancerSetNewPassword from './pages/freelancer/components/FreelancerSetNewPassword'
 
 const AppMain = () => {
 
@@ -62,6 +66,12 @@ const AppMain = () => {
           <Route path = "/user/signup" element={<UserSignUp />} />
           <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
           <Route path = "/reset-password/:token" element={ <SetNewPassword/> } />
+
+          <Route path = '/provider/forgot-password' element = { < ProviderForgotPassword /> } />
+          <Route path = '/freelancer/forgot-password' element = { < FreelancerForgotPassword /> } />
+
+          <Route path = '/provider/reset-password/:token' element = { < ProviderSetNewPassword /> } />
+          <Route path = '/freelancer/reset-password/:token' element = { < FreelancerSetNewPassword /> } />
           {/* <Route path = "/select-role" element= { <OptionPage />} /> */}
           <Route path="/" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
