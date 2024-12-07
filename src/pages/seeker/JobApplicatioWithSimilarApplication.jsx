@@ -25,8 +25,21 @@ const JobApplicatioWithSimilarApplication = () => {
   const { profileData } = useContext(AuthContext);
   const [user_id, setUser_id] = useState(null);
   const [applicationStatus, setApplicationStatus] = useState([]);
+  const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
 
   useEffect(() => {
+    const isComplete =
+      profileData?.profile_details?.resume?.url &&
+      profileData?.profile_details?.summary &&
+      profileData?.profile_details?.skills?.length > 0 &&
+      profileData?.education_details?.qualification &&
+      profileData?.education_details?.specification &&
+      profileData?.education_details?.institute_name &&
+      profileData?.education_details?.percentage &&
+      profileData?.education_details?.yearOfPassout &&
+      profileData?.mobile;
+
+      setIsProfileIncomplete(!isComplete);
     if (profileData && profileData !== null) {
       if (
         profileData?.application_applied_info?.jobs?.find(
@@ -189,14 +202,19 @@ const JobApplicatioWithSimilarApplication = () => {
   });
 
   const handleSaveBtnClick = () => {
-    if (profileData?.user_id) {
-      if (!saved) {
-        savepostMutation.mutate(job_id);
+    if (!isProfileIncomplete) {
+      if (profileData?.user_id) {
+        if (!saved) {
+          savepostMutation.mutate(job_id);
+        } else {
+          unsavePostMutation.mutate(job_id);
+        }
       } else {
-        unsavePostMutation.mutate(job_id);
+        navigate("/login");
       }
     } else {
-      navigate("/login");
+      toast.error("Please complete your profile to save or unsave this post.");
+      navigate("/user/profile");
     }
   };
 
