@@ -15,8 +15,6 @@ function FreelancerForgotPassword() {
       const response = await axiosInstance.post('/freelancer/forgot-password', {
         email: values.email,
       });
-      console.log(response.data);
-      
 
       if (response.status === 200) {
         toast.success(`Password reset link has been sent to: ${values.email}`,{duration:1000*6});
