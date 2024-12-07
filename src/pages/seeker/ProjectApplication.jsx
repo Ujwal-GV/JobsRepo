@@ -97,7 +97,7 @@ const ProjectApplication = () => {
               </h1>
               <h3 className="font-light mt-5">{provider_info?.name}</h3>
               <div className="flex gap-2">
-                <span>Cost : {data?.cost?.amount}</span>
+                <span>Cost : {data?.cost?.amount === 0 ? "Free" : data?.cost?.amount}</span>
               </div>
               <div className="flex center gap-1 w-fit mt-3 text-gray-600">
                 <span>Due Time:</span>{" "}
