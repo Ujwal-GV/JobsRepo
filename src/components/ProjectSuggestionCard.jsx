@@ -2,20 +2,36 @@ import React from "react";
 import NewBadge from "./badges/NewBadge";
 import { useNavigate } from "react-router-dom";
 import CustomBadge from "./badges/CustomBadge";
-import { formatTimestampToDate } from "../utils/CommonUtils";
+import { daysLeft, formatTimestampToDate } from "../utils/CommonUtils";
 
 const ProjectSuggestionCard = ({ data }) => {
-  const {
-    name,provider_info,cost
-  } = data;
+  const { name, provider_info, cost, dueTime } = data;
 
-  const navigate = useNavigate()
+  const daysLeftCount = daysLeft(dueTime);
+  const navigate = useNavigate();
+
 
   return (
-    <div onClick={()=>{navigate(`/user/project-apply/${data.project_id}`)}} className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover">
-      
+    <div
+      onClick={daysLeftCount >=0 ? () => {
+        navigate(`/user/project-apply/${data.project_id}`);
+      } : ()=>{}}
+      className="w-full  h-[150px]flex flex-col items-start p-2 md:p-5 bg-white border-gray rounded-2xl relative cursor-pointer primary-shadow-hover"
+    >
       <div className="absolute top-1 right-1">
-        <CustomBadge text={"Due "+formatTimestampToDate(data?.dueTime)} bgcolor="white" text_color="green"/>
+        {daysLeftCount >= 0 ? (
+          <CustomBadge
+            text={"Due " + formatTimestampToDate(data?.dueTime)}
+            bgcolor="white"
+            text_color="green"
+          />
+        ) : (
+          <CustomBadge
+            text={"Over"}
+            bgcolor="white"
+            text_color="red"
+          />
+        )}
       </div>
 
       <img
@@ -34,7 +50,6 @@ const ProjectSuggestionCard = ({ data }) => {
       </h1>
       {/* <h1 className="text-end text-sm mt-2 text-slate-400">{postedBy}</h1> */}
     </div>
-    
   );
 };
 

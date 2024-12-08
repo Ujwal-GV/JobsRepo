@@ -37,7 +37,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-20 p-5 px-2 md:px-7 lg:px-10 flex justify-between items-center sticky top-0 left-0 z-50 bg-white overflow-hidden">
-      <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/provider")}>
+      <div className="lg:-ml-[4rem] -ml-8 center cursor-pointer" onClick={() => navigate("/")}>
         {/* <img src={`${import.meta.env.BASE_URL}/EmploezLogo.png`} alt="Logo" /> */}
         <img src="/EmploezLogo.png" alt="Logo" className="text-sm ml-0 lg:w-[8rem] w-[6rem]" />
         <span className="-ml-[1rem] mt-1 font-bold text-2xl md:text-3xl">
@@ -90,8 +90,6 @@ const Navbar = () => {
             <button
               className="bg-white shadow-sm shadow-black px-3 py-1 rounded-lg flex center"
               onClick={() => {
-                // localStorage.removeItem("authToken");
-                // navigate("/login");
                 setLogoutModalOpen(true);
               }}
             >
@@ -124,7 +122,6 @@ const Navbar = () => {
           </a>
         ) : (
           <>
-            <Notification />
             <button
               className="bg-white shadow-sm shadow-black px-1 py-[2px] rounded-lg flex center"
               onClick={() => {
@@ -176,7 +173,7 @@ const Navbar = () => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
                 toast.success("Logout Successfully!!");
-                navigate("/user/login");
+              navigate("/user/login",{ replace: true });
               }}
             >
               OK
@@ -186,6 +183,8 @@ const Navbar = () => {
       >
         Are you sure want to logout ?
       </Modal>
+
+
     </div>
   );
 };

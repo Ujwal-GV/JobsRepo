@@ -26,7 +26,7 @@ function SetNewPassword() {
 
       if (response.status === 200) {
         toast.success('Password successfully reset!');
-        navigate('/login');
+        navigate('/user/login');
       }
     } catch (error) {
       toast.error('Failed to reset password. Please try again.');

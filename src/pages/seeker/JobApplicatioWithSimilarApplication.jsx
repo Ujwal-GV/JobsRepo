@@ -43,6 +43,25 @@ const JobApplicatioWithSimilarApplication = () => {
     }
   }, [profileData]);
 
+  useEffect(() => {
+    if (user_id != null) {
+
+      console.log(profileData)
+
+      if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
+        setSaved(true);
+      }
+      if (
+        profileData?.application_applied_info?.jobs?.find(
+          (id) => id.jobId === jobApplicationId
+        )
+      ) {
+        setApplied(true);
+      }
+      
+    }
+  }, [user_id]);
+
   const navigate = useNavigate();
 
   const fetchJobDetails = async (jobId) => {
@@ -65,7 +84,7 @@ const JobApplicatioWithSimilarApplication = () => {
     isError,
     error,
     isFetching,
-    isSuccess
+    isSuccess,
   } = useQuery({
     queryKey: ["jobApplication", jobApplicationId],
     queryFn: () => fetchJobDetails(jobApplicationId),
@@ -80,25 +99,21 @@ const JobApplicatioWithSimilarApplication = () => {
     });
 
     if (res.data?.applicationStatus) {
-      
-      let modifyStatus =[]
+      let modifyStatus = [];
 
-      if(res.data?.applicationStatus?.status?.length === 1)
-      {
-         modifyStatus =  res.data?.applicationStatus?.status?.map((s) => {
-          return { title: s  ,status: "finish"};
-        });
-        modifyStatus.push({title:"Viewed" ,status: "wait"})
-      } 
-      else{
+      if (res.data?.applicationStatus?.status?.length === 1) {
         modifyStatus = res.data?.applicationStatus?.status?.map((s) => {
-          return { title: s ,status: "finish" };
+          return { title: s, status: "finish" };
+        });
+        modifyStatus.push({ title: "Viewed", status: "wait" });
+      } else {
+        modifyStatus = res.data?.applicationStatus?.status?.map((s) => {
+          return { title: s, status: "finish" };
         });
       }
-      
 
       setApplicationStatus((prev) => {
-        return [ ...modifyStatus ]
+        return [...modifyStatus];
       });
     }
     return res.data;
@@ -114,7 +129,7 @@ const JobApplicatioWithSimilarApplication = () => {
     queryFn: getApplicationStatus,
     staleTime: 1000 * 60,
     gcTime: 0,
-    enabled: user_id !== null ? (jobApplied ? true: false) : false,
+    enabled: user_id !== null ? (jobApplied ? true : false) : false,
   });
 
   const [saved, setSaved] = useState(false);
@@ -212,8 +227,8 @@ const JobApplicatioWithSimilarApplication = () => {
     return <Loading />;
   }
   if (isError || error) {
-    const {message} = error.response.data
-    return <SomethingWentWrong  title={message}/>
+    const { message } = error.response.data;
+    return <SomethingWentWrong title={message} />;
   }
 
   const {
@@ -233,14 +248,11 @@ const JobApplicatioWithSimilarApplication = () => {
     job_role,
   } = jobApplicationData?.job || {};
 
-
   const {
     company_name,
     img,
     description: company_description,
   } = jobApplicationData?.company || {};
-
-
 
   if (jobApplicationData && isSuccess) {
     return (
@@ -251,7 +263,10 @@ const JobApplicatioWithSimilarApplication = () => {
               <div className="w-full rounded-xl  h-fit bg-white p-2 md:p-10 font-outfit relative">
                 <img
                   className="border border-gray-100  absolute top-2 right-2 md:top-10 md:right-10 w-12 h-12 md:w-16 md:h-16 rounded-lg"
-                  src={img?.url || "https://wheretocart.com/assets/images/business-image/business-default.jpg"}
+                  src={
+                    img?.url ||
+                    "https://wheretocart.com/assets/images/business-image/business-default.jpg"
+                  }
                   alt={company_name}
                 />
                 <h1 className="text-[1.1rem] md:text-2xl font-semibold max-w-[80%] overflow-hidden text-ellipsis text-nowrap">
