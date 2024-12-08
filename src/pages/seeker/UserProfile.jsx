@@ -769,6 +769,7 @@ const UserProfile = () => {
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfilePersonalDetailsModal
                 open={personalDetailsModalOpen}
+                saveLoading={profilePersonalDetailsUpdateMutation.isPending}
                 onClose={() => {
                   setPersonalDetailsModalOpen(false);
                   freeBody();
@@ -1436,7 +1437,10 @@ const ProfilePersonalDetailsModal = ({
     mobile: null,
     gender: null,
   },
+  saveLoading = false,
 }) => {
+  const [loading, setLoading] = useState(false);
+
   return (
     <div
       className={
@@ -1568,9 +1572,9 @@ const ProfilePersonalDetailsModal = ({
               <div className="w-full mt-4 center gap-3">
                 <button
                   type="submit"
-                  className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                  className="btn-orange px-3 border py-1 border-transparent tracking-widest flex center gap-1"
                 >
-                  Save
+                  {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
                 </button>
                 <button
                   type="button"

@@ -16,7 +16,8 @@ import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
 import moment from 'moment/moment';
 import dayjs from 'dayjs';
-import { FaCheck } from 'react-icons/fa';
+import { FaCheck, FaCheckCircle, FaCross } from 'react-icons/fa';
+import { AiFillCheckCircle, AiFillCloseCircle } from 'react-icons/ai';
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const AllPostedJobs = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
-  const limit = 3;  // Number of applicants per page
+  const limit = 10;  // Number of applicants per page
   const [totalData, setTotalData] = useState(0);
   const totalPages = Math.ceil(totalData / limit);
 
@@ -310,7 +311,7 @@ const AllPostedJobs = () => {
         </div>
 
         {/* Right Side: Applicants View */}
-        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll">
+        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll flex flex-col">
           <h1 className="text-2xl font-bold mb-5 text-gray-800">Applicants</h1>
           {jobsDataLoading ? (
             [1, 2, 3].map((d) => (
@@ -322,35 +323,28 @@ const AllPostedJobs = () => {
               </div>
             ))
           ) : (
-            <div className="grid h-auto grid-cols-1 gap-4 text-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-4 text-sm">
               {applicants && applicants.length > 0 ? (
                 <>
                   {applicants.map((applicant) => (
                     <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
-                      <h2 className="font-semibold text-lg text-gray-800">{applicant.name}</h2>
-                      <div className="w-[60px] h-[60px] absolute right-4 top-4 rounded-full bg-gray-200 overflow-hidden shadow-md">
+                      <div className="w-[50px] h-[50px] rounded-full bg-gray-200 overflow-hidden shadow-md">
                         <img
                           src={applicant.profile_details.profileImg}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {/* <p classNmae="text-gray-600 mt-1">{applicant.education_details.qualification === jobApplicationData?.qualification ? <><FaCheck className='text-green-500' />Qualification matched</> : applicant.education_details.qualification}</p> */}
-                      {/* <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p> */}
+                      <h2 className="font-semibold text-sm lg:text-lg truncate lg:text-md text-gray-800">{applicant.name}</h2>
 
-                      <div className="mt-3 mb-2">
-                        <h4 className="font-semibold text-gray-700">Qualifications:</h4>
-                        
+                      <div className="mt-3">                        
                         {applicant?.education_details?.qualification ? (
                           <>
                             {typeof applicant.education_details.qualification === 'string' ? (
                               (() => {
                                 const qualificationsArray = applicant?.education_details?.qualification.split(',').map(q => q.trim());
-
-                                console.log("Arr",qualificationsArray);
                                 const jobArray = jobApplicationData?.job?.qualification;
-                                console.log("Job Arr", jobArray.length);
-                                
+
                                 const matchedOnes = qualificationsArray.filter(q =>
                                 jobArray.includes(q)
                                 ).length;
@@ -358,82 +352,75 @@ const AllPostedJobs = () => {
                                 const totalQualifications = jobArray.length;
 
                                 return matchedOnes > 0 ? (
-                                  <span className="flex items-center space-x-2">
-                                    <FaCheck className="rounded-full p-[3px] bg-green-500" />
-                                    <p className="text-sm text-gray-600 mt-3">Qualification matched</p>
+                                  <span className="flex items-center space-x-1">
+                                    <FaCheckCircle size="20px" color='light-green' className="rounded-full p-[3px] text-green-500 mb-3" />
+                                    <p className="text-xs text-gray-600">Qualification matched</p>
                                   </span>
                                 ) : (
-                                  <p className="text-sm text-gray-600 mt-1">
-                                    No qualifications matched
-                                  </p>
+                                  <span className="flex items-center space-x-1">
+                                    <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />
+                                    <p className="text-xs text-gray-600">No Qualification matched</p>
+                                  </span>
                                 );
                               })()
                             ) : (
-                              <p className="text-sm text-gray-500">Qualifications are not in a valid format.</p>
+                              <p className="text-xs text-gray-500">Qualifications are not in a valid format.</p>
                             )}
                           </>
                         ) : (
-                          <p className="text-sm text-gray-500">No qualifications listed</p>
+                          <p className="text-xs text-gray-500">No qualifications listed</p>
                         )}
                       </div>
 
-                      <div className="mt-3 mb-2">
-                        <h4 className="font-semibold text-gray-700">Skills:</h4>
-                        {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {applicant.profile_details.skills.map((skill, index) => (
-                              <span key={index} className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm shadow-sm">
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
+                      <div className="mt-1">                        
+                        {applicant?.profile_details?.skills ? (
+                          <>
+                            {(() => {
+                              const jobSkillsSet = new Set([
+                                ...(jobApplicationData?.job?.must_skills || []),
+                                ...(jobApplicationData?.job?.other_skills || [])
+                              ]);
+
+                              const uniqueJobSkills = Array.from(jobSkillsSet);
+
+                              const matchedSkills = applicant.profile_details.skills.filter(skill =>
+                                uniqueJobSkills.includes(skill)
+                              );
+
+                              const totalSkills = uniqueJobSkills.length;
+                              const matchedSkillsCount = matchedSkills.length;
+
+                              return matchedSkillsCount > 0 ? (
+                                <span className="flex items-center space-x-1">
+                                  <FaCheckCircle size="20px" color='light-green' className="rounded-full p-[3px] text-green-500 mb-3" />
+                                  <p className="text-xs text-gray-600">
+                                    {`${matchedSkillsCount} out of ${totalSkills} skills matched`}
+                                  </p>
+                                </span>
+                              ) : (
+                                    <span className="flex items-center space-x-1">
+                                      <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />                                    
+                                      <p className="text-xs text-gray-600">No skills matched</p>
+                                    </span>
+                                  );
+                            })()}
+                          </>
                         ) : (
-                          <p className="text-sm text-gray-500">No skills added</p>
+                          <p className="text-xs text-gray-500">No skills listed</p>
                         )}
                       </div>
-                      <hr className="mt-3 mb-3 border-gray-200" />
-                      <button
-                        className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-700 transition-colors duration-200 ease-in-out shadow-md"
-                        onClick={() => handleViewClick(applicant.user_id)}
-                      >
-                        <FaEye className="mr-2" /> View Profile
-                      </button>
+
+                      <hr className="mt-1 mb-2 border-gray-200" />
+                      <span className='center'>
+                        <button
+                          className="px-3 py-1 bg-orange-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-orange-700 transition-colors duration-200 ease-in-out shadow-md"
+                          onClick={() => handleViewClick(applicant.user_id)}
+                        >
+                          <FaEye className="mr-2" /> View Profile
+                        </button>
+                      </span>
                     </div>
                   ))}
-                  {/* Pagination */}
-                  <div className="mt-4 flex justify-center">
-                    <Pagination
-                      disabled={isLoading || isFetching}
-                      pageSize={limit}
-                      total={totalData}
-                      defaultCurrent={1}
-                      current={currentPage}
-                      onChange={(page) => handlePageChange(page)}
-                      className="pagination"
-                      showSizeChanger={false}
-                      prevIcon={
-                        <button
-                          disabled={isLoading || isFetching || currentPage === 1}
-                          className={"hidden md:flex " + (currentPage === 1 && " !hidden")}
-                          style={{ border: "none", background: "none" }}
-                        >
-                          ← Prev
-                        </button>
-                      }
-                      nextIcon={
-                        <button
-                          disabled={isLoading || isFetching || currentPage >= totalPages}
-                          className={
-                            "hidden md:flex " + 
-                            (currentPage < totalPages ? "" : "!hidden")
-                          }
-                          style={{ border: "none", background: "none" }}
-                        >
-                          Next →
-                        </button>
-                      }
-                    />
-                  </div>
                 </>
               ) : (
                 <div className="w-full flex flex-col items-center">
@@ -442,6 +429,41 @@ const AllPostedJobs = () => {
               )}
             </div>
           )}
+
+          {/* Pagination */}
+          <div className="mt-4 flex justify-center">
+            <Pagination
+              disabled={isLoading || isFetching}
+              pageSize={limit}
+              total={totalData}
+              defaultCurrent={1}
+              current={currentPage}
+              onChange={(page) => handlePageChange(page)}
+              className="pagination"
+              showSizeChanger={false}
+              prevIcon={
+                <button
+                  disabled={isLoading || isFetching || currentPage === 1}
+                  className={"hidden md:flex " + (currentPage === 1 && " !hidden")}
+                  style={{ border: "none", background: "none" }}
+                >
+                  ← Prev
+                </button>
+              }
+              nextIcon={
+                <button
+                  disabled={isLoading || isFetching || currentPage >= totalPages}
+                  className={
+                    "hidden md:flex " + 
+                    (currentPage < totalPages ? "" : "!hidden")
+                  }
+                  style={{ border: "none", background: "none" }}
+                >
+                  Next →
+                </button>
+              }
+            />
+          </div>
         </div>
       </div>
     </>
