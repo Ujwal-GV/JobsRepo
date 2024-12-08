@@ -18,6 +18,8 @@ import moment from 'moment/moment';
 import dayjs from 'dayjs';
 import { FaCheck, FaCheckCircle, FaCross } from 'react-icons/fa';
 import { AiFillCheckCircle, AiFillCloseCircle } from 'react-icons/ai';
+import { BiDotsVerticalRounded } from "react-icons/bi";
+
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
@@ -27,9 +29,11 @@ const AllPostedJobs = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
-  const limit = 10;  // Number of applicants per page
+  const limit = 12;  // Number of applicants per page
   const [totalData, setTotalData] = useState(0);
   const totalPages = Math.ceil(totalData / limit);
+
+  const [reportClicked, setReportClicked] = useState(false);
 
   useEffect(()=>{
       if(profileData?.application_applied_info?.jobs?.find((id)=>id.jobId === jobApplicationId)) {
@@ -162,6 +166,19 @@ const AllPostedJobs = () => {
 
   const remainingDays = dayjs(deadLine).diff(dayjs(), 'day');
   // console.log("R", remainingDays);
+
+  const handleCandidateOption = () => {
+    setReportClicked(!reportClicked);
+  }
+
+  const handleReportAction = () => {
+    toast.error("Work in progress");
+    setReportClicked(false);
+  }
+
+  const closeModal = () => {
+    setReportClicked(false);
+  }
 
   return (
     <>
@@ -329,6 +346,40 @@ const AllPostedJobs = () => {
                   {applicants.map((applicant) => (
                     <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
                       <div className="w-[50px] h-[50px] rounded-full bg-gray-200 overflow-hidden shadow-md">
+                      <BiDotsVerticalRounded 
+                        onClick={handleCandidateOption}
+                        className='absolute right-3 border-2 border-gray-400 rounded-full text-2xl text-gray-400 cursor-pointer hover:bg-gray-600 hover:text-white hover:border-gray-600'
+                      />
+                      {reportClicked && (
+                          <div
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                            onClick={closeModal}
+                          >
+                            <div
+                              className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <h3 className="text-lg font-semibold text-gray-800 mb-4">Report User</h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                Are you sure you want to report this user? Please choose a reason.
+                              </p>
+                              <span className='flex gap-4 center'>
+                                <button
+                                  onClick={handleReportAction}
+                                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-red-700 transition-colors duration-200 ease-in-out shadow-md"
+                                >
+                                  Report
+                                </button>
+                                <button
+                                  onClick={closeModal}
+                                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg text-sm flex items-center justify-center hover:bg-gray-400 transition-colors duration-200 ease-in-out shadow-md"
+                                >
+                                  Cancel
+                                </button>
+                              </span>
+                            </div>
+                          </div>
+                        )}
                         <img
                           src={applicant.profile_details.profileImg}
                           alt="Profile"
@@ -337,78 +388,74 @@ const AllPostedJobs = () => {
                       </div>
                       <h2 className="font-semibold text-sm lg:text-lg truncate lg:text-md text-gray-800">{applicant.name}</h2>
 
-                      <div className="mt-3">                        
-                        {applicant?.education_details?.qualification ? (
-                          <>
-                            {typeof applicant.education_details.qualification === 'string' ? (
-                              (() => {
-                                const qualificationsArray = applicant?.education_details?.qualification.split(',').map(q => q.trim());
-                                const jobArray = jobApplicationData?.job?.qualification;
+                      {applicant?.education_details?.qualification ? (
+                        <>
+                          {typeof applicant.education_details.qualification === 'string' ? (
+                            (() => {
+                              const qualificationsArray = applicant?.education_details?.qualification.split(',').map(q => q.trim());
+                              const jobArray = jobApplicationData?.job?.qualification;
 
-                                const matchedOnes = qualificationsArray.filter(q =>
-                                jobArray.includes(q)
-                                ).length;
+                              const matchedOnes = qualificationsArray.filter(q =>
+                              jobArray.includes(q)
+                              ).length;
 
-                                const totalQualifications = jobArray.length;
+                              const totalQualifications = jobArray.length;
 
-                                return matchedOnes > 0 ? (
-                                  <span className="flex items-center space-x-1">
-                                    <FaCheckCircle size="20px" color='light-green' className="rounded-full p-[3px] text-green-500 mb-3" />
-                                    <p className="text-xs text-gray-600">Qualification matched</p>
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center space-x-1">
-                                    <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />
-                                    <p className="text-xs text-gray-600">No Qualification matched</p>
-                                  </span>
-                                );
-                              })()
-                            ) : (
-                              <p className="text-xs text-gray-500">Qualifications are not in a valid format.</p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="text-xs text-gray-500">No qualifications listed</p>
-                        )}
-                      </div>
-
-                      <div className="mt-1">                        
-                        {applicant?.profile_details?.skills ? (
-                          <>
-                            {(() => {
-                              const jobSkillsSet = new Set([
-                                ...(jobApplicationData?.job?.must_skills || []),
-                                ...(jobApplicationData?.job?.other_skills || [])
-                              ]);
-
-                              const uniqueJobSkills = Array.from(jobSkillsSet);
-
-                              const matchedSkills = applicant.profile_details.skills.filter(skill =>
-                                uniqueJobSkills.includes(skill)
-                              );
-
-                              const totalSkills = uniqueJobSkills.length;
-                              const matchedSkillsCount = matchedSkills.length;
-
-                              return matchedSkillsCount > 0 ? (
+                              return matchedOnes > 0 ? (
                                 <span className="flex items-center space-x-1">
                                   <FaCheckCircle size="20px" color='light-green' className="rounded-full p-[3px] text-green-500 mb-3" />
-                                  <p className="text-xs text-gray-600">
-                                    {`${matchedSkillsCount} out of ${totalSkills} skills matched`}
-                                  </p>
+                                  <p className="text-xs text-gray-600">Qualification matched</p>
                                 </span>
                               ) : (
-                                    <span className="flex items-center space-x-1">
-                                      <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />                                    
-                                      <p className="text-xs text-gray-600">No skills matched</p>
-                                    </span>
-                                  );
-                            })()}
-                          </>
-                        ) : (
-                          <p className="text-xs text-gray-500">No skills listed</p>
-                        )}
-                      </div>
+                                <span className="flex items-center space-x-1">
+                                  <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />
+                                  <p className="text-xs text-gray-600">No Qualification matched</p>
+                                </span>
+                              );
+                            })()
+                          ) : (
+                            <p className="text-xs text-gray-500">Qualifications are not in a valid format.</p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-xs text-gray-500">No qualifications listed</p>
+                      )}
+
+                      {applicant?.profile_details?.skills ? (
+                        <>
+                          {(() => {
+                            const jobSkillsSet = new Set([
+                              ...(jobApplicationData?.job?.must_skills || []),
+                              ...(jobApplicationData?.job?.other_skills || [])
+                            ]);
+
+                            const uniqueJobSkills = Array.from(jobSkillsSet);
+
+                            const matchedSkills = applicant.profile_details.skills.filter(skill =>
+                              uniqueJobSkills.includes(skill)
+                            );
+
+                            const totalSkills = uniqueJobSkills.length;
+                            const matchedSkillsCount = matchedSkills.length;
+
+                            return matchedSkillsCount > 0 ? (
+                              <span className="flex items-center space-x-1">
+                                <FaCheckCircle size="20px" color='light-green' className="rounded-full p-[3px] text-green-500 mb-3" />
+                                <p className="text-xs text-gray-600">
+                                  {`${matchedSkillsCount} out of ${totalSkills} skills matched`}
+                                </p>
+                              </span>
+                            ) : (
+                                  <span className="flex items-center space-x-1">
+                                    <AiFillCloseCircle size="20px" color='light-red' className="rounded-full p-[2px] text-red-500 mb-3" />                                    
+                                    <p className="text-xs text-gray-600">No skills matched</p>
+                                  </span>
+                                );
+                          })()}
+                        </>
+                      ) : (
+                        <p className="text-xs text-gray-500">No skills listed</p>
+                      )}
 
                       <hr className="mt-1 mb-2 border-gray-200" />
                       <span className='center'>
