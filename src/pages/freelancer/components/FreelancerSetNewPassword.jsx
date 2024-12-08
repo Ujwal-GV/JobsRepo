@@ -39,7 +39,7 @@ function FreelancerSetNewPassword() {
     <div className="w-full h-screen flex items-center justify-center">
       <Formik
         initialValues={{ newPassword: '', confirmPassword: '' }}
-        validationSchema={ProviderValidationSchema}
+        validationSchema={setNewPasswordValidationSchema}
         onSubmit={handlePasswordReset}
       >
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
