@@ -6,7 +6,14 @@ import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
-import { AutoComplete, DatePicker, message, Progress, Select, Spin } from "antd";
+import {
+  AutoComplete,
+  DatePicker,
+  message,
+  Progress,
+  Select,
+  Spin,
+} from "antd";
 import "antd/dist/reset.css";
 import dayjs from "dayjs";
 import { FaPhoneAlt, FaSave } from "react-icons/fa";
@@ -29,7 +36,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import Loading from "../Loading";
 import { useGetProfileData } from "./queries/ProfileQuery";
 import { LuLoader2 } from "react-icons/lu";
-import { HiOutlineEye } from "react-icons/hi2";
+import { HiCheckBadge, HiOutlineEye } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { userPersonalDetailsSchema } from "../../formikYup/ValidationSchema";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
@@ -48,7 +55,7 @@ const UserProfile = () => {
 
   //Auth Context
 
-  const { profileData  , setProfileData} = useContext(AuthContext);
+  const { profileData, setProfileData } = useContext(AuthContext);
 
   useEffect(() => {
     if (profileData !== null) {
@@ -92,14 +99,15 @@ const UserProfile = () => {
       setListOfIntership((prev) => {
         return { ...IntershipDetails };
       });
-    }
 
-    calculateProfileCompletePercentage()
+      setResume(profileData?.profile_details?.resume?.url);
+    }
   }, [profileData]);
 
-  const [profileFilledPercentage,setProfileFilledPercentage] = useState(0)
-  
+  const [profileFilledPercentage, setProfileFilledPercentage] = useState(0);
+
   const [profileSkills, setProfileSkills] = useState([]);
+  const [profileResume, setResume] = useState("");
 
   const [profileEducationDetails, setEducationDetails] = useState({
     qualification: null,
@@ -123,42 +131,81 @@ const UserProfile = () => {
 
   const [profileSummary, setProfileSummary] = useState("");
 
-  const calculateProfileCompletePercentage=()=>{
-
-    const totalFields = 10;
+  const calculateProfileCompletePercentage = () => {
+    const totalFields = 14;
 
     let filledFields = 2;
 
-    if( personalDetails.gender && personalDetails.gender !=="")
-    {
+    if (personalDetails.gender && personalDetails.gender !== "") {
       filledFields++;
     }
-    if( personalDetails.mobile && personalDetails.mobile !=="")
-    {
+    if (personalDetails.mobile && personalDetails.mobile !== "") {
       filledFields++;
     }
-    if(profileSummary && profileSummary !=="")
-    {
+    if (profileSummary && profileSummary !== "") {
       filledFields++;
     }
-    if(profileImg && profileImg !=="")
-    {
-        filledFields++;
+    if (profileImg && profileImg !== "") {
+      filledFields++;
     }
-    if(Object.keys(listOfIntership).length>0)
-    {
-        filledFields++;
+    if (Object.keys(listOfIntership).length > 0) {
+      filledFields++;
     }
-    if(profileSkills.length>0)
-    {
+    if (profileSkills.length > 0) {
+      filledFields++;
+    }
+
+    if (
+      profileEducationDetails.qualification &&
+      profileEducationDetails.qualification !== ""
+    ) {
+      filledFields++;
+    }
+    if (
+      profileEducationDetails.specification &&
+      profileEducationDetails.specification !== ""
+    ) {
+      filledFields++;
+    }
+    if (
+      profileEducationDetails.college &&
+      profileEducationDetails.college !== ""
+    ) {
+      filledFields++;
+    }
+    if (
+      profileEducationDetails.passedYear &&
+      profileEducationDetails.passedYear !== ""
+    ) {
+      filledFields++;
+    }
+    if (
+      profileEducationDetails.percentage &&
+      profileEducationDetails.percentage !== ""
+    ) {
+      filledFields++;
+    }
+
+    if (profileResume && profileResume !== "") {
       filledFields++;
     }
 
     const filledPercentage = (filledFields / totalFields) * 100;
 
-    setProfileFilledPercentage(filledPercentage)
-  }
-
+    setProfileFilledPercentage(filledPercentage);
+  };
+  useEffect(() => {
+    calculateProfileCompletePercentage();
+  }, [
+    profileSkills,
+    listOfIntership,
+    profileImg,
+    profileSummary,
+    personalDetails.mobile,
+    personalDetails.gender,
+    profileEducationDetails,
+    profileResume,
+  ]);
 
   const handleSkillsChange = (val) => {
     profileSkillsMutation.mutate(val);
@@ -230,7 +277,8 @@ const UserProfile = () => {
     isLoading: profileDataLoading,
     isFetching,
     isSuccess,
-    isError,error
+    isError,
+    error,
   } = useGetProfileData();
 
   const updatePersonalDetailsProfile = async (val) => {
@@ -257,7 +305,7 @@ const UserProfile = () => {
           ...variables,
         };
       });
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -281,7 +329,7 @@ const UserProfile = () => {
     mutationFn: uploadProfilePhoto,
     onSuccess: (val, variables) => {
       toast.success("Profile Photo Updated Sucessfully");
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       setProfileImg(variables);
     },
@@ -309,7 +357,7 @@ const UserProfile = () => {
       setSummaryModalOpen(false);
       freeBody();
       setProfileSummary(variables);
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -342,7 +390,7 @@ const UserProfile = () => {
       setSkillModalOpen(false);
       freeBody();
       setProfileSkills((prev) => [...variables]);
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -377,9 +425,8 @@ const UserProfile = () => {
       setEducationDetails((prev) => {
         return { ...prev, variables };
       });
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -422,7 +469,7 @@ const UserProfile = () => {
       setListOfIntership((prev) => {
         return { ...prev, ...variables };
       });
-      setProfileData(val)
+      setProfileData(val);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error) => {
@@ -439,32 +486,28 @@ const UserProfile = () => {
     return <Loading />;
   }
 
-  if(isError || error)
-  {
-    return <SomethingWentWrong/>
+  if (isError || error) {
+    return <SomethingWentWrong />;
   }
 
-  if(isSuccess)
-  {
+  if (isSuccess) {
     return (
       <MainContext>
         <div className="w-full min-h-screen bg-slate-50 md:p-5">
           <div className="w-full min-h-screen  relative overflow-x-hidden mx-auto rounded-lg  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-white pb-5 px-2 md:px-0 font-outfit ">
             {/* BreadCrumbs */}
-  
-  
+
             {/* Avatar and PersonalDetails */}
             <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-5  h-fit mx-auto ">
-
               <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
                 <ProfileAvatar
                   url={profileImg}
                   onChange={(val) => profilePhotoUploadMutation.mutate(val)}
                 />
               </div>
-  
+
               {/* Profile Application Deatils */}
-  
+
               <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative border border-slate-200">
                 <MdEdit
                   className="absolute top-2 right-2  cursor-pointer text-[0.8rem] md:text-[0.96rem]"
@@ -473,20 +516,36 @@ const UserProfile = () => {
                     freezeBody();
                   }}
                 />
-                 
-                 <div className="absolute bottom-[101%] md:bottom-1 -right-1 md:right-1  flex flex-col items-center">
-                   <ProfileProgress profileFilledPercentage={profileFilledPercentage}/>
-                   <span className="text-[0.6rem]">{profileFilledPercentage < 100 && "Complete Profile"}</span>
-                 </div>
 
-                <h1> <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.fullName}</span></h1>
+                <div className="absolute bottom-[101%] md:bottom-1 -right-1 md:right-1  flex flex-col items-center">
+                  {
+                    profileFilledPercentage< 100 && <ProfileProgress profileFilledPercentage={parseFloat(profileFilledPercentage.toFixed(2))}/>
+                  }
+                  <span className="text-[0.6rem]">
+                    {profileFilledPercentage < 100 && "Complete Profile" }
+                  </span>
+                  {
+                    profileFilledPercentage === 100 && <span className="flex justify-center items-center gap-[2px] text-[1.2rem] text-green-600"><HiCheckBadge/></span>
+                  }
+                </div>
+
+                <h1>
+                  {" "}
+                  <span className="text-[0.85rem] md:text-[1rem]">
+                    {personalDetails.fullName}
+                  </span>
+                </h1>
                 <h1 className="flex justify-start items-center gap-1">
                   <MdEmail className="text-orange-600 flex-shrink-0" />
-                  <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.email}</span>
+                  <span className="text-[0.85rem] md:text-[1rem]">
+                    {personalDetails.email}
+                  </span>
                 </h1>
                 <h1 className="flex justify-start items-center gap-1">
                   <FaPhoneAlt className="text-orange-600" />
-                  <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.mobile || "Mobile"}</span>
+                  <span className="text-[0.85rem] md:text-[1rem]">
+                    {personalDetails.mobile || "Mobile"}
+                  </span>
                 </h1>
                 <h1 className="flex justify-start items-center gap-1">
                   {personalDetails.gender.toLowerCase() === "male" && (
@@ -502,9 +561,9 @@ const UserProfile = () => {
                 </h1>
               </div>
             </div>
-  
+
             {/* Other Profile Details */}
-  
+
             <div className="w-[100%]   mx-auto flex flex-wrap center p-1 border-t pt-2  mt-2">
               <DeatilsBadge
                 icon={<BiSolidBadgeCheck className="text-green-600" />}
@@ -521,18 +580,20 @@ const UserProfile = () => {
               <DeatilsBadge
                 icon={<AiFillProject className="text-green-600 rotate-180" />}
                 title="Projects Applied"
-                val={profileData?.application_applied_info?.projects?.length || 0}
+                val={
+                  profileData?.application_applied_info?.projects?.length || 0
+                }
               />
-               <DeatilsBadge
+              <DeatilsBadge
                 icon={<AiFillProject className="text-orange-600 rotate-180" />}
                 title="Following"
                 val={profileData?.follwing?.length || 0}
-                onClick={()=>navigate("/user/company/following")}
+                onClick={() => navigate("/user/company/following")}
               />
             </div>
             <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2 ">
               {/* Section 1 */}
-  
+
               {/* <div className="part-1 flex-1"> */}
               <ProfileInputWrapper>
                 <ProfileInfoField
@@ -558,7 +619,7 @@ const UserProfile = () => {
                   </div>
                 </ProfileInfoField>
               </ProfileInputWrapper>
-  
+
               <ProfileInputWrapper>
                 <ProfileInfoField
                   title="Skills"
@@ -582,7 +643,7 @@ const UserProfile = () => {
                   </div>
                 </ProfileInfoField>
               </ProfileInputWrapper>
-  
+
               <ProfileInputWrapper>
                 <ProfileInfoField
                   title="Education"
@@ -658,7 +719,7 @@ const UserProfile = () => {
                 </ProfileInfoField>
               </ProfileInputWrapper>
               {/* </div> */}
-  
+
               <ProfileInputWrapper>
                 <ProfileInfoField
                   title="Resume"
@@ -669,7 +730,7 @@ const UserProfile = () => {
                 </ProfileInfoField>
               </ProfileInputWrapper>
             </div>
-  
+
             {/* All Modals  */}
           </div>
         </div>
@@ -688,7 +749,7 @@ const UserProfile = () => {
               />
             </AnimateEnterExit>
           )}
-  
+
           {educationModalOpen && (
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfileEducationModal
@@ -703,7 +764,7 @@ const UserProfile = () => {
               />
             </AnimateEnterExit>
           )}
-  
+
           {personalDetailsModalOpen && (
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfilePersonalDetailsModal
@@ -717,7 +778,7 @@ const UserProfile = () => {
               />
             </AnimateEnterExit>
           )}
-  
+
           {summaryModalOpen && (
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfileSummaryModal
@@ -731,7 +792,7 @@ const UserProfile = () => {
               />
             </AnimateEnterExit>
           )}
-  
+
           {intershipModalOpen && (
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfileIntershipModal
@@ -944,19 +1005,21 @@ const InternShipCard = ({
 
 // Profile Progress
 const ProfileProgress = ({ profileFilledPercentage }) => {
-  
-
   const getProgressColor = (percentage) => {
-    if (percentage === 100) {
-      return '#52c41a'; // Green for 100%
+    if (percentage === 100.00) {
+
+
+      return "green"; // Green for 100%
     }
-    if (percentage >= 75) {
-      return '#faad14'; // Orange for 75% and above
+    else if (percentage >= 75) {
+      return "orange"; // Orange for 75% and above
     }
-    if (percentage >= 50) {
-      return '#eb2f96'; // Pink for 50% to 74%
+    else if (percentage >= 50) {
+      return "yellow"; // Pink for 50% to 74%
+    }else{
+      return "red"; // Red for below 50%
     }
-    return '#f5222d'; // Red for below 50%
+    
   };
 
   return (
@@ -968,7 +1031,15 @@ const ProfileProgress = ({ profileFilledPercentage }) => {
       strokeWidth={20}
       showInfo={true}
       size={"small"}
-      strokeColor={getProgressColor(profileFilledPercentage)} 
+      format={()=>{
+        if(profileFilledPercentage !== 100)
+        {
+          return <span className="text-[0.6rem]">{profileFilledPercentage+"%"}</span>
+        }else{
+          return  <></>
+        }
+      }}
+      strokeColor={getProgressColor(profileFilledPercentage)}
     />
   );
 };
@@ -1046,7 +1117,7 @@ const ProfileSkillModal = ({
   };
 
   const handleSelect = (value) => {
-   const alreadySelected = selectSkills.some((skill) => skill.value === value);
+    const alreadySelected = selectSkills.some((skill) => skill.value === value);
 
     if (alreadySelected) {
       message.error("Skill already selected");
@@ -1083,53 +1154,56 @@ const ProfileSkillModal = ({
             setSelectSkills(defaulsSkills);
           }}
         />
-         <h1 className="mt-5">Select skills</h1>
+        <h1 className="mt-5">Select skills</h1>
 
-          <div className="flex flex-wrap gap-1 w-full  items-start">
-            {selectSkills.map((data) => (
-              <Tag
-                val={data.value}
-                key={data.label}
-                close={true}
-                onClick={() => handleDelete(data.label)}
-              />
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-1 w-full  items-start">
+          {selectSkills.map((data) => (
+            <Tag
+              val={data.value}
+              key={data.label}
+              close={true}
+              onClick={() => handleDelete(data.label)}
+            />
+          ))}
+        </div>
 
-          <AutoComplete
-            notFoundContent={loading ? <Spin size="small"  className="w-full flex center"/> : null}
-            onChange={(value) => {
-              if (value.trim().length === 0) {
-                setSearchValue("");
-              }
+        <AutoComplete
+          notFoundContent={
+            loading ? (
+              <Spin size="small" className="w-full flex center" />
+            ) : null
+          }
+          onChange={(value) => {
+            if (value.trim().length === 0) {
+              setSearchValue("");
+            }
+          }}
+          className="w-full mt-7 md:mt-10 h-10 focus:shadow-none"
+          placeholder="Search for a skill"
+          options={options}
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          value={searchValue}
+        />
+        <div className="w-full flex center mt-5 gap-4">
+          <button
+            className="btn-orange px-4 py-2 tracking-widest flex center gap-1"
+            onClick={() => {
+              onChange(selectSkills);
             }}
-            className="w-full mt-7 md:mt-10 h-10 focus:shadow-none"
-            placeholder="Search for a skill"
-            options={options}
-            onSearch={handleSearch}
-            onSelect={handleSelect}
-            value={searchValue}
-          />
-          <div className="w-full flex center mt-5 gap-4">
-            <button
-              className="btn-orange px-4 py-2 tracking-widest flex center gap-1"
-              onClick={() => {
-                onChange(selectSkills);
-              }}
-            >
-              {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
-            </button>
-            <button
-              className="btn-orange-outline px-4 py-2 "
-              onClick={() => {
-                onClose();
-                setSelectSkills(defaulsSkills);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        
+          >
+            {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
+          </button>
+          <button
+            className="btn-orange-outline px-4 py-2 "
+            onClick={() => {
+              onClose();
+              setSelectSkills(defaulsSkills);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1327,7 +1401,9 @@ const ProfileEducationModal = ({
               const updatedData = {
                 ...data,
                 percentage: data["percentage"]
-                  ? `${data["percentage"].replace(/%|cgpa/gi, "").trim()} ${marksTypeItems[marksType].symbol}`
+                  ? `${data["percentage"].replace(/%|cgpa/gi, "").trim()} ${
+                      marksTypeItems[marksType].symbol
+                    }`
                   : "",
               };
               onChange(updatedData);
@@ -1404,7 +1480,9 @@ const ProfilePersonalDetailsModal = ({
                     />
                     {/* Error message for Full Name */}
                     {meta.touched && meta.error && (
-                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                      <div className="text-[0.7rem] text-red-500">
+                        {meta.error}
+                      </div>
                     )}
                   </div>
                 )}
@@ -1426,7 +1504,9 @@ const ProfilePersonalDetailsModal = ({
                     />
                     {/* Error message for Email */}
                     {meta.touched && meta.error && (
-                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                      <div className="text-[0.7rem] text-red-500">
+                        {meta.error}
+                      </div>
                     )}
                   </div>
                 )}
@@ -1453,7 +1533,9 @@ const ProfilePersonalDetailsModal = ({
                     />
                     {/* Error message for Mobile */}
                     {meta.touched && meta.error && (
-                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                      <div className="text-[0.7rem] text-red-500">
+                        {meta.error}
+                      </div>
                     )}
                   </div>
                 )}
@@ -1474,7 +1556,9 @@ const ProfilePersonalDetailsModal = ({
                     />
                     {/* Error message for Gender */}
                     {meta.touched && meta.error && (
-                      <div className="text-[0.7rem] text-red-500">{meta.error}</div>
+                      <div className="text-[0.7rem] text-red-500">
+                        {meta.error}
+                      </div>
                     )}
                   </div>
                 )}
