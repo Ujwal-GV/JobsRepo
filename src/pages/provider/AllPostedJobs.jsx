@@ -16,6 +16,7 @@ import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
 import moment from 'moment/moment';
 import dayjs from 'dayjs';
+import { FaCheck } from 'react-icons/fa';
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
@@ -334,7 +335,48 @@ const AllPostedJobs = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p>
+                      {/* <p classNmae="text-gray-600 mt-1">{applicant.education_details.qualification === jobApplicationData?.qualification ? <><FaCheck className='text-green-500' />Qualification matched</> : applicant.education_details.qualification}</p> */}
+                      {/* <p className="text-gray-600 mt-1">Qualification: {applicant.education_details.qualification || "Not mentioned"}</p> */}
+
+                      <div className="mt-3 mb-2">
+                        <h4 className="font-semibold text-gray-700">Qualifications:</h4>
+                        
+                        {applicant?.education_details?.qualification ? (
+                          <>
+                            {typeof applicant.education_details.qualification === 'string' ? (
+                              (() => {
+                                const qualificationsArray = applicant?.education_details?.qualification.split(',').map(q => q.trim());
+
+                                console.log("Arr",qualificationsArray);
+                                const jobArray = jobApplicationData?.job?.qualification;
+                                console.log("Job Arr", jobArray.length);
+                                
+                                const matchedOnes = qualificationsArray.filter(q =>
+                                jobArray.includes(q)
+                                ).length;
+
+                                const totalQualifications = jobArray.length;
+
+                                return matchedOnes > 0 ? (
+                                  <span className="flex items-center space-x-2">
+                                    <FaCheck className="rounded-full p-[3px] bg-green-500" />
+                                    <p className="text-sm text-gray-600 mt-3">Qualification matched</p>
+                                  </span>
+                                ) : (
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    No qualifications matched
+                                  </p>
+                                );
+                              })()
+                            ) : (
+                              <p className="text-sm text-gray-500">Qualifications are not in a valid format.</p>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-sm text-gray-500">No qualifications listed</p>
+                        )}
+                      </div>
+
                       <div className="mt-3 mb-2">
                         <h4 className="font-semibold text-gray-700">Skills:</h4>
                         {applicant.profile_details.skills && applicant.profile_details.skills.length > 0 ? (
