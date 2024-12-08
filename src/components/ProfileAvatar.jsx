@@ -122,6 +122,7 @@ const ProfileAvatar = ({ url = "" ,onChange=()=>{} }) => {
         onChange={handleChange}
         disabled={loading}
         style={{ width: "100%", height: "100%" }}
+        
       >
         {imageUrl ? (
           <div className="w-full h-full relative flex center">

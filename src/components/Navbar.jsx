@@ -173,7 +173,7 @@ const Navbar = () => {
                 localStorage.removeItem("authToken");
                 sessionStorage.removeItem("location");
                 toast.success("Logout Successfully!!");
-              navigate("/user/login",{ replace: true });
+                navigate("/user/login",{ replace: true });
               }}
             >
               OK

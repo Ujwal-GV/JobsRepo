@@ -48,7 +48,7 @@ const JobApplicatioWithSimilarApplication = () => {
 
       console.log(profileData)
 
-      if (profileData?.saved_ids?.jobs?.find((id) => id === jobApplicationId)) {
+      if (profileData?.saved_info?.jobs?.find((id) => id === jobApplicationId)) {
         setSaved(true);
       }
       if (
