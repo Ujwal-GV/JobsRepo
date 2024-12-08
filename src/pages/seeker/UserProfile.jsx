@@ -498,7 +498,7 @@ const UserProfile = () => {
             {/* BreadCrumbs */}
 
             {/* Avatar and PersonalDetails */}
-            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-5  h-fit mx-auto ">
+            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-5  h-fit mx-auto pt-4">
               <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
                 <ProfileAvatar
                   url={profileImg}
