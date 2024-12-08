@@ -33,6 +33,9 @@ const AppSavedListPage = () => {
     return res.data;
   };
 
+  console.log(savedList)
+
+  console.log(totalData_pagination)
   
 
   const { isLoading, isFetching, isError, error, data } = useQuery({
@@ -56,6 +59,7 @@ const AppSavedListPage = () => {
     
     const removedData =  savedList?.filter((sData)=>sData?.saved_app_info?.job_id !== jobId)
     setSavedList((prev)=>[...removedData])
+    alert(Removed)
 
   }
 
@@ -75,21 +79,10 @@ const AppSavedListPage = () => {
 
     return (
       <MainContext>
-        <div className="w-full min-h-[90vh] bg-slate-100 p-3 md:px-6 md:py-4">
+        <div className="w-full min-h-[90vh] bg-slate-50 p-3 md:px-6 md:py-4">
           {/* Body Wrapper */}
 
-          <div className="w-full flex center h-8">
-            <CustomBreadCrumbs
-              items={[
-                {
-                  path: "/",
-                  icon: <CiHome />,
-                  title: "Home",
-                },
-                { title: "Saved Jobs" },
-              ]}
-            />
-          </div>
+         
 
           <div className="w-full md:w-[99%] lg:w-[90%] mx-auto h-full">
             {/* Job Application Status */}
@@ -104,7 +97,7 @@ const AppSavedListPage = () => {
 
             {/* Main content area */}
 
-            <div className="bg-white min-h-[70vh] w-full p-4 mt-2 rounded-md">
+            <div className="bg-white  w-full p-4 mt-2 rounded-md">
               {
                 (isLoading || isFetching) ?   <>
                         

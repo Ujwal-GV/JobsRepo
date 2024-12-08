@@ -37,7 +37,6 @@ function ForgotPassword() {
         {({ handleChange, handleBlur, values, touched, errors, isValid }) => (
           <Form className="bg-white w-[90%] md:w-[400px] shadow-lg shadow-black rounded-lg p-2 px-4 md:px-6">
             <div className="mt-4 flex justify-center items-center">
-              {/* <img src="Logo.png" alt="Logo" className="w-12 h-12 mr-4" /> */}
               <span className="text-2xl md:text-2xl font-bold">Forgot Password</span>
             </div>
             <hr className="m-4" />

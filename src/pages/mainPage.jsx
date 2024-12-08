@@ -179,7 +179,7 @@ function MainPage() {
           title="Explore jobs in top companies"
           onViewClick={() => navigate("/user/companies")}
         >
-          <AdvancedSwiper>
+          <AdvancedSwiper key={"companies"}>
             {companyDataLoading ? (
               [...Array(5)].map((data) => (
                 <SwiperSlide key={data}>

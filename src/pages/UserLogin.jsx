@@ -103,7 +103,7 @@ function UserLogin() {
                 disabled={SeekerLoginMutation.isPending}
                 type="submit"
                 className={
-                  "mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base " +
+                  "mb-4 flex mx-auto center gap-1 w-[80%] p-3 btn-dark rounded-lg text-base " +
                   (!isValid && "cursor-not-allowed")
                 }
               >

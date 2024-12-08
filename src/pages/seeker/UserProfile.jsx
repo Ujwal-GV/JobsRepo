@@ -6,7 +6,7 @@ import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
-import { AutoComplete, DatePicker, message, Select, Spin } from "antd";
+import { AutoComplete, DatePicker, message, Progress, Select, Spin } from "antd";
 import "antd/dist/reset.css";
 import dayjs from "dayjs";
 import { FaPhoneAlt, FaSave } from "react-icons/fa";
@@ -93,8 +93,12 @@ const UserProfile = () => {
         return { ...IntershipDetails };
       });
     }
+
+    calculateProfileCompletePercentage()
   }, [profileData]);
 
+  const [profileFilledPercentage,setProfileFilledPercentage] = useState(0)
+  
   const [profileSkills, setProfileSkills] = useState([]);
 
   const [profileEducationDetails, setEducationDetails] = useState({
@@ -118,6 +122,43 @@ const UserProfile = () => {
   const [intershipDetails, setIntershipDetails] = useState({});
 
   const [profileSummary, setProfileSummary] = useState("");
+
+  const calculateProfileCompletePercentage=()=>{
+
+    const totalFields = 10;
+
+    let filledFields = 2;
+
+    if( personalDetails.gender && personalDetails.gender !=="")
+    {
+      filledFields++;
+    }
+    if( personalDetails.mobile && personalDetails.mobile !=="")
+    {
+      filledFields++;
+    }
+    if(profileSummary && profileSummary !=="")
+    {
+      filledFields++;
+    }
+    if(profileImg && profileImg !=="")
+    {
+        filledFields++;
+    }
+    if(Object.keys(listOfIntership).length>0)
+    {
+        filledFields++;
+    }
+    if(profileSkills.length>0)
+    {
+      filledFields++;
+    }
+
+    const filledPercentage = (filledFields / totalFields) * 100;
+
+    setProfileFilledPercentage(filledPercentage)
+  }
+
 
   const handleSkillsChange = (val) => {
     profileSkillsMutation.mutate(val);
@@ -407,25 +448,14 @@ const UserProfile = () => {
   {
     return (
       <MainContext>
-        <div className="w-full min-h-screen bg-slate-50 p-5">
-          <div className="w-full min-h-screen  relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
+        <div className="w-full min-h-screen bg-slate-50 md:p-5">
+          <div className="w-full min-h-screen  relative overflow-x-hidden mx-auto rounded-lg  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-white pb-5 px-2 md:px-0 font-outfit ">
             {/* BreadCrumbs */}
   
-            <div className="w-full flex center py-3 pt-2   bg-slate-100">
-              <CustomBreadCrumbs
-                items={[
-                  {
-                    path: "/",
-                    icon: <CiHome />,
-                    title: "Home",
-                  },
-                  { title: "Profile", icon: <CiUser /> },
-                ]}
-              />
-            </div>
   
             {/* Avatar and PersonalDetails */}
-            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-2  h-fit mx-auto">
+            <div className="flex center flex-col w-[95%] md:flex-row md:w-full gap-5  h-fit mx-auto ">
+
               <div className="w-[200px] h-[200px] flex center relative rounded-full  bg-white">
                 <ProfileAvatar
                   url={profileImg}
@@ -435,22 +465,28 @@ const UserProfile = () => {
   
               {/* Profile Application Deatils */}
   
-              <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative">
+              <div className="bg-white w-full md:w-[500px] h-full  p-3 md:p-7 rounded-xl relative border border-slate-200">
                 <MdEdit
-                  className="absolute top-2 right-2  cursor-pointer"
+                  className="absolute top-2 right-2  cursor-pointer text-[0.8rem] md:text-[0.96rem]"
                   onClick={() => {
                     setPersonalDetailsModalOpen(true);
                     freezeBody();
                   }}
                 />
-                <h1>{personalDetails.fullName}</h1>
+                 
+                 <div className="absolute bottom-[101%] md:bottom-1 -right-1 md:right-1  flex flex-col items-center">
+                   <ProfileProgress profileFilledPercentage={profileFilledPercentage}/>
+                   <span className="text-[0.6rem]">{profileFilledPercentage < 100 && "Complete Profile"}</span>
+                 </div>
+
+                <h1> <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.fullName}</span></h1>
                 <h1 className="flex justify-start items-center gap-1">
-                  <MdEmail className="text-orange-600" />
-                  {personalDetails.email}
+                  <MdEmail className="text-orange-600 flex-shrink-0" />
+                  <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.email}</span>
                 </h1>
                 <h1 className="flex justify-start items-center gap-1">
                   <FaPhoneAlt className="text-orange-600" />
-                  {personalDetails.mobile || "Mobile"}
+                  <span className="text-[0.85rem] md:text-[1rem]">{personalDetails.mobile || "Mobile"}</span>
                 </h1>
                 <h1 className="flex justify-start items-center gap-1">
                   {personalDetails.gender.toLowerCase() === "male" && (
@@ -494,7 +530,7 @@ const UserProfile = () => {
                 onClick={()=>navigate("/user/company/following")}
               />
             </div>
-            <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2">
+            <div className="w-full   max-w-[90%] md:w-full mx-auto mt-4 flex flex-col  gap-2 ">
               {/* Section 1 */}
   
               {/* <div className="part-1 flex-1"> */}
@@ -509,7 +545,7 @@ const UserProfile = () => {
                 >
                   <div className="flex flex-wrap gap-1 w-full pb-2 ">
                     {!profileSummary ? (
-                      <div className="w-full gap-1 center flex">
+                      <div className="w-full gap-1 center flex text-[0.8rem]">
                         <TbMoodEmptyFilled /> Add Summary About Your Profile
                       </div>
                     ) : (
@@ -533,7 +569,7 @@ const UserProfile = () => {
                 >
                   <div className="flex flex-wrap gap-1 w-full md:max-h-[100px] custom-scroll-nowidth overflow-auto">
                     {profileSkills.length === 0 ? (
-                      <div className="w-full gap-1 center flex">
+                      <div className="w-full gap-1 center flex text-[0.8rem]">
                         <TbMoodEmptyFilled /> No Skills Selected
                       </div>
                     ) : (
@@ -571,7 +607,7 @@ const UserProfile = () => {
                         key={"edu-card"}
                       />
                     ) : (
-                      <div className="flex center w-full ">
+                      <div className="flex center w-full text-[0.8rem]">
                         <TbMoodEmptyFilled /> No Data Found
                       </div>
                     )}
@@ -614,7 +650,7 @@ const UserProfile = () => {
                         ))}
                       </>
                     ) : (
-                      <div className="flex center w-full ">
+                      <div className="flex center w-full text-[0.8rem]">
                         <TbMoodEmptyFilled /> No Data Found
                       </div>
                     )}
@@ -731,7 +767,7 @@ const DeatilsBadge = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={
-        "w-[120px] h-[120px] sm:w-[150px] sm:h-[150pxx] relative cursor-pointer  flex-shrink-0 my-1 md:!my-0  center flex gap-1 border-[1px] bg-white rounded-3xl px-3  mx-2 flex-col " +
+        "w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] relative cursor-pointer  flex-shrink-0 my-1 md:!my-0  center flex gap-1 border-[1px] bg-white rounded-3xl px-3  mx-2 flex-col " +
         (hovered && " !border-orange-600")
       }
       onClick={onClick}
@@ -748,7 +784,7 @@ const DeatilsBadge = ({
 };
 
 const ProfileInputWrapper = ({ children }) => (
-  <div className="flex flex-col mt-3 center w-full">
+  <div className="flex flex-col mt-3 center w-full border border-slate-200 rounded-xl p-4">
     <div className="w-full ">{children}</div>
   </div>
 );
@@ -903,6 +939,37 @@ const InternShipCard = ({
         {profileIntershipDetails.startDate} , {profileIntershipDetails.endDate}
       </h1>
     </div>
+  );
+};
+
+// Profile Progress
+const ProfileProgress = ({ profileFilledPercentage }) => {
+  
+
+  const getProgressColor = (percentage) => {
+    if (percentage === 100) {
+      return '#52c41a'; // Green for 100%
+    }
+    if (percentage >= 75) {
+      return '#faad14'; // Orange for 75% and above
+    }
+    if (percentage >= 50) {
+      return '#eb2f96'; // Pink for 50% to 74%
+    }
+    return '#f5222d'; // Red for below 50%
+  };
+
+  return (
+    <Progress
+      type="dashboard"
+      steps={8}
+      percent={profileFilledPercentage}
+      trailColor="rgba(0, 0, 0, 0.06)"
+      strokeWidth={20}
+      showInfo={true}
+      size={"small"}
+      strokeColor={getProgressColor(profileFilledPercentage)} 
+    />
   );
 };
 

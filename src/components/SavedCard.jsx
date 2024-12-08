@@ -42,6 +42,9 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
     companyData = {},
   } = data || {};
 
+
+  
+
   const { profileData } = useContext(AuthContext);
 
   useEffect(() => {
@@ -58,15 +61,15 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
     <div
       className="w-full md:max-w-full relative md:mx-auto rounded-xl h-[140px] p-2 border border-slate-300  primary-shadow-hover  font-outfit flex flex-col gap-1  justify-between items-center cursor-pointer"
       onClick={(e) => {
-        navigate(`/user/job-post/${data?.job_id}`);
+        navigate(`/user/job-post/${saved_app_info?.job_id}`);
       }}
     >
       <div className="flex justify-between gap-1 items-center w-full flex-1 px-4">
         <div className="flex flex-1 flex-col">
           <h5 className="text-[1rem]">
-            {data?.title?.length > 30
-              ? data?.title?.slice(0, 30) + "..."
-              : data?.title}
+            {saved_app_info?.title?.length > 30
+              ? saved_app_info?.title?.slice(0, 30) + "..."
+              : saved_app_info?.title}
           </h5>
           <h6 className="text-[0.9rem] font-light">
             {companyData?.company_name?.length > 30
@@ -75,22 +78,22 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
           </h6>
           <span className="text-[0.8rem] flex justify-start items-center">
             <LiaRupeeSignSolid />{" "}
-            {data?.package?.disclosed ? (
+            {saved_app_info?.package?.disclosed ? (
               <>
-                {data?.package?.min +
+                {saved_app_info?.package?.min +
                   " - " +
-                  data?.package?.max}
+                  saved_app_info?.package?.max}
               </>
             ) : (
               "Not Disclosed"
             )}
           </span>
-          {data?.experience && (
+          {saved_app_info?.experience && (
             <span className="text-[0.8rem] flex justify-start items-center gap-1">
               <IoMdBriefcase />{" "}
-              {data?.experience?.min +
+              {saved_app_info?.experience?.min +
                 " - " +
-                data?.experience?.max +
+                saved_app_info?.experience?.max +
                 " yrs"}{" "}
             </span>
           )}
@@ -105,7 +108,7 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
       </div>
       <div className="flex justify-end gap-2 items-center w-full text-[0.8rem]">
         {appliedIds?.find(
-          (idData) => idData?.jobId === data?.job_id
+          (idData) => idData?.jobId === saved_app_info?.job_id
         ) && (
           <CustomBadge text="Applied" bgcolor="#E2F7C5" text_color="green" />
         )}
@@ -113,7 +116,7 @@ const SavedCard = ({ data  ,onDelete =()=>{} }) => {
           className="p-1 bg-orange-600 rounded-full text-white flex center gap-1"
           onClick={(e) => {
             e.stopPropagation();
-            unsavePostMutation.mutate(data?.job_id);
+            unsavePostMutation.mutate(saved_app_info?.job_id);
           }}
         >
           {unsavePostMutation.isPending && (
