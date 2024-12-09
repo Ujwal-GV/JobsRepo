@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import { FaCheck, FaCheckCircle, FaCross } from 'react-icons/fa';
 import { AiFillCheckCircle, AiFillCloseCircle } from 'react-icons/ai';
 import { BiDotsVerticalRounded } from "react-icons/bi";
+import { MdRefresh } from 'react-icons/md';
 
 
 const AllPostedJobs = () => {
@@ -76,7 +77,9 @@ const AllPostedJobs = () => {
   const { 
     isLoading: jobsDataLoading, 
     data: applicantsData, 
-    error: applicantsError 
+    error: applicantsError,
+    refetch: refetchApplicants,
+    isFetching: applicantsFetching
   } = useQuery({
     queryKey: ['applicants', jobApplicationId, currentPage],
     queryFn: () => fetchApplicants(jobApplicationId, currentPage, limit),
@@ -121,6 +124,10 @@ const AllPostedJobs = () => {
     }
   };  
 
+  const handleRefreshCandidates = () => {
+    refetchApplicants();
+  }
+
   useEffect(() => {
     if (applicantsData && applicantsData.job && applicantsData.job.User_info) {
       const applicants = applicantsData.job.User_info;
@@ -131,6 +138,7 @@ const AllPostedJobs = () => {
   if (isLoading || isFetching) {
     return <Loading />;
   }
+  
   if (isError) {
     toast.error(error.response.data.message);
   }
@@ -232,8 +240,8 @@ const AllPostedJobs = () => {
                   <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Qualifications</h1>
                   {qualification && qualification.length > 0 ? (
                     qualification.map((qualification, index) => (
-                      <div key={index} className="mb-2">
-                        <KeyHighlightsListItem value={qualification} />
+                      <div key={index} className="mb-2 text-sm lg:text-md md:text-md">
+                        <KeyHighlightsListItem marginBottom={1} value={qualification} />
                       </div>
                     ))
                   ) : (
@@ -246,8 +254,8 @@ const AllPostedJobs = () => {
                   <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Specializations</h1>
                   {specification && specification.length > 0 ? (
                     specification.map((specification, index) => (
-                      <div key={index} className="mb-2">
-                        <KeyHighlightsListItem value={specification} />
+                      <div key={index} className="mb-2 text-sm lg:text-md md:text-md">
+                        <KeyHighlightsListItem marginBottom={1} value={specification} />
                       </div>
                     ))
                   ) : (
@@ -260,8 +268,8 @@ const AllPostedJobs = () => {
                   <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Required Skills</h1>
                   {must_skills && must_skills.length > 0 ? (
                     must_skills.map((mustSkill, index) => (
-                      <div key={index} className="mb-2">
-                        <KeyHighlightsListItem value={mustSkill} />
+                      <div key={index} className="mb-2 text-sm lg:text-md md:text-md">
+                        <KeyHighlightsListItem marginBottom={1} value={mustSkill} />
                       </div>
                     ))
                   ) : (
@@ -274,8 +282,8 @@ const AllPostedJobs = () => {
                   <h1 className="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Other Skills</h1>
                   {other_skills && other_skills.length > 0 ? (
                     other_skills.map((otherSkill, index) => (
-                      <div key={index} className="mb-2">
-                        <KeyHighlightsListItem value={otherSkill} />
+                      <div key={index} className="mb-2 text-sm lg:text-md md:text-md">
+                        <KeyHighlightsListItem marginBottom={1} value={otherSkill} />
                       </div>
                     ))
                   ) : (
@@ -328,21 +336,30 @@ const AllPostedJobs = () => {
         </div>
 
         {/* Right Side: Applicants View */}
-        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll flex flex-col">
+        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll flex flex-col relative">
           <h1 className="text-2xl font-bold mb-5 text-gray-800">Applicants</h1>
-          {jobsDataLoading ? (
+          <button
+            onClick={handleRefreshCandidates}
+            className="absolute mb-4 px-2 py-2 right-6 text-gray-800 rounded-full flex items-center gap-2 hover:bg-gray-200 transition-all"
+          >
+            <MdRefresh className="text-xl" />
+          </button>
+          {jobsDataLoading || applicantsFetching ? (
             [1, 2, 3].map((d) => (
-              <div
-                key={d}
-                className="flex-1 bg-gray-200 mb-2 w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-lg gap-2"
-              >
-                <JobCardSkeleton id={d} />
+              <div className="w-full flex flex-col items-center">
+                {[1, 2, 3].map((d) => (
+                  <div key={d} className="flex grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 bg-gray-200 pr-6 mx-2 w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-lg gap-2">
+                    <JobCardSkeleton id={d} />
+                    <JobCardSkeleton id={d} />
+                    <JobCardSkeleton id={d} />
+                  </div>
+                ))}
               </div>
             ))
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-4 text-sm">
               {applicants && applicants.length > 0 ? (
-                <>
+                <>                
                   {applicants.map((applicant) => (
                     <div key={applicant.user_id} className="p-4 bg-white rounded-lg shadow-lg relative">
                       <div className="w-[50px] h-[50px] rounded-full bg-gray-200 overflow-hidden shadow-md">
@@ -352,14 +369,15 @@ const AllPostedJobs = () => {
                       />
                       {reportClicked && (
                           <div
-                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                            className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50"
                             onClick={closeModal}
                           >
                             <div
-                              className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full"
+                              className="bg-white lg:text-md md:text-md mx-4 p-4 rounded-lg shadow-lg max-w-sm w-[80%]"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <h3 className="text-lg font-semibold text-gray-800 mb-4">Report User</h3>
+                              <h3 className="text-lg center font-semibold text-gray-800 mb-4">Report User</h3>
+                              <hr className='w-[90%] mx-auto mb-2' />
                               <p className="text-sm text-gray-600 mb-4">
                                 Are you sure you want to report this user? Please choose a reason.
                               </p>
@@ -381,7 +399,7 @@ const AllPostedJobs = () => {
                           </div>
                         )}
                         <img
-                          src={applicant.profile_details.profileImg}
+                          src={applicant?.profile_details?.profileImg ? applicant.profile_details.profileImg : "img"}
                           alt="Profile"
                           className="w-full h-full object-cover"
                         />
@@ -390,8 +408,7 @@ const AllPostedJobs = () => {
 
                       {applicant?.education_details?.qualification ? (
                         <>
-                          {typeof applicant.education_details.qualification === 'string' ? (
-                            (() => {
+                          {(() => {
                               const qualificationsArray = applicant?.education_details?.qualification.split(',').map(q => q.trim());
                               const jobArray = jobApplicationData?.job?.qualification;
 
@@ -412,10 +429,7 @@ const AllPostedJobs = () => {
                                   <p className="text-xs text-gray-600">No Qualification matched</p>
                                 </span>
                               );
-                            })()
-                          ) : (
-                            <p className="text-xs text-gray-500">Qualifications are not in a valid format.</p>
-                          )}
+                            })()}
                         </>
                       ) : (
                         <p className="text-xs text-gray-500">No qualifications listed</p>

@@ -171,7 +171,16 @@ const ViewCandidate = () => {
                             <h1 className="text-xl font-semibold">{applicant?.name || "N/A"}</h1>
                             <div className="relative">
                                 <div className={`${status.includes("Contact Viewed") ? '' : 'blur'}`}>
-                                    <a href={`mailto:${applicant?.email}`}>
+                                    <a 
+                                        href={`mailto:${applicant?.email}`} 
+                                        className={`${!status.includes("Contact Viewed") ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                                        onClick={(e) => {
+                                                if(!status.includes("Contact Viewed")) {
+                                                    e.preventDefault();
+                                                }
+                                            }
+                                        }
+                                    >
                                         <h1 className="flex items-center gap-2 text-sm text-gray-600">
                                             <MdEmail className="text-orange-600" />
                                             {applicant?.email || "Not provided"}
