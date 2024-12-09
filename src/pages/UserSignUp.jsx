@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, ErrorMessage } from "formik";
 import { MdEmail } from "react-icons/md";
 import { FaKey, FaUser } from "react-icons/fa";
@@ -14,6 +14,9 @@ function UserSignUp() {
   const navigate = useNavigate();
   const [otpSent, setOtpSent] = useState(false);
   const [otpValidated, setOtpValidated] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [triesLeft, setTriesLeft] = useState(3);
+  const [cooldown, setCooldown] = useState(false);
 
   const sendOtpMutation = useMutation({
     mutationKey: "send-user-otp",
@@ -21,9 +24,16 @@ function UserSignUp() {
       const res = await axiosInstance.post("/user/send-otp", { email });
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("OTP sent to your email!");
       setOtpSent(true);
+      setTimer(60);
+      setTriesLeft(data.triesLeft);
+      if (data.triesLeft === 0) {
+        setCooldown(true);
+      } else {
+        setCooldown(false);
+      }
     },
     onError: (error) => {
       const { message } = error?.response?.data || {};
@@ -65,6 +75,23 @@ function UserSignUp() {
     },
   });
 
+  useEffect(() => {
+    let interval = 0;
+    if (otpSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [otpSent, timer]);
+
+  const handleResendOtp = (email) => {
+    setOtpSent(false);
+    sendOtpMutation.mutate(email);
+  }
+
   return (
     <div className="h-screen w-full center font-outfit">
       <Formik
@@ -105,14 +132,14 @@ function UserSignUp() {
                 component="p"
                 className="text-red-500 text-sm"
               />
-            {!otpSent && (
+            {!otpSent && !cooldown && (
                 <button
                   type="button"
                   onClick={() => sendOtpMutation.mutate(values.email)}
                   className="mt-4 p-3 flex mx-auto center rounded-lg btn-dark w-[80%]"
                 >
                   Send OTP
-                {(sendOtpMutation.isPending ) && (
+                {(sendOtpMutation.isPending || sendOtpMutation.isSuccess ) && (
                   <LuLoader2 className="animate-spin-slow" />
                 )}
                 </button>
@@ -133,6 +160,21 @@ function UserSignUp() {
                   icon={<FaKey />}
                   customClass={touched.otp && errors.otp ? "input-error" : ""}
                 />
+                <div className="flex justify-end">
+                  {timer === 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleResendOtp(values.email)}
+                      className="mt-3 py-1 lg:py-2 md:py-2 flex center justify-end text-sm bg-black rounded-lg text-white w-[30%] lg:w-[25%] md:w-[25%]"
+                    >
+                    Resend OTP
+                  </button>
+                  ) : (
+                    <p className="text-right mt-3 text-sm text-red-500">
+                      Resend OTP in {timer}s
+                    </p>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() =>
