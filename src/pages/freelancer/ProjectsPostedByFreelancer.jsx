@@ -91,7 +91,7 @@ const ProjectsPostedByFreelancer = () => {
     }
 
     return (
-        <div className='flex flex-col w-full min-h-screen mx-auto bg-gray-100 py-3 px-3 md:py-3 md:px-6 lg:px-3 gap-10'>
+        <div className='flex flex-col w-full min-h-screen mx-auto bg-gray-100 py-3 md:py-3 md:px-6 lg:px-3 gap-10'>
             <div className="w-full lg:w-[55%] job-apply-section flex flex-col mx-auto relative">
                 <div className="w-full flex center py-3 pt-2 bg-slate-100">
                     <CustomBreadCrumbs
@@ -106,7 +106,7 @@ const ProjectsPostedByFreelancer = () => {
                     />
                 </div>
 
-                <div className="w-full rounded-xl h-fit bg-white hover: cursor-pointer p-7 font-outfit">
+                <div className="w-full rounded-xl h-fit bg-white hover: cursor-pointer p-5 font-outfit">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-5 gap-3">
                     <h1 className="text-2xl font-bold text-gray-800">Projects Posted ({freelancerData?.length})</h1>
 

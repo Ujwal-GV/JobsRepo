@@ -121,7 +121,7 @@ function MainPageFreelancer() {
           <h2 className="text-xl lg:text-2xl md:text-2xl mx-auto font-semibold text-center flex-grow">Projects Posted by You</h2>
           <button
             onClick={handlePostClick}
-            className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
+            className="bg-orange-500 text-white px-4 py-3 lg:px-6 lg:py-3 md:px-6 md:py-3 rounded-full hover:bg-orange-600 transition duration-200"
           >
             Post a Project
           </button>
@@ -177,7 +177,7 @@ function MainPageFreelancer() {
                 <div className="flex flex-row gap-2 mt-2 lg:mt-0 lg:ml-4">
                   <button
                     title="View"
-                    className="px-3 py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
+                    className="px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
                     onClick={() => navigate(`/freelancer/project/${project_id}`)}
                   >
                     <FaEye className="mr-1" />
@@ -186,7 +186,7 @@ function MainPageFreelancer() {
 
                   <button
                     title="Delete"
-                    className="px-3 py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
+                    className="px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
                     onClick={() => handleProjectDelete(project_id)}
                   >
                     {mutation.isPending && mutation.variables === project_id ? (

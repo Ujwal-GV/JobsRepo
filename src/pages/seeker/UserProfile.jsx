@@ -784,6 +784,7 @@ const UserProfile = () => {
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfileSummaryModal
                 open={summaryModalOpen}
+                saveLoading={profileSummaryMutation.isPending}
                 onClose={() => {
                   setSummaryModalOpen(false);
                   freeBody();
@@ -798,6 +799,7 @@ const UserProfile = () => {
             <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
               <ProfileIntershipModal
                 open={intershipModalOpen}
+                saveLoading={profileIntershipMutation.isPending}
                 onClose={() => {
                   setInternShipModalOpen(false);
                   freeBody();
@@ -1601,8 +1603,10 @@ const ProfileIntershipModal = ({
   addInterShipData = () => {},
   value,
   onDeleteInternship = () => {},
+  saveLoading=false,
 }) => {
   const [data, setData] = useState({ ...value });
+  const [loading, setLoading] = useState(false);
 
   return (
     <div
@@ -1701,10 +1705,10 @@ const ProfileIntershipModal = ({
               <div className="w-full mt-4 center gap-3">
                 <button
                   type="submit"
-                  className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                  className="btn-orange px-3 border py-1 border-transparent tracking-widest flex gap-1"
                 >
-                  Save
-                </button>
+                    {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
+                  </button>
                 <button
                   type="button"
                   className="btn-orange-outline px-3 py-1"
@@ -1729,7 +1733,9 @@ const ProfileSummaryModal = ({
   onClose = () => {},
   value,
   onSummaryChange = () => {},
+  saveLoading=false,
 }) => {
+  const [loading, setLoading] = useState(false);
   return (
     <div
       className={
@@ -1778,9 +1784,9 @@ const ProfileSummaryModal = ({
               <div className="w-full mt-4 center gap-3">
                 <button
                   type="submit"
-                  className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                  className="btn-orange px-3 border py-1 border-transparent tracking-widest flex gap-1"
                 >
-                  Save
+                  {saveLoading && <LuLoader2 className="animate-spin-slow " />} Save
                 </button>
                 <button
                   type="button"

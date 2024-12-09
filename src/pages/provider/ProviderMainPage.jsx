@@ -99,7 +99,7 @@ function ProviderMainPage() {
           <h2 className="text-xl lg:text-2xl md:text-2xl mx-auto font-semibold text-center flex-grow">Jobs Posted by You</h2>
           <button
             onClick={handlePostJobClick}
-            className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-200"
+            className="bg-orange-500 text-white px-4 py-3 lg:px-6 lg:py-3 md:px-6 md:py-3 rounded-full hover:bg-orange-600 transition duration-200"
           >
             Post a Job
           </button>
@@ -115,7 +115,7 @@ function ProviderMainPage() {
           </button>)}
         </div>
         <hr className="mt-5 mb-2 border-gray" />
-        <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-2">
+        <div className="flex flex-col gap-4 h-[620px] overflow-y-auto custom-scroll p-1">
         {jobsDataLoading ? (
           [1, 2, 3, 4, 5].map((d) => (
             <div key={d} className="flex-1 bg-white w-full flex items-center justify-center h-auto rounded-lg animate-pulse shadow-md">
@@ -146,16 +146,16 @@ function ProviderMainPage() {
               <div className="flex flex-row gap-2 mt-2 lg:mt-0 lg:ml-4">
                 <button
                   title="View"
-                  className="px-3 py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
+                  className="px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg bg-black text-white rounded-lg text-sm flex items-center hover:bg-gray-800 transition duration-200"
                   onClick={() => navigate(`/provider/all-jobs/${job?.job_id}`)}
                 >
-                  <FaEye className="mr-1" />
+                  <FaEye className="mr-1 text-[0.7rem] lg:text-sm md:text-sm" />
                   View
                 </button>
 
                 <button
                   title="Delete"
-                  className="px-3 py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
+                  className="px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
                   onClick={() => handlePostDelete(job?.job_id)}
                 >
                   {mutation && mutation.variables === job.job_id ? (
