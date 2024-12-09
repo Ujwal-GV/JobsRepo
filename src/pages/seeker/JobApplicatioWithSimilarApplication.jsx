@@ -12,7 +12,7 @@ import Loading from "../Loading";
 import toast from "react-hot-toast";
 import { LuLoader2 } from "react-icons/lu";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Steps } from "antd";
+import { message, Steps } from "antd";
 import { CustomSkeleton } from "./CompanyAllPosts";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
 
@@ -227,7 +227,7 @@ const JobApplicatioWithSimilarApplication = () => {
       }
     } else {
       if(profileData?.user_id) {
-        toast.error("Please complete your profile to save or unsave this post.");
+        message.warning("Kindly complete your profile to save or unsave this post.");
         navigate("/user/profile");
       } else {
         toast.error("Please log in to save this job.")
@@ -245,7 +245,7 @@ const JobApplicatioWithSimilarApplication = () => {
       }
     } else {
       if(profileData?.user_id) {
-        toast.error("Please complete your profile to save or unsave this post.");
+        message.warning("Kindly complete your profile in order to apply for this job.");
         navigate("/user/profile");
       } else {
         toast.error("Please log in to apply for this job.");
