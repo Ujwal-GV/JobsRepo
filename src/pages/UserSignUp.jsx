@@ -68,7 +68,7 @@ function UserSignUp() {
   return (
     <div className="h-screen w-full center font-outfit">
       <Formik
-        initialValues={{ email: "", password: "", name: "" }}
+        initialValues={{ email: "", password: "", name: "", confirmPassword: "" }}
         validationSchema={signupValidationSchema}
         onSubmit={(values) => {
           SeekerSignUpMutation.mutate(values);
@@ -188,6 +188,26 @@ function UserSignUp() {
                   />
                   <ErrorMessage
                     name="password"
+                    component="p"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="mb-4 w-full">
+                  <InputBox
+                    key={"confirmPassword"}
+                    name={"confirmPassword"}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Confirm Password"
+                    type="password"
+                    customClass={
+                      touched.confirmPassword && errors.confirmPassword ? "input-error" : ""
+                    }
+                    value={values.confirmPassword}
+                    icon={<FaKey />}
+                  />
+                  <ErrorMessage
+                    name="confirmPassword"
                     component="p"
                     className="text-red-500 text-sm"
                   />
