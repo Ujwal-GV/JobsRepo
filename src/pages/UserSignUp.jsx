@@ -12,6 +12,40 @@ import { LuLoader2 } from "react-icons/lu";
 
 function UserSignUp() {
   const navigate = useNavigate();
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpValidated, setOtpValidated] = useState(false);
+
+  const sendOtpMutation = useMutation({
+    mutationKey: "send-user-otp",
+    mutationFn: async (email) => {
+      const res = await axiosInstance.post("/user/send-otp", { email });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("OTP sent to your email!");
+      setOtpSent(true);
+    },
+    onError: (error) => {
+      const { message } = error?.response?.data || {};
+      toast.error(message || "Failed to send OTP. Try again.");
+    },
+  });
+
+  const verifyOtpMutation = useMutation({
+    mutationKey: "verify-user-otp",
+    mutationFn: async ({ email, otp }) => {
+      const res = await axiosInstance.post("/user/verify-otp", { email, otp });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("OTP validated successfully!");
+      setOtpValidated(true);
+    },
+    onError: (error) => {
+      const { message } = error?.response?.data || {};
+      toast.error(message || "Invalid OTP. Please try again.");
+    },
+  });
 
   // Mutation for Job Seeker SignUp
   const SeekerSignUpMutation = useMutation({
@@ -50,31 +84,12 @@ function UserSignUp() {
                 Registeration
               </span>
             </div>
-
-            {/* Full Name Field */}
-            <div className="mb-4 w-full">
-                <hr className="m-4" />
-              <InputBox
-                key={"name"}
-                name={"name"}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                placeholder="Enter Full Name"
-                type="text"
-                customClass={touched.name && errors.name ? "input-error" : ""}
-                value={values.name}
-                icon={<FaUser />}
-              />
-              <ErrorMessage
-                name="name"
-                component="p"
-                className="text-red-500 text-sm"
-              />
-            </div>
+            <hr className="m-4" />
 
             {/* Email */}
             <div className="mb-4 w-full">
               <InputBox
+                disable={ sendOtpMutation.isSuccess || verifyOtpMutation.isSuccess ||sendOtpMutation.isPending }
                 key={"email"}
                 name={"email"}
                 onBlur={handleBlur}
@@ -90,44 +105,112 @@ function UserSignUp() {
                 component="p"
                 className="text-red-500 text-sm"
               />
+            {!otpSent && (
+                <button
+                  type="button"
+                  onClick={() => sendOtpMutation.mutate(values.email)}
+                  className="mt-4 p-3 flex mx-auto center rounded-lg btn-dark w-[80%]"
+                >
+                  Send OTP
+                {(sendOtpMutation.isPending ) && (
+                  <LuLoader2 className="animate-spin-slow" />
+                )}
+                </button>
+              )}
             </div>
+
+            {/* OTP Validation */}
+            {otpSent && !otpValidated && (
+              <div className="mb-4 w-full">
+                <InputBox
+                  key="otp"
+                  name="otp"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="Enter OTP"
+                  type="text"
+                  value={values.otp}
+                  icon={<FaKey />}
+                  customClass={touched.otp && errors.otp ? "input-error" : ""}
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    verifyOtpMutation.mutate({
+                      email: values.email,
+                      otp: values.otp,
+                    })
+                  }
+                  className="mt-4 p-3 flex mx-auto center rounded-lg btn-dark w-[80%]"
+                >
+                  Verify OTP
+                  {(verifyOtpMutation.isPending ) && (
+                  <LuLoader2 className="animate-spin-slow" />
+                )}
+                </button>
+              </div>
+            )}
 
             {/* Password */}
-            <div className="mb-4 w-full">
-              <InputBox
-                key={"password"}
-                name={"password"}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                placeholder="Enter Password"
-                type="password"
-                customClass={
-                  touched.password && errors.password ? "input-error" : ""
-                }
-                value={values.password}
-                icon={<FaKey />}
-              />
-              <ErrorMessage
-                name="password"
-                component="p"
-                className="text-red-500 text-sm"
-              />
-            </div>
+            {otpValidated && (
+              <>
+                <div className="mb-4 w-full">
+                  <InputBox
+                    key={"name"}
+                    name={"name"}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter Full Name"
+                    type="text"
+                    customClass={touched.name && errors.name ? "input-error" : ""}
+                    value={values.name}
+                    icon={<FaUser />}
+                  />
+                  <ErrorMessage
+                    name="name"
+                    component="p"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="mb-4 w-full">
+                  <InputBox
+                    key={"password"}
+                    name={"password"}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Enter Password"
+                    type="password"
+                    customClass={
+                      touched.password && errors.password ? "input-error" : ""
+                    }
+                    value={values.password}
+                    icon={<FaKey />}
+                  />
+                  <ErrorMessage
+                    name="password"
+                    component="p"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+              </>
+            )}
 
             {/* Submit Button */}
-            <button
-              disabled={SeekerSignUpMutation.isPending}
-              type="submit"
-              className={
-                "mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base " +
-                (!isValid && "cursor-not-allowed")
-              }
-            >
-              Register
-              {SeekerSignUpMutation.isPending && (
-                <LuLoader2 className="animate-spin-slow ml-2" />
-              )}
-            </button>
+            {otpValidated && (
+              <button
+                disabled={SeekerSignUpMutation.isPending}
+                type="submit"
+                className={
+                    "mb-4 flex mx-auto center w-[80%] p-3 btn-dark rounded-lg text-base " +
+                    (!isValid && "cursor-not-allowed")
+                  }
+                >
+                Register
+                {SeekerSignUpMutation.isPending && (
+                  <LuLoader2 className="animate-spin-slow ml-2" />
+                )}
+              </button>
+            )}
             <hr />
             <p className="m-2 text-center text-gray-400 text-sm">
               Already have an account?{" "}
