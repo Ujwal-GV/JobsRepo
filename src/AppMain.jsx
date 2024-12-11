@@ -49,6 +49,7 @@ import ProviderForgotPassword from './pages/provider/components/ProviderForgotPa
 import FreelancerForgotPassword from './pages/freelancer/components/FreelancerForgotPassword'
 import ProviderSetNewPassword from './pages/provider/components/ProviderSetNewPassword'
 import FreelancerSetNewPassword from './pages/freelancer/components/FreelancerSetNewPassword'
+import ShortlistedCandidates from './pages/provider/ShortlistedCandidates'
 
 const AppMain = () => {
 
@@ -97,6 +98,7 @@ const AppMain = () => {
               <Route path = '/provider/view-candidate/:job_id/:user_id' element = { <ViewCandidate /> } />
               <Route path = "/provider/business-post" element = { <BusinessPost /> } />
               <Route path = '/provider/jobs-posted/:company_id' element = { <JobPostedByCompany /> } />
+              <Route path = "/provider/shortlist/:postId" element = { <ShortlistedCandidates /> } />
           </Route> 
           <Route path="/freelancer" element={<FreelancerMainWrapper />}>
             <Route index element={ <MainPageFreelancer /> } />
