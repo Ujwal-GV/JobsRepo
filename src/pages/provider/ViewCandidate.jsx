@@ -12,6 +12,7 @@ import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
 import { CiHome, CiUser } from "react-icons/ci";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Steps } from "antd";
+import toast from "react-hot-toast";
 
 // Fetch initial status
 const fetchInitialStatus = async (userId, jobId) => {
@@ -72,6 +73,17 @@ const ViewCandidate = () => {
             status: newStatus,
             user_Id: userId,
         });
+        if (newStatus === "Shortlisted" && response) {
+            const response = await axiosInstance.post("/jobs/post/shortlist/add", {
+                postId: jobId,
+                userId: userId,
+            });
+            if (response) {
+                toast.success("Candidate shortlisted");
+            } else {
+                toast.error("Error shortlisting candidate");
+            }
+        }
         return response.data;
     };
 
@@ -97,10 +109,10 @@ const ViewCandidate = () => {
     });
 
     const toggleContactVisibility = () => {
-        if (!status.includes("Contact Viewed") && status.includes("Resume Viewed") && status.includes("Interested")) {
+        if (!status.includes("Contact Viewed") && status.includes("Resume Viewed") && status.includes("Shortlisted")) {
             mutation.mutate("Contact Viewed");
         } else {
-            message.warning("Contact details can be viewed only after sharing interest.");
+            message.warning("Contact details can be viewed only after shortlisting candidate.");
         }
     };
 
@@ -110,11 +122,11 @@ const ViewCandidate = () => {
         }
     };
 
-    const handleInterestShared = () => {
+    const handleShortlisting = () => {
         if (status.includes("Resume Viewed")) {
-            mutation.mutate("Interested");
+            mutation.mutate("Shortlisted");
         } else {
-            message.warning("Please view the resume before expressing interest.");
+            message.warning("Please view the resume before shortlisting candidate.");
         }
     };
 
@@ -122,7 +134,7 @@ const ViewCandidate = () => {
         { title: "Applied" },
         { title: "Profile Viewed" },
         { title: status.includes("Resume Viewed") ? "Resume Viewed" : "Resume Not Viewed" },
-        { title: status.includes("Interested") ? "Interest Shared" : "Share Interest" },
+        { title: status.includes("Shortlisted") ? "Shortlisted" : "Shortist Candidate" },
         { title: status.includes("Contact Viewed") ? "Contact Viewed" : "Contact Not Viewed" },
     ];
 
@@ -217,12 +229,12 @@ const ViewCandidate = () => {
                         </button>
 
                         <button
-                            onClick={handleInterestShared}
-                            className={`px-4 py-2 mt-2 bg-white border rounded-full p-1 shadow-md ${status.includes("Interested") ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-                            title="Express Interest"
-                            disabled={status.includes("Interested")}
+                            onClick={handleShortlisting}
+                            className={`px-4 py-2 mt-2 bg-white border rounded-full p-1 shadow-md ${status.includes("Shortlisted") ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                            title="Shortlist Candidate"
+                            disabled={status.includes("Shortlisted")}
                         >
-                            {status.includes("Interested") ? "Interest Shared" : "Share Interest"}
+                            {status.includes("Shortlisted") ? "Shortlisted" : "Shortlist Candidate"}
                         </button>
 
                         <button
