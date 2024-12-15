@@ -63,7 +63,6 @@ function MainPageFreelancer() {
     if (profileData) {      
       setFreelancerId(profileData?.freelancer_id);
     }
-    queryClient.invalidateQueries([freelancerId])
   }, [profileData]);
 
   const fetchProjects = async () => {
@@ -164,7 +163,7 @@ function MainPageFreelancer() {
 
             return (
               <>
-                <div className="flex flex-col bg-white p-5 rounded-lg lg:flex-row justify-between items-start lg:items-center" key={project_id}>
+                <div className="flex flex-col bg-white p-5 rounded-lg lg:flex-row justify-between items-start lg:items-center shadow-lg" key={project_id}>
                 {/* Job Details */}
                 <div className="flex flex-col">
                   <h3 className="font-bold">{projectName}</h3>

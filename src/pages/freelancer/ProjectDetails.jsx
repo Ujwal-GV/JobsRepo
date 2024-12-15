@@ -16,6 +16,7 @@ import CustomBreadCrumbs from '../../components/CustomBreadCrumbs';
 import { CiHome, CiUser } from 'react-icons/ci';
 import moment from 'moment/moment';
 import dayjs from 'dayjs';
+import { MdRefresh } from 'react-icons/md';
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
@@ -69,7 +70,9 @@ const AllPostedJobs = () => {
   const { 
     isLoading: projectsDataLoading, 
     data: applicantsData, 
-    error: applicantsError 
+    error: applicantsError,
+    isFetching: applicantsDataFetching,
+    refetch: refetchApplicants,
   } = useQuery({
     queryKey: ['project_applicants', projectId, currentPage],
     queryFn: () => fetchApplicants(projectId, currentPage, limit),
@@ -110,7 +113,11 @@ const AllPostedJobs = () => {
     if (val <= totalPages && val > 0) {
       setCurrentPage(val);
     }
-  };  
+  };
+
+  const handleRefreshCandidates = () => {
+    refetchApplicants();
+  }
 
   useEffect(() => {
     if (applicantsData) {
@@ -162,11 +169,11 @@ const AllPostedJobs = () => {
 
                 {/* Project Info */}
                 <div className="w-full rounded-xl h-fit bg-white p-6 shadow-lg font-outfit relative">
-                  <img 
+                  {/* <img 
                     src={img} 
                     alt={providerName} 
                     className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover absolute top-4 right-4 border-2 border-gray-200" 
-                  />
+                  /> */}
                   <h1 title={projectTitle} className="text-lg md:text-2xl font-bold text-gray-900 mb-1 pr-2 truncate">{projectTitle}</h1>
                   {/* <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-3">{providerName}</h2> */}
                   <h3 className="text-sm md:text-base text-gray-600">Project-Id: {project_id}</h3>
@@ -219,9 +226,15 @@ const AllPostedJobs = () => {
         </div>
 
         {/* Right Side: Applicants View */}
-        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll">
+        <div className="w-full lg:w-1/2 bg-gray-100 p-5 rounded-lg shadow-md h-[48rem] overflow-y-auto custom-scroll flex flex-col relative">
           <h1 className="text-2xl font-bold mb-5 text-gray-800">Applicants</h1>
-          {projectsDataLoading ? (
+          <button
+            onClick={handleRefreshCandidates}
+            className="absolute mb-4 px-2 py-2 right-6 text-gray-800 rounded-full flex items-center gap-2 hover:bg-gray-200 transition-all"
+          >
+            <MdRefresh className="text-xl" />
+          </button>
+          {projectsDataLoading || applicantsDataFetching ? (
             [1, 2, 3].map((d) => (
               <div
                 key={d}

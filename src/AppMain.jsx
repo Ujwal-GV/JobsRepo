@@ -50,6 +50,12 @@ import FreelancerForgotPassword from './pages/freelancer/components/FreelancerFo
 import ProviderSetNewPassword from './pages/provider/components/ProviderSetNewPassword'
 import FreelancerSetNewPassword from './pages/freelancer/components/FreelancerSetNewPassword'
 import ShortlistedCandidates from './pages/provider/ShortlistedCandidates'
+import AdminWrapper from './pages/admin/components/AdminWrapper'
+import AdminDashboardPanel from './pages/admin/AdminDashboardPanel'
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminUserManagementPanel from './pages/admin/AdminUserManagement'
+import AdminUserControlPanel from './pages/admin/AdminUserControlPanel'
+import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
 
 const AppMain = () => {
 
@@ -63,8 +69,10 @@ const AppMain = () => {
         <Routes>
           <Route path = "/login" element={<Login />} />
           <Route path = "/signup" element={ <SignUp/> } />
+
           <Route path = "/user/login" element={<UserLogin />} />
           <Route path = "/user/signup" element={<UserSignUp />} />
+
           <Route path = "/forgotpassword" element={ <ForgotPassword/> } />
           <Route path = "/reset-password/:token" element={ <SetNewPassword/> } />
 
@@ -73,6 +81,9 @@ const AppMain = () => {
 
           <Route path = '/provider/reset-password/:token' element = { < ProviderSetNewPassword /> } />
           <Route path = '/freelancer/reset-password/:token' element = { < FreelancerSetNewPassword /> } />
+
+          <Route path = "/admin/login" element={<AdminLogin />} />
+
           {/* <Route path = "/select-role" element= { <OptionPage />} /> */}
           <Route path="/" element={<MainWrapper/>}>
               <Route index element={ <MainPage/> } /> 
@@ -108,6 +119,14 @@ const AppMain = () => {
             <Route path = "/freelancer/post-project" element={ <ProjectApplicationPost/> } />
             <Route path = '/freelancer/view-candidate/:project_id/:user_id' element = { <ViewProjectCandidate /> } />
           </Route>
+
+          <Route path="/admin" element={<AdminWrapper/>}>
+              <Route index element={ <AdminDashboardPanel /> } />  
+              <Route path="/admin/user-management" element={ <AdminUserManagementPanel /> } />
+              <Route path="/admin/user-control" element={ <AdminUserControlPanel /> } />
+              <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
+          </Route>
+
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>
         </Routes> 
       </BrowserRouter>
