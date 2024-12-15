@@ -133,7 +133,7 @@ function ProviderMainPage() {
           </div>
         ) : (
           jobs.map((job) => (
-            <div className="flex flex-col bg-white p-5 rounded-lg lg:flex-row justify-between items-start lg:items-center" key={job.job_id}>
+            <div className="flex flex-col bg-white p-5 rounded-lg lg:flex-row justify-between items-start lg:items-center shadow-lg" key={job.job_id}>
               {/* Job Details */}
               <div className="flex flex-col">
                 <h3 className="font-bold">{job.title}</h3>

@@ -9,7 +9,8 @@ import { Pagination } from 'antd';
 import { FaEye, FaMailBulk } from 'react-icons/fa';
 import { MdRefresh } from 'react-icons/md';
 import { JobCardSkeleton } from '../../components/JobCard';
-import toast from 'react-hot-toast';
+import toast, { LoaderIcon } from 'react-hot-toast';
+import { LuLoader2 } from 'react-icons/lu';
 
 export default function ShortlistedCandidates() {
     const { postId } = useParams();
@@ -56,25 +57,33 @@ export default function ShortlistedCandidates() {
         gcTime: 0,
     });
 
-    // const sendMailToCandidates = async(postId) => {
-    //     const response = await axiosInstance.post("/jobs/post/shortlist/send-mail", {
-    //         postId,
-    //     });
-    //     console.log(response.data);
-    //     return response.data;
-    // }
+    const sendMailToCandidates = async(postId) => {
+        try {
+            const response = await axiosInstance.post("/jobs/post/shortlist/send-mail", {
+                postId,
+            });
+            if(response.data) {
+                return response.data;
+            } else {
+                throw new Error("Failed to send mail");
+            }
+        } catch (err) {
+            throw new Error(err.message || "Failed to send mail");
+        }
+    };
 
-    // const sendMailMutation = useMutation({
-    //     mutationKey: ["send-mail-to-candidates"],
-    //     mutationFn: sendMailToCandidates,
-    //     onSuccess: (data) => {
-    //         console.log(data);
-    //     } ,
-    //     onError: (error) => {
-    //         console.log(error);
-    //         message.error("Failed to send mail");
-    //     },
-    // });
+    const sendMailMutation = useMutation({
+        mutationKey: ["send-mail-to-candidates"],
+        mutationFn: sendMailToCandidates,
+        onSuccess: (data) => {
+            toast.success("Mail sent to shortlisted candidates");
+            console.log(data);
+        } ,
+        onError: (error) => {
+            console.log(error);
+            toast.error("Failed to send mail");
+        },
+    });
 
     useEffect(() => {
         if (shortlistedCandidatesData?.pageData) {
@@ -97,9 +106,13 @@ export default function ShortlistedCandidates() {
         navigate(`/provider/view-candidate/${postId}/${userId}`);
     };
 
-    // const handleSendMailToCandidates = (postId) => {
-    //     sendMailMutation.mutate(postId);
-    // }
+    const handleSendMailToCandidates = () => {
+        if(postId) {
+            sendMailMutation.mutate(postId);
+        } else {
+            toast.error("Invalid post ID. Please refresh and try again");
+        }
+    }
 
     return (
         <div className="flex flex-col w-full min-h-screen bg-gray-100 py-3 px-4 gap-10">
@@ -122,10 +135,19 @@ export default function ShortlistedCandidates() {
 
                         <div className="flex gap-2 md:ml-auto justify-center">
                             <button
-                                className="flex items-center w-[80%] center gap-1 text-sm bg-orange-600 hover:bg-orange-700 rounded-lg px-4 py-2 text-white"
-                                // onClick={() => handleSendMailToCandidates(postId)}
+                                className="flex items-center w-[80%] justify-center gap-1 text-sm bg-orange-600 hover:bg-orange-700 rounded-lg px-4 py-2 text-white"
+                                onClick={handleSendMailToCandidates}
+                                disabled={sendMailMutation.isPending}
                             >
-                                <FaMailBulk /> Send Mail
+                            {sendMailMutation.isPending ? (
+                                <>
+                                    <LuLoader2 className="animate-spin" /> Sending...
+                                </>
+                            ) : (
+                                <>
+                                    <FaMailBulk /> Send Mail
+                                </>
+                            )}
                             </button>
                             <button
                                 onClick={handleRefreshCandidates}

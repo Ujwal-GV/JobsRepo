@@ -1,3 +1,7 @@
+import { FaUser, FaToolbox } from 'react-icons/fa';
+import { FaBuildingUser } from 'react-icons/fa6';
+import { CiWarning } from "react-icons/ci";
+
 export const jobData = [
   {
     id: 1,
@@ -468,5 +472,75 @@ export const companyData = [
     { label: "Real Estate Law", value: "Real Estate Law" },
     { label: "Tax Law", value: "Tax Law" },
     { label: "Environmental Law", value: "Environmental Law" }
+  ];
+
+  export const usersData = [
+    { name: "Alice Johnson", email: "alice@example.com", role: "Provider", registrationDate: "2022-03-10", status: "Verified" },
+    { name: "Bob Williams", email: "bob@example.com", role: "Seeker", registrationDate: "2023-02-01", status: "Unverified" },
+    { name: "Charlie Brown", email: "charlie@example.com", role: "Freelancer", registrationDate: "2021-12-15", status: "Verified" },
+    { name: "David Smith", email: "david@example.com", role: "Seeker", registrationDate: "2022-04-22", status: "Verified" },
+    { name: "Eve Davis", email: "eve@example.com", role: "Freelancer", registrationDate: "2023-01-17", status: "Unverified" },
+    { name: "Frank Moore", email: "frank@example.com", role: "Provider", registrationDate: "2021-10-08", status: "Verified" },
+    { name: "Grace Lee", email: "grace@example.com", role: "Seeker", registrationDate: "2022-06-05", status: "Verified" },
+    { name: "Hannah Taylor", email: "hannah@example.com", role: "Freelancer", registrationDate: "2023-03-12", status: "Unverified" },
+    { name: "Ian Hall", email: "ian@example.com", role: "Provider", registrationDate: "2022-07-21", status: "Verified" },
+    { name: "Jack White", email: "jack@example.com", role: "Freelancer", registrationDate: "2022-08-30", status: "Verified" },
+    { name: "Karen Green", email: "karen@example.com", role: "Seeker", registrationDate: "2023-04-19", status: "Unverified" },
+    { name: "Leo King", email: "leo@example.com", role: "Freelancer", registrationDate: "2021-09-03", status: "Verified" },
+    { name: "Mia Scott", email: "mia@example.com", role: "Provider", registrationDate: "2022-01-11", status: "Verified" },
+    { name: "Nina Adams", email: "nina@example.com", role: "Seeker", registrationDate: "2023-05-15", status: "Unverified" },
+    { name: "Oscar Clark", email: "oscar@example.com", role: "Freelancer", registrationDate: "2022-02-20", status: "Verified" },
+    { name: "Paula Martinez", email: "paula@example.com", role: "Provider", registrationDate: "2022-09-25", status: "Verified" },
+    { name: "Quinn Garcia", email: "quinn@example.com", role: "Seeker", registrationDate: "2023-06-06", status: "Unverified" },
+    { name: "Riley Rodriguez", email: "riley@example.com", role: "Freelancer", registrationDate: "2022-03-18", status: "Verified" },
+    { name: "Sofia Martinez", email: "sofia@example.com", role: "Provider", registrationDate: "2022-10-15", status: "Verified" },
+    { name: "Thomas Lopez", email: "thomas@example.com", role: "Freelancer", registrationDate: "2023-07-22", status: "Unverified" },
+    { name: "Uma Wilson", email: "uma@example.com", role: "Seeker", registrationDate: "2021-08-01", status: "Verified" },
+    { name: "Victor Young", email: "victor@example.com", role: "Provider", registrationDate: "2022-05-19", status: "Verified" },
+    { name: "Wendy Clark", email: "wendy@example.com", role: "Freelancer", registrationDate: "2023-08-28", status: "Unverified" },
+    { name: "Xander Baker", email: "xander@example.com", role: "Seeker", registrationDate: "2022-12-11", status: "Verified" },
+    { name: "Yara Perez", email: "yara@example.com", role: "Provider", registrationDate: "2022-07-07", status: "Verified" },
+    { name: "Zoe Sanchez", email: "zoe@example.com", role: "Freelancer", registrationDate: "2023-09-15", status: "Unverified" },
+    { name: "Aaron Bell", email: "aaron@example.com", role: "Provider", registrationDate: "2022-06-13", status: "Verified" },
+    { name: "Betty James", email: "betty@example.com", role: "Freelancer", registrationDate: "2022-11-23", status: "Verified" },
+    { name: "Cindy Brooks", email: "cindy@example.com", role: "Seeker", registrationDate: "2023-10-03", status: "Unverified" },
+    { name: "Dylan Gray", email: "dylan@example.com", role: "Freelancer", registrationDate: "2021-05-14", status: "Verified" },
+    { name: "Ethan Russell", email: "ethan@example.com", role: "Provider", registrationDate: "2022-08-08", status: "Verified" },
+    { name: "Fiona Wood", email: "fiona@example.com", role: "Seeker", registrationDate: "2023-11-20", status: "Unverified" },
+    { name: "George Perry", email: "george@example.com", role: "Freelancer", registrationDate: "2022-04-27", status: "Verified" },
+    { name: "Holly Reed", email: "holly@example.com", role: "Seeker", registrationDate: "2022-12-05", status: "Verified" },
+    { name: "Ian Hughes", email: "ian.h@example.com", role: "Provider", registrationDate: "2023-12-29", status: "Unverified" },
+    { name: "Julia Turner", email: "julia@example.com", role: "Freelancer", registrationDate: "2021-07-25", status: "Verified" },
+    { name: "Kevin Cook", email: "kevin@example.com", role: "Seeker", registrationDate: "2023-01-14", status: "Verified" },
+    { name: "Laura Harris", email: "laura@example.com", role: "Provider", registrationDate: "2022-10-10", status: "Verified" },
+    { name: "Mike Stone", email: "mike@example.com", role: "Freelancer", registrationDate: "2023-05-19", status: "Unverified" },
+    { name: "Nora Bell", email: "nora@example.com", role: "Provider", registrationDate: "2022-11-11", status: "Verified" },
+    { name: "Oscar King", email: "oscar.k@example.com", role: "Seeker", registrationDate: "2023-08-13", status: "Unverified" },
+    { name: "Peter Cox", email: "peter@example.com", role: "Freelancer", registrationDate: "2021-09-30", status: "Verified" },
+    { name: "Quinn Blake", email: "quinn@example.com", role: "Provider", registrationDate: "2023-04-05", status: "Verified" },
+    { name: "Rosa Wright", email: "rosa@example.com", role: "Freelancer", registrationDate: "2022-03-15", status: "Verified" },
+    { name: "Sam Lee", email: "sam@example.com", role: "Seeker", registrationDate: "2023-06-30", status: "Unverified" },
+  ];
+  
+
+  export const userActionsData = [
+    { title: 'Pending Verification', count: 12, description: ' profiles pending verification' },
+    { title: 'Blocked Accounts', count: 8, description: ' accounts awaiting unblocking' },
+    { title: 'Inactive Accounts', count: 3, description: ' accounts marked as inactive' },
+    { title: 'Account Deletion Requests', count: 42, description: ' pending deletion requests' },
+  ];
+
+  export const dashboardData = [
+    { title: 'Job Seekers', icon: FaUser, count: 10250 },
+    { title: 'Job Providers', icon: FaBuildingUser, count: 5600 },
+    { title: 'Freelancers', icon: FaToolbox, count: 3420 },
+    { title: 'Reports', icon: CiWarning, count: 20 },
+  ];
+
+  export const actionsData = [
+    { title: 'Verification Requests', count: 12, description: ' profiles pending verification' },
+    { title: 'Feedback Messages', count: 8, description: ' unread feedback messages' },
+    { title: 'Account Deletion Requests', count: 3, description: ' profiles deletion pending' },
+    { title: 'Some Other Requests', count: 42, description: ' other works pending' },
   ];
   
