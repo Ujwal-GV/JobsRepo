@@ -5,7 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
-import { FaSortDown, FaSortUp } from "react-icons/fa";
+import {
+  FaLongArrowAltDown,
+  FaLongArrowAltUp,
+  FaSortDown,
+  FaSortUp,
+} from "react-icons/fa";
 
 const SeekerTable = () => {
   const [filteredTableData, setFilteredTableData] = useState([]);
@@ -45,6 +50,7 @@ const SeekerTable = () => {
       setFilteredTableData(data.users);
       setTotalData(data.totalUsers);
     }
+    console.log(data);
   }, [data]);
 
   const handleCurrentPageChange = (page) => {
@@ -103,7 +109,7 @@ const SeekerTable = () => {
     let filteredData = [];
 
     if (searchText === "") {
-      filteredData = tableData;
+      filteredData = [...tableData];
     } else {
       filteredData = tableData.filter(
         (tData) =>
@@ -114,32 +120,44 @@ const SeekerTable = () => {
     }
 
     if (sortValue !== "") {
-        alert(sortType)
       if (sortValue === "name") {
-        if (sortType === "desc") {
+        if (sortType === "inc") {
           filteredData = filteredData.sort((a, b) =>
             a.name.localeCompare(b.name)
           );
-        } else if (sortType === "inc") {
+        } else if (sortType === "desc") {
           filteredData = filteredData.sort((a, b) =>
             b.name.localeCompare(a.name)
           );
         }
       } else if (sortValue === "email") {
-        if (sortType === "desc") {
+        if (sortType === "inc") {
           filteredData = filteredData.sort((a, b) =>
             a.email.localeCompare(b.email)
           );
-        } else if (sortType === "inc") {
+        } else if (sortType === "desc") {
           filteredData = filteredData.sort((a, b) =>
             b.email.localeCompare(a.email)
           );
         }
       } else if (sortValue === "Registered Date") {
+        if (sortType === "inc") {
+          filteredData = filteredData.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        } else if (sortType === "desc") {
+          filteredData = filteredData.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        }
       }
+    } else {
+      filteredData = [...filteredData];
     }
 
-    setFilteredTableData(filteredData);
+    setFilteredTableData(() => [...filteredData]);
     setTotalData(filteredData.length);
     setTableLoading(false);
   };
@@ -213,10 +231,41 @@ const SeekerTable = () => {
         <span className="text-[1.1rem] border border-gray-400 p-2 rounded-tl-md rounded-bl-md">
           ID
         </span>
-        <span className="text-[1.1rem] border border-gray-400 p-2 ">Name</span>
-        <span className="text-[1.1rem] border border-gray-400 p-2">Email</span>
-        <span className="text-[1.1rem] border border-gray-400 p-2">
-          Registered Date
+        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+          Name{" "}
+          {sortValue === "name" ? (
+            sortType === "desc" ? (
+              <FaLongArrowAltDown className="text-[0.5rem] text-red-600" />
+            ) : (
+              <FaLongArrowAltUp className="text-[0.5rem] text-green-600" />
+            )
+          ) : (
+            ""
+          )}{" "}
+        </span>
+        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+          Email{" "}
+          {sortValue === "email" ? (
+            sortType === "desc" ? (
+              <FaLongArrowAltDown className="text-[0.5rem]" />
+            ) : (
+              <FaLongArrowAltUp className="text-[0.5rem]" />
+            )
+          ) : (
+            ""
+          )}{" "}
+        </span>
+        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+          Registered Date{" "}
+          {sortValue === "Registered Date" ? (
+            sortType === "desc" ? (
+              <FaLongArrowAltDown className="text-[0.5rem]" />
+            ) : (
+              <FaLongArrowAltUp className="text-[0.5rem]" />
+            )
+          ) : (
+            ""
+          )}
         </span>
         <span className="text-[1.1rem] border border-gray-400 p-2">Status</span>
         <span className="text-[1.1rem] border border-gray-400 p-2 rounded-tr-md rounded-br-md">
@@ -228,7 +277,13 @@ const SeekerTable = () => {
 
       {filteredTableData.length === 0 && (
         <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
-          <TbMoodEmpty /> <span> No Data Found</span>{" "}
+          {!tableLoading ? (
+            <>
+              <TbMoodEmpty /> <span> No Data Found</span>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       )}
 

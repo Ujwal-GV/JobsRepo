@@ -35,7 +35,11 @@ const CustomePagination = ({
       {(endPage < startPage && totalData!==0) ? (
         <button
           key="btn"
-          className={`px-3 py-1 rounded-md mx-1  bg-[${activePageBg}] text-[${activePageColor}] `}
+          className={`px-3 py-1 rounded-md mx-1`}
+          style={{
+            background:activePageBg,
+            color:activePageColor
+          }}
         >
           {startPage}
         </button>
