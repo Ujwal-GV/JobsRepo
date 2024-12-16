@@ -46,7 +46,7 @@ export default function AdminDashboardPanel() {
           <h2 className="text-2xl mt-2 font-semibold text-black  mb-6">Statistics</h2>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {dashboardData.map((item, index) => (
-              <DashboardCard key={index} title={item.title} icon={React.createElement(item.icon)} count={item.count} />
+              <DashboardCard key={index} title={item.title} icon={React.createElement(item.icon)} count={item.count} percentage={item.percentage}/>
             ))}
           </div>
         </div>

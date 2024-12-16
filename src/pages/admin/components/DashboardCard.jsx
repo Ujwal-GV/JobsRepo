@@ -1,11 +1,11 @@
 import { Progress } from 'antd'
 import React from 'react'
 
-export default function DashboardCard({title, count, icon}) {
+export default function DashboardCard({title, count, icon ,percentage}) {
   return (
     <div className="bg-[#0c1a32e9]  shadow-lg text-white rounded-lg px-4 py-3 flex items-center justify-between transition hover:scale-105 hover:cursor-pointer ">
          <Progress
-          percent={60}
+          percent={percentage || 60}
           strokeColor="#00a8e8" // Red for the filled portion
           trailColor="#FFFFFF" // White for the unfilled portion
           type="dashboard"
