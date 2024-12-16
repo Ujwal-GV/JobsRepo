@@ -1,6 +1,7 @@
 import { Progress } from 'antd';
 import React from 'react';
 
+
 export default function DashboardCard({ title, count, icon }) {
   return (
     <div className="bg-[#0c1a32e9] shadow-lg text-white rounded-lg px-4 py-3 flex items-center justify-between gap-4 transition hover:scale-105 hover:cursor-pointer">

@@ -154,6 +154,7 @@ const piedata = [
             <MdRefresh className="text-xl" />
           </button>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
             {usersCountLoading || usersDataIsFetching ? 
               <p className='flex items-center gap-1'>Loading statistics<LuLoader2 className='animate-spin-slow' /></p>
               :
@@ -164,6 +165,7 @@ const piedata = [
                 : 
                 <p className='flex justify-center align-center mx-auto'>Loading data.....</p>
               }
+
           </div>
         </div>
       </div>
