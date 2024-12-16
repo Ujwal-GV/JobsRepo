@@ -531,8 +531,8 @@ export const companyData = [
   ];
 
   export const dashboardData = [
-    { title: 'Job Seekers', icon: FaUser, count: 10250 },
-    { title: 'Job Providers', icon: FaBuildingUser, count: 5600 },
+    { title: 'Job Seekers', icon: FaUser, count: 602580870 },
+    { title: 'Job Providers', icon: FaBuildingUser, count: 56000 },
     { title: 'Freelancers', icon: FaToolbox, count: 3420 },
     { title: 'Reports', icon: CiWarning, count: 20 },
   ];

@@ -485,3 +485,35 @@ input::placeholder{
   }
   
 }
+
+
+
+
+.custom-progress .ant-progress-circle-path {
+  stroke-linecap: round; /* Makes the ends of the stroke rounded */
+}
+
+.custom-progress .ant-progress-circle-trail {
+  stroke-linecap: round; /* Makes the trail rounded */
+}
+
+
+.dashboard-card2{
+
+  background: rgba( 60, 9, 108, 0.3 );
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 14px );
+-webkit-backdrop-filter: blur( 14px );
+border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+.dashboard-card{
+
+  background: rgba( 60, 9, 108, 0.3 );
+box-shadow: 1px 1px 5px 0 white;
+backdrop-filter: blur( 14px );
+-webkit-backdrop-filter: blur( 14px );
+border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
+}

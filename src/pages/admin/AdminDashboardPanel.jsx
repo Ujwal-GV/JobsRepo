@@ -5,17 +5,32 @@ import { CiWarning } from "react-icons/ci";
 import DashboardCard from './components/DashboardCard';
 import DashboardActionCards from './components/DashboardActionCards';
 import { dashboardData, actionsData } from '../../../assets/dummyDatas/Data';
+import LineChart from './components/LineChart';
+
 
 export default function AdminDashboardPanel() {
+
+  const data = [
+    { year: '1991', value: 3 },
+    { year: '1992', value: 4 },
+    { year: '1993', value: 3.5 },
+    { year: '1994', value: 5 },
+    { year: '1995', value: 4.9 },
+    { year: '1996', value: 6 },
+    { year: '1997', value: 7 },
+  ];
+  
+
+
   return (
-    <>
-      <h1 className="p-4 my-4 mx-4 text-gray-600 underline font-black bg-white text-lg lg:text-[1.8rem] rounded-lg uppercase text-center shadow-lg">
+    <div className='h-screen overflow-y-auto'>
+      <h1 className="p-4 my-4 mx-4 text-black underline font-black  text-lg lg:text-[1.8rem] rounded-lg uppercase  shadow-lg">
         Admin Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 p-4">
         {/* Admin Profile */}
-        <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+        {/* <div className="bg-white rounded-lg shadow-lg p-6 text-center">
           <img 
             src="https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png"
             alt="Admin Avatar"
@@ -24,13 +39,12 @@ export default function AdminDashboardPanel() {
           <h3 className="text-lg font-semibold mt-4">Admin Name</h3>
           <p className="text-md text-gray-500">Administrator</p>
           <p className="text-sm text-red-500">Last login: 2 days ago</p>
-        </div>
+        </div> */}
 
         {/* Statistics Section */}
-        <div className="bg-gray-200 rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
-          <h2 className="text-2xl mt-2 font-semibold text-center mb-6">Statistics</h2>
-          <hr className="border-white mb-3 w-[90%] mx-auto" />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-transparent rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
+          <h2 className="text-2xl mt-2 font-semibold text-black  mb-6">Statistics</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {dashboardData.map((item, index) => (
               <DashboardCard key={index} title={item.title} icon={React.createElement(item.icon)} count={item.count} />
             ))}
@@ -38,11 +52,24 @@ export default function AdminDashboardPanel() {
         </div>
       </div>
 
-      {/* Pending Actions Section */}
+     
+
+
       <div className="p-4">
-        <div className="bg-gray-200 rounded-lg shadow-lg mt-6 p-2 lg:p-4 md:p-4 lg:p-5">
-          <h2 className="text-2xl mt-2 font-semibold text-center mb-6">Pending Actions</h2>
-          <hr className="border-white mb-3 w-[90%] mx-auto" />
+        <div className="bg-white rounded-lg shadow-lg mt-6 p-2 lg:p-4 md:p-4 ">
+        
+        <div className="w-[600px] shadow-md shadow-gray-400 rounded-lg">
+           <h5>User Registered</h5>
+           <LineChart data={data} xAxis='year' yAxis='value'/>
+          </div>
+        </div>
+      </div>
+
+
+       {/* Pending Actions Section */}
+       <div className="p-4">
+        <div className="bg-white rounded-lg shadow-lg mt-6 p-2 lg:p-4 md:p-4 lg:p-5">
+          <h2 className="text-2xl mt-2 font-semibold text-center mb-6 text-black">Pending Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {actionsData.map((item, index) => (
               <DashboardActionCards
@@ -55,6 +82,7 @@ export default function AdminDashboardPanel() {
           </div>
         </div>
       </div>
-    </>
+
+    </div>
   );
 }
