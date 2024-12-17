@@ -7,9 +7,9 @@ const CustomMultiBarChart = ({ data, xAxisKey, barKeys, colors = ["#8884d8", "#8
       <ResponsiveContainer>
         <BarChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={xAxisKey} />
-          <YAxis />
-          <Tooltip />
+          <XAxis dataKey={xAxisKey} tick={{ fill: "#8884d8", fontSize: 12, fontWeight: "400" , }} />
+          <YAxis tick={{ fill: "#82ca9d", fontSize: 12, fontStyle: "italic" }}/>
+          <Tooltip cursor={{fill:"#5f728b80"}}  />
           <Legend />
           {barKeys.map((key, index) => (
             <Bar key={key} dataKey={key} fill={colors[index % colors.length]} barSize={20} />

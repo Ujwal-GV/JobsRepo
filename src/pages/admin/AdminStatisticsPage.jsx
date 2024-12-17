@@ -10,6 +10,7 @@ import { MdRefresh } from 'react-icons/md';
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { FaCalendar, FaDownload } from 'react-icons/fa';
+import { IoHourglassOutline } from 'react-icons/io5';
 
 export default function AdminStatisticsPage() {
   const [days, setDays] = useState(7);
@@ -295,11 +296,11 @@ export default function AdminStatisticsPage() {
 
   return (
     <div className="h-screen overflow-y-auto p-4">
-      <h1 className="text-2xl font-bold text-center underline uppercase">Admin Dashboard</h1>
+      <h1 className="text-2xl font-bold text-center underline uppercase text-white">Admin Dashboard</h1>
 
       <div className="flex gap-4 justify-end mb-4">
         <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']}>
-          <button className="bg-[#0c1a32e9] text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500">
+          <button className="bg-gray-700 bg-opacity-50 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500">
             <span className="flex gap-2">
                 <FaCalendar />{selectLabel}
             </span>
@@ -328,7 +329,7 @@ export default function AdminStatisticsPage() {
 
         <button
           onClick={() => downloadAsImage("charts-container", "statistics.png")}
-          className="py-2 px-4 bg-[#0c1a32e9] text-white rounded-lg shadow hover:bg-gray-500"
+          className="py-2 px-4 bg-gray-700 bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
         >
           <span className="flex gap-2">
             <FaDownload />Download Image
@@ -337,7 +338,7 @@ export default function AdminStatisticsPage() {
         <button
           onClick={handleRefreshData}
           title='Refresh'
-          className="py-2 px-2 bg-[#0c1a32e9] text-white hover:bg-gray-500 rounded-full transition-all"
+          className="py-2 px-2 bg-gray-700 bg-opacity-50 text-white hover:bg-gray-500 rounded-full transition-all"
         >
           <MdRefresh className="text-xl" />
         </button>
@@ -345,12 +346,12 @@ export default function AdminStatisticsPage() {
 
       <div id="charts-container">
 
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        <div className='flex items-center justify-between mt-3 bg-[#0c1a32e9] rounded-lg text-white uppercase mb-4'>
+      <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-lg p-6">
+        <div className='flex items-center justify-between mt-3  rounded-lg text-white uppercase mb-4'>
             <h2 className="text-xl mt-3 ml-4 text-white uppercase">Active Users</h2>
             <button
                 onClick={downloadCSVActiveUserCounts}
-                className="py-2 px-4 mr-4 bg-gray-100 rounded-lg shadow hover:bg-gray-300 text-black"
+                className="py-2 px-4 mr-4 bg-gray-700 bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-800 text-[0.8rem]"
             >
                 <span className="flex gap-2">
                     <FaDownload />Download Active Users Stats CSV
@@ -358,12 +359,12 @@ export default function AdminStatisticsPage() {
             </button>
         </div>
         
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6 ">
             <div className="shadow-md p-10 rounded-lg min-h-[20rem]">
-              <h3 className="text-center font-semibold">Active Users Breakdown</h3>
+              <h3 className="text-center font-medium text-white">Active Users Breakdown</h3>
               {activeUsersCountLoading || activeUsersCountFetching ? (
                 <div className='flex align-center items-center justify-center p-10 min-h-[16rem] w-full'>
-                    <Spin size='large' className='animate-spin-slow' />
+                    <IoHourglassOutline className='animate-spin-slow text-[2rem] text-white' />
                 </div>               
                 ) : (
                 <CustomMultiBarChart
@@ -379,12 +380,12 @@ export default function AdminStatisticsPage() {
 
 
         {/* Bar Graph Section for Registered Users */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6 relative">
-        <div className='flex items-center justify-between mt-3 bg-[#0c1a32e9] rounded-lg text-white uppercase mb-4'>
+        <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-lg p-6 mb-6 relative mt-4">
+        <div className='flex items-center justify-between mt-3  rounded-lg text-white uppercase mb-4'>
             <h2 className="text-xl mt-3 ml-4 text-white uppercase">Registration Line Graphs</h2>
             <button
                 onClick={downloadCSVRegistrationStats}
-                className="py-2 px-4 mr-4 bg-gray-100 rounded-lg shadow hover:bg-gray-300 text-black"
+                className="py-2 px-4 mr-4 bg-gray-700 bg-opacity-50 rounded-lg shadow hover:bg-gray-800 text-white text-[0.8rem]"
             >
                 <span className='flex gap-2'>
                     <FaDownload />Download Registration Stats CSV
@@ -394,11 +395,11 @@ export default function AdminStatisticsPage() {
 
         <div className="grid grid-cols-2 gap-6">
             {['Users', 'Providers', 'Freelancers', 'Posts', 'Projects'].map((key, index) => (
-                <div key={index} className="shadow-md p-4 rounded-lg">
-                <h3 className="text-center font-semibold capitalize">{key}</h3>
+                <div key={index} className="shadow-md p-4 rounded-lg bg-gray-800 border border-gray-700 bg-opacity-50">
+                <h3 className="text-center font-thin capitalize text-gray-200">{key}</h3>
                 {registrationStatsLoading || registrationStatsFetching ? (
                     <div className='flex align-center items-center justify-center p-10 min-h-[25rem] w-full'>
-                    <Spin size='large' className='animate-spin-slow' />
+                    <IoHourglassOutline className='animate-spin-slow text-[1rem] text-white' />
                     </div>
                 ) : (
                     <CustomSingleBarChart 
@@ -414,12 +415,12 @@ export default function AdminStatisticsPage() {
         </div>
 
         {/* Pie Chart Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-        <div className='flex items-center justify-between mt-3 bg-[#0c1a32e9] rounded-lg text-white uppercase mb-4'>
+        <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-lg p-6 mb-6">
+        <div className='flex items-center justify-between mt-3  rounded-lg text-white uppercase mb-4'>
             <h2 className="text-xl mt-3 ml-4 text-white uppercase">Pie Chart Statistics</h2>
             <button
                 onClick={downloadCSVPieChartData}
-                className="py-2 px-4 mr-4 bg-gray-100 rounded-lg shadow hover:bg-gray-300 text-black"
+                className="py-2 px-4 mr-4  rounded-lg shadow hover:bg-gray-800 text-white bg-gray-700 bg-opacity-50 text-[0.8rem]"
             >
                 <span className='flex gap-2'>
                     <FaDownload />Download User Stats CSV
@@ -429,12 +430,12 @@ export default function AdminStatisticsPage() {
         <div className={`grid gap-6 ${pieChartLoading || pieChartFetching ? "grid-cols-1" : "grid-cols-3"}`}>
             {pieChartLoading || pieChartFetching ? (
                 <div className='flex align-center items-center justify-center p-10 min-h-[22.5rem] w-full'>
-                    <Spin size='large' className='animate-spin-slow' />
+                    <IoHourglassOutline className='animate-spin-slow text-[1rem] text-white' />
                 </div>             
                 ) : (
               pieChartData.map((item, index) => (
                 <div key={index} className="shadow-md p-4 rounded-lg">
-                  <h3 className="text-center font-semibold">{item.title}</h3>
+                  <h3 className="text-center font-thin text-white">{item.title}</h3>
                   <CustomPieChart
                     data={[
                       { name: 'Total', value: item.data },
@@ -449,12 +450,12 @@ export default function AdminStatisticsPage() {
         </div>
 
         {/* Bar Chart Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6">
-        <div className='flex items-center justify-between mt-3 bg-[#0c1a32e9] rounded-lg text-white uppercase mb-4'>
+        <div className="bg-slate-800 bg-opacity-50 shadow-lg rounded-lg p-6">
+        <div className='flex items-center justify-between mt-3  rounded-lg text-white uppercase mb-4'>
             <h2 className="text-xl mt-3 ml-4 text-white uppercase">Bar Chart Statistics</h2>
             <button
                 onClick={downloadCSVUserCounts}
-                className="py-2 px-4 mr-4 bg-gray-100 rounded-lg shadow hover:bg-gray-300 text-black"
+                className="py-2 px-4 mr-4 bg-gray-100 rounded-lg shadow hover:bg-gray-800 text-white bg-gray-700 bg-opacity-50 text-[0.8rem]"
             >
                 <span className="flex gap-2">
                     <FaDownload />Download Distribution Stats CSV
@@ -462,22 +463,22 @@ export default function AdminStatisticsPage() {
             </button>
         </div>          
         <div className="grid grid-cols-2 gap-6">
-            <div className="shadow-md p-4 rounded-lg">
-              <h3 className="text-center font-semibold">User Distribution</h3>
+            <div className="shadow-md p-4 rounded-lg bg-gray-800 border border-gray-700 bg-opacity-50">
+              <h3 className="text-center font-thin text-gray-200">User Distribution</h3>
               {userCountsLoading || userCountsFetching ? (
                 <div className='flex align-center items-center justify-center p-10 min-h-[15rem] w-full'>
-                    <Spin size='large' className='animate-spin-slow' />
+                   <IoHourglassOutline className='animate-spin-slow text-[1rem] text-white' />
                 </div>               
                 ) : (
                 <CustomSingleBarChart data={userCounts} xAxisKey="name" barKey="total" barColor={["#FF8042"]} />
               )}
             </div>
 
-            <div className="shadow-md p-4 rounded-lg">
-              <h3 className="text-center font-semibold">Registration Breakdown</h3>
+            <div className="shadow-md p-4 rounded-lg bg-gray-800 border border-gray-700 bg-opacity-50">
+              <h3 className="text-center font-thin text-gray-200">Registration Breakdown</h3>
               {registrationStatsLoading || registrationStatsFetching ? (
                 <div className='flex align-center items-center justify-center p-10 min-h-[16rem] w-full'>
-                    <Spin size='large' className='animate-spin-slow' />
+                    <IoHourglassOutline className='animate-spin-slow text-[1rem] text-white' />
                 </div>               
                 ) : (
                 <CustomMultiBarChart

@@ -8,7 +8,7 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [ "#EC4899", "#10B981","#6366F1", "#885CF6",];
 
 const CustomPieChart = ({data}) => {
   return (
@@ -33,7 +33,7 @@ const CustomPieChart = ({data}) => {
             ))}
           </Pie>
           <Tooltip />
-          <Legend verticalAlign="bottom" height={36} />
+          <Legend content={<CustomLegend />} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -41,3 +41,26 @@ const CustomPieChart = ({data}) => {
 };
 
 export default CustomPieChart;
+
+
+const CustomLegend = ({ payload }) => {
+  return (
+    <ul style={{ listStyle: "none", margin: 0, padding: 0 }} className="flex justify-center items-center gap-[6px]">
+      {payload.map((entry, index) => (
+        <li key={`item-${index}`} style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          {/* Circle marker */}
+          <div
+            style={{
+              width: "12px",
+              height: "12px",
+              borderRadius: "50%", // Makes the marker circular
+              backgroundColor: entry.color,
+              marginRight: "1px",
+            }}
+          ></div>
+          <span className="text-white font-thin" style={{ fontSize: "11px", }}>{entry.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};

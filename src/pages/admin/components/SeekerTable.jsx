@@ -50,7 +50,6 @@ const SeekerTable = () => {
       setFilteredTableData(data.users);
       setTotalData(data.totalUsers);
     }
-    console.log(data);
   }, [data]);
 
   const handleCurrentPageChange = (page) => {
@@ -173,9 +172,9 @@ const SeekerTable = () => {
   };
 
   return (
-    <section className="w-full border border-slate-100 rounded-sm relative py-3">
+    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
       {tableLoading && (
-        <div className="absolute top-0 left-0 w-full h-full bg-slate-50 opacity-75 flex justify-center items-center cursor-progress">
+        <div className="absolute top-0 left-0 w-full h-full bg-slate-700 bg-opacity-75 flex justify-center items-center cursor-progress">
           <RiLoader3Fill className="animate-spin text-[1.5rem]" />
         </div>
       )}
@@ -188,7 +187,7 @@ const SeekerTable = () => {
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className="bg-[#efefef] me-1 py-2 px-3 rounded-lg !border !border-black"
+            className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:text-[0.8rem]"
             placeholder="Search by name or email or userId"
           />
           <button onClick={() => filterTableDataHandler()}>Search</button>
@@ -228,10 +227,10 @@ const SeekerTable = () => {
 
       {/* Table Header */}
       <div className="w-full grid grid-cols-6 p-2">
-        <span className="text-[1.1rem] border border-gray-400 p-2 rounded-tl-md rounded-bl-md">
+        <span className="text-[1.1rem] border border-gray-700 p-2 rounded-tl-md rounded-bl-md">
           ID
         </span>
-        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+        <span className="text-[1.1rem] border border-gray-700 p-2 flex justify-start items-center gap-1 ">
           Name{" "}
           {sortValue === "name" ? (
             sortType === "desc" ? (
@@ -241,34 +240,34 @@ const SeekerTable = () => {
             )
           ) : (
             ""
-          )}{" "}
+          )}
         </span>
-        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+        <span className="text-[1.1rem] border border-gray-700 p-2 flex justify-start items-center gap-1 ">
           Email{" "}
           {sortValue === "email" ? (
             sortType === "desc" ? (
-              <FaLongArrowAltDown className="text-[0.5rem]" />
+              <FaLongArrowAltDown className="text-[0.5rem] text-red-600" />
             ) : (
-              <FaLongArrowAltUp className="text-[0.5rem]" />
+              <FaLongArrowAltUp className="text-[0.5rem] text-green-600" />
             )
           ) : (
             ""
           )}{" "}
         </span>
-        <span className="text-[1.1rem] border border-gray-400 p-2 flex justify-start items-center gap-1 ">
+        <span className="text-[1.1rem] border border-gray-700 p-2 flex justify-start items-center gap-1 ">
           Registered Date{" "}
           {sortValue === "Registered Date" ? (
             sortType === "desc" ? (
-              <FaLongArrowAltDown className="text-[0.5rem]" />
+              <FaLongArrowAltDown className="text-[0.5rem] text-red-600" />
             ) : (
-              <FaLongArrowAltUp className="text-[0.5rem]" />
+              <FaLongArrowAltUp className="text-[0.5rem] text-green-600" />
             )
           ) : (
             ""
           )}
         </span>
-        <span className="text-[1.1rem] border border-gray-400 p-2">Status</span>
-        <span className="text-[1.1rem] border border-gray-400 p-2 rounded-tr-md rounded-br-md">
+        <span className="text-[1.1rem] border border-gray-700 p-2">Status</span>
+        <span className="text-[1.1rem] border border-gray-700 p-2 rounded-tr-md rounded-br-md">
           Action
         </span>
       </div>
@@ -314,7 +313,7 @@ const UserTableCard = ({ data = {} }) => {
   if (Object.keys(data).length > 0) {
     return (
       <div
-        className="w-full grid grid-cols-6 p-2 border-b border-b-gray-300 hover:bg-slate-100"
+        className="w-full grid grid-cols-6 p-2 border-b border-b-gray-700 hover:bg-gray-800 hover:bg-opacity-50 text-[0.9rem]"
         key={data?._id}
       >
         <span className="overflow-hidden text-ellipsis p-1">
