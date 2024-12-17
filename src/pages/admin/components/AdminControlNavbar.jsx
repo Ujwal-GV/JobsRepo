@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaHome, FaUser, FaAd, FaCogs, FaAppStore, FaPowerOff, FaUserCog } from "react-icons/fa";
+import { FaHome, FaUser, FaAd, FaCogs, FaAppStore, FaPowerOff, FaUserCog, FaChartBar } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ const AdminControlNavbar = () => {
   const menuItems = [
     { title: "Dashboard", nav: "/admin", icon: <FaHome />, label: "dashboard" },
     { title: "User Management", nav: "/admin/user-management", icon: <FaUser />, label: "userManagement" },
+    { title: "Statistics", nav: "/admin/statistics", icon: <FaChartBar />, label: "statistics" },
     { title: "User Verification Control", nav: "/admin/user-control", icon: <FaUserCog />, label: "userControl" },
     { title: "Ads Management", nav: "/admin/ads-management", icon: <FaAd />, label: "adsManagement" },
     { title: "Application Management", nav: "/admin/app-management", icon: <FaAppStore />, label: "appManagement" },
