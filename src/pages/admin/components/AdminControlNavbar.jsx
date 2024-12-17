@@ -46,9 +46,9 @@ const AdminControlNavbar = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen ">
       <div
-        className={`bg-gray-800 text-white font-outfit flex flex-col min-w-[3rem] ${
+        className={`bg-gray-800   text-white font-outfit flex flex-col min-w-[3rem] ${
           isCollapsed ? "w-[4rem]" : "w-[16rem]"
         } z-10 absolute left-0 top-0 h-screen transition-all duration-500 ease-in-out`}
         onMouseEnter={() => setIsCollapsed(false)}

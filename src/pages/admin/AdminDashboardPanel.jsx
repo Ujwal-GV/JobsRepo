@@ -27,16 +27,19 @@ const [selectLabel, setSelectLabel] = useState("Select Time Range");
 const [RegistrationDays, setRegistrationDays] = useState(7);
 const [label, setLabel] = useState("Select Time Range");
 
+
+
+
   const handleUsersCount = async() => {
     try {
       const res = await axiosInstance.get("/admin/satistics/all-users");
 
       const updatedData = [
-          { title: 'Job Seekers', icon: FaUser, count: res.data.UsersCount },
-          { title: 'Job Providers', icon: FaBuildingUser, count: res.data.ProviderCount },
-          { title: 'Freelancers', icon: FaUserTie, count: res.data.FreelancerCount },
-          { title: 'Posts', icon: MdWork, count: res.data.PostCount },
-          { title: 'Projects', icon: FaProjectDiagram, count: res.data.ProjectCount },
+          { title: 'Job Seekers', icon: FaUser, count: res.data.UsersCount ,color:"#6366F1",percentage:90 },
+          { title: 'Job Providers', icon: FaBuildingUser, count: res.data.ProviderCount,color:"885CF6",percentage:70 },
+          { title: 'Freelancers', icon: FaUserTie, count: res.data.FreelancerCount,color:"#EC4899",percentage:50 },
+          { title: 'Posts', icon: MdWork, count: res.data.PostCount,color:"#10B981",percentage:40 },
+          { title: 'Projects', icon: FaProjectDiagram, count: res.data.ProjectCount,color:"red",percentage:30 },
       ];
 
       setUpdatedData(updatedData);
@@ -211,43 +214,21 @@ const [label, setLabel] = useState("Select Time Range");
       },
     ];
 
-    // const handleSetDays = ({ key, domEvent }) => {
-    //   setDays(Number(key));
-    //   setSelectLabel(domEvent.target.innerText);
-    //   refreshActiveUsersCount();
-    // };
-
-    // const handleSetRegistrationDate = ({ key, domEvent }) => {
-    //   setRegistrationDays(Number(key));
-    //   setLabel(domEvent.target.innerText);
-    //   refreshRegistrationCount();
-    // };
-
   return (
     <div className='h-screen overflow-y-auto'>
-      <h1 className="p-4 my-4 mx-4 text-black underline center font-black text-lg lg:text-[1.8rem] rounded-lg uppercase  shadow-lg">
+      <h1 className="p-4 my-4 mx-4 text-white underline center font-black text-lg lg:text-[1.8rem] rounded-lg uppercase  shadow-lg">
         Admin Dashboard
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 p-4">
-        {/* Admin Profile */}
-        {/* <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-          <img 
-            src="https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png"
-            alt="Admin Avatar"
-            className="rounded-full w-24 h-24 mx-auto"
-          />
-          <h3 className="text-lg font-semibold mt-4">Admin Name</h3>
-          <p className="text-md text-gray-500">Administrator</p>
-          <p className="text-sm text-red-500">Last login: 2 days ago</p>
-        </div> */}
+        
 
         {/* Statistics Section */}
-        <div className="bg-transparent rounded-lg shadow-lg p-2 lg:p-4 md:p-4 relative">
-          <h2 className="text-2xl justify-start font-semibold text-black">Statistics</h2>
+        <div className="bg-transparent rounded-lg  p-2 lg:p-4 md:p-4 relative  ">
+          <h2 className="text-2xl justify-start font-semibold text-white">Statistics</h2>
           <button
             onClick={handleRefreshCount}
-            className="absolute top-4 py-2 px-2 justify-end right-6 text-gray-800 rounded-full hover:bg-gray-200 transition-all"
+            className="absolute top-4 py-2 px-2 justify-end right-6 text-gray-800 rounded-full  transition-all"
           >
             <MdRefresh className="text-xl" />
           </button>
@@ -255,7 +236,7 @@ const [label, setLabel] = useState("Select Time Range");
 
             {usersCountLoading || usersDataIsFetching ? 
               <div className='flex align-center justify-center items-center mx-auto min-h-[15.1rem]'>
-                <Spin size='large' className='animate-spin-slow' />
+                <Spin size='large' className='animate-spin-slow text-gray-300' />
               </div>
               : 
               usersCount.length > 0 ?
@@ -266,6 +247,8 @@ const [label, setLabel] = useState("Select Time Range");
                     icon={React.createElement(item.icon)} 
                     count={item.count} 
                     isLoading={usersCountLoading} 
+                    color={item.color}
+                    percentage={item.percentage}
                   />
                 )) 
                 : 
@@ -516,8 +499,8 @@ const [label, setLabel] = useState("Select Time Range");
 
        {/* Pending Actions Section */}
        <div className="p-4">
-        <div className="bg-white rounded-lg shadow-lg mt-6 p-2 lg:p-4 md:p-4 lg:p-5">
-          <h2 className="text-2xl mt-2 font-semibold text-center mb-6 text-black">Pending Actions</h2>
+        <div className="bg-gray-800 bg-opacity-50 rounded-lg shadow-lg mt-6 p-2 md:p-4 lg:p-5">
+          <h2 className="text-2xl mt-2 font-semibold text-center mb-6 text-gray-200">Pending Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {actionsData.map((item, index) => (
               <DashboardActionCards
