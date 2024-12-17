@@ -10,9 +10,18 @@ import {
   FaLongArrowAltUp,
   FaSortDown,
   FaSortUp,
+  FaUserCheck,
+  FaUsers,
+  FaUserSlash,
 } from "react-icons/fa";
 
 const SeekerTable = () => {
+  const USER_TYPE = [
+    { label: "All", icon: <FaUsers />, color: "yellow" },
+    { label: "Blocked", icon: <FaUserSlash />, color: "red" },
+    { label: "Not Blocked", icon: <FaUserCheck />, color: "green" },
+  ];
+
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalData, setTotalData] = useState(0);
@@ -22,19 +31,32 @@ const SeekerTable = () => {
   const [searchText, setSearchText] = useState("");
   const [sortValue, setSortValue] = useState("");
   const [sortType, setSortType] = useState("inc");
+  const [userType, setUserType] = useState("All");
 
   const fetchData = async ({ queryKey }) => {
+
+    let queryParam = {page: queryKey[1],
+      limit: 10,q: searchText,}
+
+    if(userType!=="All")
+    {
+      queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
+    }
+
     const res = await axiosInstance.get("/admin/seekers", {
-      params: {
-        page: queryKey[1],
-        limit: 10,
-      },
+      params: queryParam,
     });
     return res.data;
   };
 
-  const { isLoading, isError, data } = useQuery({
-    queryKey: ["seekers-data", currentPage],
+  const {
+    isLoading,
+    isFetching,
+    isError,
+    data,
+    refetch: searchHandler,
+  } = useQuery({
+    queryKey: ["seekers-data", currentPage ,searchText ,userType],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -42,7 +64,12 @@ const SeekerTable = () => {
 
   useEffect(() => {
     setTableLoading(isLoading);
-  }, [isLoading]);
+    if(isFetching)
+    {
+      setTableLoading(isFetching)
+    }
+  
+  }, [isLoading,isFetching]);
 
   useEffect(() => {
     if (data) {
@@ -105,18 +132,7 @@ const SeekerTable = () => {
   const filterTableDataHandler = () => {
     setTableLoading(true);
 
-    let filteredData = [];
-
-    if (searchText === "") {
-      filteredData = [...tableData];
-    } else {
-      filteredData = tableData.filter(
-        (tData) =>
-          tData?.name?.startsWith(searchText) ||
-          tData?.user_id?.startsWith(searchText) ||
-          tData?.email?.startsWith(searchText)
-      );
-    }
+    let filteredData = [...tableData];
 
     if (sortValue !== "") {
       if (sortValue === "name") {
@@ -171,6 +187,11 @@ const SeekerTable = () => {
     filterTableDataHandler();
   };
 
+  const handleUserTypeChange=(type)=>{
+    setUserType(type)
+    searchHandler()
+  }
+
   return (
     <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
       {tableLoading && (
@@ -189,11 +210,33 @@ const SeekerTable = () => {
             onChange={(e) => setSearchText(e.target.value)}
             className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:text-[0.8rem]"
             placeholder="Search by name or email or userId"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                searchHandler();
+              }
+            }}
           />
-          <button onClick={() => filterTableDataHandler()}>Search</button>
+          <button onClick={() => searchHandler()}>Search</button>
         </div>
 
         <div className="flex justify-center items-center gap-2">
+          <div className="me-2 flex justify-center items-center gap-3">
+            {USER_TYPE.map((type, idx) => {
+              return (
+                <span
+                  key={type.FaLongArrowAltDown}
+                  style={{
+                    color: userType === type.label ? type.color : "white",
+                  }}
+                  onClick={()=>{handleUserTypeChange(type.label)}}
+                  className="flex justify-center items-center gap-[2px] text-[0.6rem] cursor-pointer"
+                >
+                  {type.icon} {type.label}
+                </span>
+              );
+            })}
+          </div>
+
           {sortValue !== "" ? (
             <SortComponent
               key={sortValue}
@@ -364,7 +407,12 @@ const SortComponent = ({
       className="w-fit flex text-[0.8rem] justify-center items-center gap-1 cursor-pointer "
       onClick={() => handleSortTypeChange()}
     >
-      {sortValue} {sortType === "inc" ? <FaSortUp /> : <FaSortDown />}
+      {sortValue}{" "}
+      {sortType === "inc" ? (
+        <FaSortUp className=" text-green-600" />
+      ) : (
+        <FaSortDown className="text-red-600" />
+      )}
     </div>
   );
 };
