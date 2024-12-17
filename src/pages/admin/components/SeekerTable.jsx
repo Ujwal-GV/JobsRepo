@@ -208,7 +208,7 @@ const SeekerTable = () => {
             type="text"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:text-[0.8rem]"
+            className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:!text-[0.8rem]"
             placeholder="Search by name or email or userId"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -229,7 +229,7 @@ const SeekerTable = () => {
                     color: userType === type.label ? type.color : "white",
                   }}
                   onClick={()=>{handleUserTypeChange(type.label)}}
-                  className="flex justify-center items-center gap-[2px] text-[0.6rem] cursor-pointer"
+                  className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
                   {type.icon} {type.label}
                 </span>
@@ -253,6 +253,7 @@ const SeekerTable = () => {
           <Dropdown
             menu={{
               items,
+              className: "custom-dropdown-menu"
             }}
             trigger={["click"]}
           >
