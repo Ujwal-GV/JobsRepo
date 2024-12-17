@@ -58,7 +58,7 @@ const CustomLegend = ({ payload }) => {
               marginRight: "1px",
             }}
           ></div>
-          <span className="text-white font-thin" style={{ fontSize: "11px", }}>{entry.value}</span>
+          <span className="text-white font-thin" style={{ fontSize: "13px", }}>{entry.value}</span>
         </li>
       ))}
     </ul>

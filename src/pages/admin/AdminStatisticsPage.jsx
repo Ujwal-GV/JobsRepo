@@ -299,7 +299,15 @@ export default function AdminStatisticsPage() {
       <h1 className="text-2xl font-bold text-center underline uppercase text-white">Admin Dashboard</h1>
 
       <div className="flex gap-4 justify-end mb-4">
-        <Dropdown menu={{ items, onClick: handleMenuClick }} trigger={['click']}>
+        <Dropdown 
+          menu={{ 
+            items, 
+            onClick: handleMenuClick,
+            className: 'custom-dropdown-menu'
+           }} 
+          className= 'custom-dropdown-menu-color'
+          trigger={['click']}
+          >
           <button className="bg-gray-700 bg-opacity-50 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-500">
             <span className="flex gap-2">
                 <FaCalendar />{selectLabel}
