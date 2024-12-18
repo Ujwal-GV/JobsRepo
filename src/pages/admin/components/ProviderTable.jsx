@@ -15,7 +15,7 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 
-const SeekerTable = () => {
+const ProviderTable = () => {
   const USER_TYPE = [
     { label: "All", icon: <FaUsers />, color: "yellow" },
     { label: "Blocked", icon: <FaUserSlash />, color: "red" },
@@ -43,12 +43,17 @@ const SeekerTable = () => {
       queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
     }
 
-    const res = await axiosInstance.get("/admin/seekers", {
-      params: queryParam,
-    });
-    console.log("Seekers:", res.data);
-
-    return res.data;
+    try {
+        const res = await axiosInstance.get("/admin/providers", {
+          params: queryParam,
+        });
+        console.log("Providers:", res.data);
+        return res.data;
+      } catch (error) {
+        console.log(error);
+        
+        throw new Error(error);
+      }
   };
 
   const {
@@ -58,7 +63,7 @@ const SeekerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["seekers-data", currentPage ,searchText ,userType],
+    queryKey: ["providers-data", currentPage ,searchText ,userType],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -140,11 +145,11 @@ const SeekerTable = () => {
       if (sortValue === "name") {
         if (sortType === "inc") {
           filteredData = filteredData.sort((a, b) =>
-            a.name.localeCompare(b.name)
+            a.company_name.localeCompare(b.company_name)
           );
         } else if (sortType === "desc") {
           filteredData = filteredData.sort((a, b) =>
-            b.name.localeCompare(a.name)
+            b.company_name.localeCompare(a.company_name)
           );
         }
       } else if (sortValue === "email") {
@@ -353,7 +358,7 @@ const SeekerTable = () => {
   );
 };
 
-export default SeekerTable;
+export default ProviderTable;
 
 const UserTableCard = ({ data = {} }) => {
   if (Object.keys(data).length > 0) {
@@ -363,9 +368,9 @@ const UserTableCard = ({ data = {} }) => {
         key={data?._id}
       >
         <span className="overflow-hidden text-ellipsis p-1">
-          {data?.user_id}
+          {data?.company_id}
         </span>
-        <span className="overflow-hidden text-ellipsis p-1">{data?.name}</span>
+        <span className="overflow-hidden text-ellipsis p-1">{data?.company_name}</span>
         <span className="overflow-hidden text-ellipsis p-1">{data?.email}</span>
         <span className="overflow-hidden text-ellipsis p-1">
           {new Date(data?.createdAt).toLocaleString()}
