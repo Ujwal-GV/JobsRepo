@@ -15,7 +15,7 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 
-const SeekerTable = () => {
+const FreelancerTable = () => {
   const USER_TYPE = [
     { label: "All", icon: <FaUsers />, color: "yellow" },
     { label: "Blocked", icon: <FaUserSlash />, color: "red" },
@@ -43,12 +43,15 @@ const SeekerTable = () => {
       queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
     }
 
-    const res = await axiosInstance.get("/admin/seekers", {
-      params: queryParam,
-    });
-    console.log("Seekers:", res.data);
-
-    return res.data;
+    try {
+        const res = await axiosInstance.get("/admin/freelancers", {
+          params: queryParam,
+        });
+        console.log("Freelancers:", res.data);
+        return res.data;
+      } catch (error) {
+        throw new Error(error);
+      }
   };
 
   const {
@@ -58,10 +61,10 @@ const SeekerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["seekers-data", currentPage ,searchText ,userType],
+    queryKey: ["freelancers-data", currentPage ,searchText ,userType],
     queryFn: fetchData,
     keepPreviousData: true,
-    staleTime: Infinity,
+    staleTime: 0,
   });
 
   useEffect(() => {
@@ -82,6 +85,8 @@ const SeekerTable = () => {
   }, [data]);
 
   const handleCurrentPageChange = (page) => {
+    console.log("Page", page);
+    
     setCurrentPage(page);
   };
 
@@ -342,7 +347,7 @@ const SeekerTable = () => {
 
       <article className="w-full flex justify-center items-center mt-3 ">
         <CustomePagination
-          key={"seeker-pagination"}
+        //   key={"seeker-pagination"}
           totalData={totalData}
           currentPage={currentPage}
           dataPerPage={10}
@@ -353,7 +358,7 @@ const SeekerTable = () => {
   );
 };
 
-export default SeekerTable;
+export default FreelancerTable;
 
 const UserTableCard = ({ data = {} }) => {
   if (Object.keys(data).length > 0) {
@@ -363,7 +368,7 @@ const UserTableCard = ({ data = {} }) => {
         key={data?._id}
       >
         <span className="overflow-hidden text-ellipsis p-1">
-          {data?.user_id}
+          {data?.freelancer_id}
         </span>
         <span className="overflow-hidden text-ellipsis p-1">{data?.name}</span>
         <span className="overflow-hidden text-ellipsis p-1">{data?.email}</span>

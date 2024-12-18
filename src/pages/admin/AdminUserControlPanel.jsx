@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import SeekerTable from "./components/SeekerTable";
+import ProviderTable from "./components/ProviderTable";
+import FreelancerTable from "./components/FreelancerTable";
 
 const AdminUserControlPanel = () => {
 
@@ -33,7 +35,15 @@ const AdminUserControlPanel = () => {
       <section className="w-full p-4 bg-gray-800 bg-opacity-50 text-gray-200">
        
        {
-         activeTable === "Seekers" ?  <SeekerTable/> :<></>
+         activeTable === "Seekers" ?  <SeekerTable/> : null
+       }
+
+       {
+         activeTable === "Providers" ?  <ProviderTable/> : null
+       }
+
+       {
+         activeTable === "Freelancers" ?  <FreelancerTable/> : null
        }
         
       </section>

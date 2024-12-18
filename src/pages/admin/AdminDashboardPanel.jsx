@@ -17,6 +17,7 @@ import { useDomEvent } from 'framer-motion';
 import CustomPieChart from './components/CustomPieChart';
 import CustomSingleBarChart from './components/CustomSingleBarChart';
 import CustomMultiBarChart from './components/CustomMultiBarChart';
+import { IoHourglassOutline } from 'react-icons/io5';
 
 export default function AdminDashboardPanel() {
 const [updatedData, setUpdatedData] = useState([]);
@@ -216,7 +217,7 @@ const [label, setLabel] = useState("Select Time Range");
 
   return (
     <div className='h-screen overflow-y-auto'>
-      <h1 className="p-4 my-4 mx-4 text-white underline center font-black text-lg lg:text-[1.8rem] rounded-lg uppercase  shadow-lg">
+      <h1 className="p-4 my-4 mx-4 text-white underline center font-black text-[1.8rem] rounded-lg uppercase  shadow-lg">
         Admin Dashboard
       </h1>
 
@@ -228,15 +229,15 @@ const [label, setLabel] = useState("Select Time Range");
           <h2 className="text-2xl justify-start font-semibold text-white">Statistics</h2>
           <button
             onClick={handleRefreshCount}
-            className="absolute top-4 py-2 px-2 justify-end right-6 text-gray-800 rounded-full  transition-all"
+            className="absolute top-4 py-2 px-2 justify-end right-6 rounded-full transition-all bg-gray-700 bg-opacity-50 text-white hover:bg-gray-500"
           >
             <MdRefresh className="text-xl" />
           </button>
           <div className={`grid ${usersCountLoading || usersDataIsFetching ? "grid-cols-1" : "grid-cols-4" } gap-6`}>
 
             {usersCountLoading || usersDataIsFetching ? 
-              <div className='flex align-center justify-center items-center mx-auto min-h-[15.1rem]'>
-                <Spin size='large' className='animate-spin-slow text-gray-300' />
+              <div className='flex align-center justify-center items-center mx-auto min-h-[20.3rem]'>
+                <IoHourglassOutline className='animate-spin-slow text-[2rem] text-white' />
               </div>
               : 
               usersCount.length > 0 ?
