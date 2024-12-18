@@ -22,6 +22,51 @@ const FreelancerTable = () => {
     { label: "Not Blocked", icon: <FaUserCheck />, color: "green" },
   ];
 
+  const LIMIT_ITEM = [
+    {
+      label: (
+        <span
+          className="w-full"
+          onClick={() => {
+            setTableLimit(10)
+          }}
+        >
+          10
+        </span>
+      ),
+      key: "10",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(20)}>
+          20
+        </span>
+      ),
+      key: "20",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(50)}>
+          50
+        </span>
+      ),
+      key: "50",
+    },
+    {
+      label: (
+        <span
+          className="w-full"
+          onClick={() => setTableLimit(100)}
+        >
+          100
+        </span>
+      ),
+      key: "100",
+    },
+  ]
+
+
+
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalData, setTotalData] = useState(0);
@@ -32,26 +77,26 @@ const FreelancerTable = () => {
   const [sortValue, setSortValue] = useState("");
   const [sortType, setSortType] = useState("inc");
   const [userType, setUserType] = useState("All");
+  const [tableLimit,setTableLimit] = useState(10);
 
   const fetchData = async ({ queryKey }) => {
+    let queryParam = { page: queryKey[1], limit: tableLimit, q: searchText };
 
-    let queryParam = {page: queryKey[1],
-      limit: 10,q: searchText,}
-
-    if(userType!=="All")
-    {
-      queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
+    if (userType !== "All") {
+      queryParam = {
+        ...queryParam,
+        isBlocked: userType === "Blocked" ? true : false,
+      };
     }
 
     try {
-        const res = await axiosInstance.get("/admin/freelancers", {
-          params: queryParam,
-        });
-        console.log("Freelancers:", res.data);
-        return res.data;
-      } catch (error) {
-        throw new Error(error);
-      }
+      const res = await axiosInstance.get("/admin/freelancers", {
+        params: queryParam,
+      });
+      return res.data;
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   const {
@@ -61,7 +106,7 @@ const FreelancerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["freelancers-data", currentPage ,searchText ,userType],
+    queryKey: ["freelancers-data", currentPage, userType ,tableLimit],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: 0,
@@ -69,24 +114,23 @@ const FreelancerTable = () => {
 
   useEffect(() => {
     setTableLoading(isLoading);
-    if(isFetching)
-    {
-      setTableLoading(isFetching)
+    if (isFetching) {
+      setTableLoading(isFetching);
     }
-  
-  }, [isLoading,isFetching]);
+  }, [isLoading, isFetching]);
 
   useEffect(() => {
     if (data) {
       setTableData(data.users);
       setFilteredTableData(data.users);
       setTotalData(data.totalUsers);
+      if (searchText !== "") {
+        setCurrentPage(1);
+      }
     }
   }, [data]);
 
   const handleCurrentPageChange = (page) => {
-    console.log("Page", page);
-    
     setCurrentPage(page);
   };
 
@@ -96,7 +140,7 @@ const FreelancerTable = () => {
     {
       label: (
         <span
-          className="w-full"
+          className="w-full text-center"
           onClick={() => {
             setSortValue("");
             setSortType("inc");
@@ -109,7 +153,7 @@ const FreelancerTable = () => {
     },
     {
       label: (
-        <span className="w-full" onClick={() => setSortValue("name")}>
+        <span className="w-full text-center" onClick={() => setSortValue("name")}>
           Name
         </span>
       ),
@@ -117,7 +161,7 @@ const FreelancerTable = () => {
     },
     {
       label: (
-        <span className="w-full" onClick={() => setSortValue("email")}>
+        <span className="w-full text-center" onClick={() => setSortValue("email")}>
           Email
         </span>
       ),
@@ -126,7 +170,7 @@ const FreelancerTable = () => {
     {
       label: (
         <span
-          className="w-full"
+          className="w-full text-center"
           onClick={() => setSortValue("Registered Date")}
         >
           Registered Date
@@ -194,13 +238,13 @@ const FreelancerTable = () => {
     filterTableDataHandler();
   };
 
-  const handleUserTypeChange=(type)=>{
-    setUserType(type)
-    searchHandler()
-  }
+  const handleUserTypeChange = (type) => {
+    setUserType(type);
+    searchHandler();
+  };
 
   return (
-    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
+    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3 ">
       {tableLoading && (
         <div className="absolute top-0 left-0 w-full h-full bg-slate-700 bg-opacity-75 flex justify-center items-center cursor-progress">
           <RiLoader3Fill className="animate-spin text-[1.5rem]" />
@@ -214,7 +258,9 @@ const FreelancerTable = () => {
           <input
             type="text"
             value={searchText}
-            onChange={(e) => {setSearchText(e.target.value);setCurrentPage(1)}}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
             className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:!text-[0.8rem]"
             placeholder="Search by name or email or userId"
             onKeyDown={(e) => {
@@ -235,7 +281,9 @@ const FreelancerTable = () => {
                   style={{
                     color: userType === type.label ? type.color : "white",
                   }}
-                  onClick={()=>{handleUserTypeChange(type.label)}}
+                  onClick={() => {
+                    handleUserTypeChange(type.label);
+                  }}
                   className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
                   {type.icon} {type.label}
@@ -260,7 +308,7 @@ const FreelancerTable = () => {
           <Dropdown
             menu={{
               items,
-              className: "custom-dropdown-menu"
+              className: "custom-dropdown-menu",
             }}
             trigger={["click"]}
           >
@@ -325,7 +373,9 @@ const FreelancerTable = () => {
 
       {/* Table Data */}
 
-      {filteredTableData.length === 0 && (
+      <article className="h-[60vh] overflow-y-auto">
+        
+        {filteredTableData.length === 0 && (
         <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
           {!tableLoading ? (
             <>
@@ -335,7 +385,7 @@ const FreelancerTable = () => {
             <></>
           )}
         </div>
-      )}
+       )}
 
       {filteredTableData.length > 0 && (
         <div className="mt-2 w-full">
@@ -345,14 +395,33 @@ const FreelancerTable = () => {
         </div>
       )}
 
-      <article className="w-full flex justify-center items-center mt-3 ">
+      </article>
+
+      <article className="w-full flex justify-center items-center mt-3 relative">
         <CustomePagination
-        //   key={"seeker-pagination"}
+          key={"freelancer-pagination"}
           totalData={totalData}
           currentPage={currentPage}
-          dataPerPage={10}
+          dataPerPage={tableLimit}
           onPageChange={(p) => handleCurrentPageChange(p)}
         />
+        <div className="absolute bottom-1 right-2">
+          <span className="me-2">Total Data : {totalData}</span>
+          <Dropdown
+            menu={{
+              items:LIMIT_ITEM,
+              className: "custom-dropdown-menu",
+            }}
+            trigger={["click"]}
+          >
+            <a
+              onClick={(e) => e.preventDefault()}
+              className="cursor-pointer text-[0.8rem]"
+            >
+              Limit {tableLimit}
+            </a>
+          </Dropdown>
+        </div>
       </article>
     </section>
   );

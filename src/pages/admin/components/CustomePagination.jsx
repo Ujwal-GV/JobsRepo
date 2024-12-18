@@ -18,6 +18,7 @@ const CustomePagination = ({
     setNoOfPages(pages);
     setStartPage(Math.max(1, currentPage - 2));
     setEndPage(Math.min(pages, currentPage + 2));
+    setCurrentPage(currentPage)
   }, [totalData, dataPerPage, currentPage]);
 
   const handlePageChange = (page) => {
@@ -28,7 +29,6 @@ const CustomePagination = ({
   if (totalData === 0) {
     return null;
   }
-
   return (
     <div className="w-fit flex">
       {paginationcurrentPage > 1 && (
@@ -48,7 +48,7 @@ const CustomePagination = ({
           key={page}
           onClick={() => handlePageChange(page)}
           className={`px-3 py-1 rounded-md mx-1 
-            ${paginationcurrentPage === page ? 
+            ${(paginationcurrentPage === page ) ? 
               "bg-gray-300 text-black" : 
               `bg-[${activePageBg}] text-[${activePageColor}]
             `}`}
