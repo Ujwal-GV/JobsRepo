@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaHome, FaUser, FaAd, FaCogs, FaAppStore, FaPowerOff, FaUserCog } from "react-icons/fa";
+import { FaHome, FaUser, FaAd, FaCogs, FaAppStore, FaPowerOff, FaUserCog, FaChartBar } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ const AdminControlNavbar = () => {
   const menuItems = [
     { title: "Dashboard", nav: "/admin", icon: <FaHome />, label: "dashboard" },
     { title: "User Management", nav: "/admin/user-management", icon: <FaUser />, label: "userManagement" },
+    { title: "Statistics", nav: "/admin/statistics", icon: <FaChartBar />, label: "statistics" },
     { title: "User Verification Control", nav: "/admin/user-control", icon: <FaUserCog />, label: "userControl" },
     { title: "Ads Management", nav: "/admin/ads-management", icon: <FaAd />, label: "adsManagement" },
     { title: "Application Management", nav: "/admin/app-management", icon: <FaAppStore />, label: "appManagement" },
@@ -45,9 +46,9 @@ const AdminControlNavbar = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen ">
       <div
-        className={`bg-gray-800 text-white font-outfit flex flex-col min-w-[3rem] ${
+        className={`bg-gray-800   text-white font-outfit flex flex-col min-w-[3rem] ${
           isCollapsed ? "w-[4rem]" : "w-[16rem]"
         } z-10 absolute left-0 top-0 h-screen transition-all duration-500 ease-in-out`}
         onMouseEnter={() => setIsCollapsed(false)}

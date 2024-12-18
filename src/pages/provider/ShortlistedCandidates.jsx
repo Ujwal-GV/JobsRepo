@@ -59,7 +59,7 @@ export default function ShortlistedCandidates() {
 
     const sendMailToCandidates = async(postId) => {
         try {
-            const response = await axiosInstance.post("/jobs/post/shortlist/send-mail", {
+            const response = await axiosInstance.post("/jobs/post/sendEmail", {
                 postId,
             });
             if(response.data) {
@@ -67,7 +67,7 @@ export default function ShortlistedCandidates() {
             } else {
                 throw new Error("Failed to send mail");
             }
-        } catch (err) {
+        } catch (err) {            
             throw new Error(err.message || "Failed to send mail");
         }
     };

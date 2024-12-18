@@ -56,6 +56,7 @@ import AdminLogin from './pages/admin/AdminLogin'
 import AdminUserManagementPanel from './pages/admin/AdminUserManagement'
 import AdminUserControlPanel from './pages/admin/AdminUserControlPanel'
 import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
+import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
 
 const AppMain = () => {
 
@@ -125,6 +126,8 @@ const AppMain = () => {
               <Route path="/admin/user-management" element={ <AdminUserManagementPanel /> } />
               <Route path="/admin/user-control" element={ <AdminUserControlPanel /> } />
               <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
+              <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
+
           </Route>
 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>

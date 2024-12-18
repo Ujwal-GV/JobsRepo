@@ -20,13 +20,14 @@ import { FaCheck, FaCheckCircle, FaCross } from 'react-icons/fa';
 import { AiFillCheckCircle, AiFillCloseCircle } from 'react-icons/ai';
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { MdRefresh } from 'react-icons/md';
+import { useMutation } from "@tanstack/react-query"; 
 
 
 const AllPostedJobs = () => {
   const navigate = useNavigate();
 
   const { id: jobApplicationId } = useParams();
-  const {profileData} = useContext(AuthContext);
+  const {profileData} = useContext(AuthContext);  
 
   const [currentPage, setCurrentPage] = useState(1);
   const [applicants, setApplicants] = useState([]);
@@ -35,6 +36,9 @@ const AllPostedJobs = () => {
   const totalPages = Math.ceil(totalData / limit);
 
   const [reportClicked, setReportClicked] = useState(false);
+
+  const [reportReason, setReportReason] = useState('');
+  const [otherReason, setOtherReason] = useState('');
 
   useEffect(()=>{
       if(profileData?.application_applied_info?.jobs?.find((id)=>id.jobId === jobApplicationId)) {
@@ -114,6 +118,30 @@ const AllPostedJobs = () => {
     }
   };
 
+  const { 
+    mutate: reportUser, 
+    isLoading: isReporting, 
+    isPending: isReportingPending 
+  } = useMutation({
+    mutationKey: ["report-user"],
+    mutationFn: async (data) => {
+      const res = await axiosInstance.post('/reports/user', data);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Report submitted successfully");
+      setReportClicked(false);
+      setReportReason('');
+      setOtherReason('');
+      closeModal();
+    },
+    onError: (error) => {
+      const message = error?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    },
+  });
+
+
   const handleViewClick = (userId) => {
     navigate(`/provider/view-candidate/${jobApplicationId}/${userId}`);
   };
@@ -179,14 +207,27 @@ const AllPostedJobs = () => {
     setReportClicked(!reportClicked);
   }
 
-  const handleReportAction = () => {
-    toast.error("Work in progress");
-    setReportClicked(false);
-  }
+  const handleReportAction = (user_id) => {
+    const reportData = {
+      reportedBy: profileData.company_id,
+      reportedTo: user_id,
+      content: reportReason === 'Other' ? otherReason : reportReason,
+    };
+  
+    if (!reportData.content) {
+      toast.error("Please select a reason for reporting.");
+      return;
+    }
+
+    reportUser(reportData);
+  };
+  
 
   const closeModal = () => {
     setReportClicked(false);
-  }
+    setReportReason("");
+    setOtherReason("");
+  };
 
   const handleShortlistButton = () => {
     navigate(`/provider/shortlist/${jobApplicationId}`);
@@ -381,7 +422,7 @@ const AllPostedJobs = () => {
                       />
                       {reportClicked && (
                           <div
-                            className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50"
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
                             onClick={closeModal}
                           >
                             <div
@@ -391,14 +432,40 @@ const AllPostedJobs = () => {
                               <h3 className="text-lg center font-semibold text-gray-800 mb-4">Report User</h3>
                               <hr className='w-[90%] mx-auto mb-2' />
                               <p className="text-sm text-gray-600 mb-4">
-                                Are you sure you want to report this user? Please choose a reason.
+                                Please select a reason for reporting this user.
                               </p>
-                              <span className='flex gap-4 center'>
+                              {["Inappropriate behavior", "Spam or fraud", "Harassment", "Other"].map((reason) => (
+                                <div className="mb-2" key={reason}>
+                                  <label className="flex items-center space-x-2">
+                                    <input
+                                      type="radio"
+                                      name="reportReason"
+                                      value={reason}
+                                      checked={reportReason === reason}
+                                      onChange={(e) => setReportReason(e.target.value)}
+                                      className="form-radio text-red-600"
+                                    />
+                                    <span className="text-gray-600">{reason}</span>
+                                  </label>
+                                </div>
+                              ))}
+                              {reportReason === "Other" && (
+                                <div className="mt-2">
+                                  <textarea
+                                    placeholder="Describe the issue..."
+                                    value={otherReason}
+                                    onChange={(e) => setOtherReason(e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                                  />
+                                </div>
+                              )}
+                              <div className="mt-4 flex justify-end gap-4">
                                 <button
-                                  onClick={handleReportAction}
+                                  onClick={() => handleReportAction(applicant.user_id)}
                                   className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm flex items-center justify-center hover:bg-red-700 transition-colors duration-200 ease-in-out shadow-md"
+                                  disabled={isReporting || isReportingPending}
                                 >
-                                  Report
+                                  {isReporting || isReportingPending ? "Reporting..." : "Report"}
                                 </button>
                                 <button
                                   onClick={closeModal}
@@ -406,10 +473,11 @@ const AllPostedJobs = () => {
                                 >
                                   Cancel
                                 </button>
-                              </span>
+                              </div>
                             </div>
                           </div>
                         )}
+
                         <img
                           src={applicant?.profile_details?.profileImg ? applicant.profile_details.profileImg : "img"}
                           alt="Profile"
