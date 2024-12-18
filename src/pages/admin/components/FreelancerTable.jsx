@@ -214,7 +214,7 @@ const FreelancerTable = () => {
           <input
             type="text"
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => {setSearchText(e.target.value);setCurrentPage(1)}}
             className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:!text-[0.8rem]"
             placeholder="Search by name or email or userId"
             onKeyDown={(e) => {
@@ -231,7 +231,7 @@ const FreelancerTable = () => {
             {USER_TYPE.map((type, idx) => {
               return (
                 <span
-                  key={type.FaLongArrowAltDown}
+                  key={type.label}
                   style={{
                     color: userType === type.label ? type.color : "white",
                   }}
