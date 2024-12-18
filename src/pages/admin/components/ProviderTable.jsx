@@ -22,6 +22,46 @@ const ProviderTable = () => {
     { label: "Not Blocked", icon: <FaUserCheck />, color: "green" },
   ];
 
+  const LIMIT_ITEM = [
+    {
+      label: (
+        <span
+          className="w-full"
+          onClick={() => {
+            setTableLimit(10);
+          }}
+        >
+          10
+        </span>
+      ),
+      key: "10",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(20)}>
+          20
+        </span>
+      ),
+      key: "20",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(50)}>
+          50
+        </span>
+      ),
+      key: "50",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(100)}>
+          100
+        </span>
+      ),
+      key: "100",
+    },
+  ];
+
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalData, setTotalData] = useState(0);
@@ -32,28 +72,29 @@ const ProviderTable = () => {
   const [sortValue, setSortValue] = useState("");
   const [sortType, setSortType] = useState("inc");
   const [userType, setUserType] = useState("All");
+  const [tableLimit,setTableLimit] = useState(10);
 
   const fetchData = async ({ queryKey }) => {
+    let queryParam = { page: queryKey[1], limit: tableLimit, q: searchText };
 
-    let queryParam = {page: queryKey[1],
-      limit: 10,q: searchText,}
-
-    if(userType!=="All")
-    {
-      queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
+    if (userType !== "All") {
+      queryParam = {
+        ...queryParam,
+        isBlocked: userType === "Blocked" ? true : false,
+      };
     }
 
     try {
-        const res = await axiosInstance.get("/admin/providers", {
-          params: queryParam,
-        });
-        console.log("Providers:", res.data);
-        return res.data;
-      } catch (error) {
-        console.log(error);
-        
-        throw new Error(error);
-      }
+      const res = await axiosInstance.get("/admin/providers", {
+        params: queryParam,
+      });
+      console.log("Providers:", res.data);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+
+      throw new Error(error);
+    }
   };
 
   const {
@@ -63,7 +104,7 @@ const ProviderTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["providers-data", currentPage ,searchText ,userType],
+    queryKey: ["providers-data", currentPage, userType ,tableLimit],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -71,18 +112,19 @@ const ProviderTable = () => {
 
   useEffect(() => {
     setTableLoading(isLoading);
-    if(isFetching)
-    {
-      setTableLoading(isFetching)
+    if (isFetching) {
+      setTableLoading(isFetching);
     }
-  
-  }, [isLoading,isFetching]);
+  }, [isLoading, isFetching]);
 
   useEffect(() => {
     if (data) {
       setTableData(data.users);
       setFilteredTableData(data.users);
       setTotalData(data.totalUsers);
+      if (searchText !== "") {
+        setCurrentPage(1);
+      }
     }
   }, [data]);
 
@@ -194,10 +236,10 @@ const ProviderTable = () => {
     filterTableDataHandler();
   };
 
-  const handleUserTypeChange=(type)=>{
-    setUserType(type)
-    searchHandler()
-  }
+  const handleUserTypeChange = (type) => {
+    setUserType(type);
+    searchHandler();
+  };
 
   return (
     <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
@@ -231,11 +273,13 @@ const ProviderTable = () => {
             {USER_TYPE.map((type, idx) => {
               return (
                 <span
-                  key={type.FaLongArrowAltDown}
+                  key={type.label}
                   style={{
                     color: userType === type.label ? type.color : "white",
                   }}
-                  onClick={()=>{handleUserTypeChange(type.label)}}
+                  onClick={() => {
+                    handleUserTypeChange(type.label);
+                  }}
                   className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
                   {type.icon} {type.label}
@@ -260,7 +304,7 @@ const ProviderTable = () => {
           <Dropdown
             menu={{
               items,
-              className: "custom-dropdown-menu"
+              className: "custom-dropdown-menu",
             }}
             trigger={["click"]}
           >
@@ -325,6 +369,7 @@ const ProviderTable = () => {
 
       {/* Table Data */}
 
+      <article className="h-[60vh] overflow-y-auto">
       {filteredTableData.length === 0 && (
         <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
           {!tableLoading ? (
@@ -344,15 +389,33 @@ const ProviderTable = () => {
           })}
         </div>
       )}
+      </article>
 
-      <article className="w-full flex justify-center items-center mt-3 ">
+      <article className="w-full flex justify-center items-center mt-3 relative ">
         <CustomePagination
-          key={"seeker-pagination"}
+          key={"provider-pagination"}
           totalData={totalData}
           currentPage={currentPage}
           dataPerPage={10}
           onPageChange={(p) => handleCurrentPageChange(p)}
         />
+        <div className="absolute bottom-1 right-2">
+          <span className="me-2">Total Data : {totalData}</span>
+          <Dropdown
+            menu={{
+              items: LIMIT_ITEM,
+              className: "custom-dropdown-menu",
+            }}
+            trigger={["click"]}
+          >
+            <a
+              onClick={(e) => e.preventDefault()}
+              className="cursor-pointer text-[0.8rem]"
+            >
+              Limit {tableLimit}
+            </a>
+          </Dropdown>
+        </div>
       </article>
     </section>
   );
@@ -370,7 +433,9 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.company_id}
         </span>
-        <span className="overflow-hidden text-ellipsis p-1">{data?.company_name}</span>
+        <span className="overflow-hidden text-ellipsis p-1">
+          {data?.company_name}
+        </span>
         <span className="overflow-hidden text-ellipsis p-1">{data?.email}</span>
         <span className="overflow-hidden text-ellipsis p-1">
           {new Date(data?.createdAt).toLocaleString()}

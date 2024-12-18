@@ -22,6 +22,46 @@ const SeekerTable = () => {
     { label: "Not Blocked", icon: <FaUserCheck />, color: "green" },
   ];
 
+  const LIMIT_ITEM = [
+    {
+      label: (
+        <span
+          className="w-full"
+          onClick={() => {
+            setTableLimit(10);
+          }}
+        >
+          10
+        </span>
+      ),
+      key: "10",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(20)}>
+          20
+        </span>
+      ),
+      key: "20",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(50)}>
+          50
+        </span>
+      ),
+      key: "50",
+    },
+    {
+      label: (
+        <span className="w-full" onClick={() => setTableLimit(100)}>
+          100
+        </span>
+      ),
+      key: "100",
+    },
+  ];
+
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalData, setTotalData] = useState(0);
@@ -32,15 +72,20 @@ const SeekerTable = () => {
   const [sortValue, setSortValue] = useState("");
   const [sortType, setSortType] = useState("inc");
   const [userType, setUserType] = useState("All");
+  const [tableLimit, setTableLimit] = useState(10);
 
   const fetchData = async ({ queryKey }) => {
+    let queryParam = {
+      page: searchText === "" ? queryKey[1] : 1,
+      limit: tableLimit,
+      q: searchText,
+    };
 
-    let queryParam = {page: queryKey[1],
-      limit: 10,q: searchText,}
-
-    if(userType!=="All")
-    {
-      queryParam = {...queryParam , isBlocked : userType === "Blocked" ? true :false}
+    if (userType !== "All") {
+      queryParam = {
+        ...queryParam,
+        isBlocked: userType === "Blocked" ? true : false,
+      };
     }
 
     const res = await axiosInstance.get("/admin/seekers", {
@@ -57,7 +102,7 @@ const SeekerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["seekers-data", currentPage ,searchText ,userType],
+    queryKey: ["seekers-data", currentPage, userType,tableLimit],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -65,18 +110,19 @@ const SeekerTable = () => {
 
   useEffect(() => {
     setTableLoading(isLoading);
-    if(isFetching)
-    {
-      setTableLoading(isFetching)
+    if (isFetching) {
+      setTableLoading(isFetching);
     }
-  
-  }, [isLoading,isFetching]);
+  }, [isLoading, isFetching]);
 
   useEffect(() => {
     if (data) {
       setTableData(data.users);
       setFilteredTableData(data.users);
       setTotalData(data.totalUsers);
+      if (searchText !== "") {
+        setCurrentPage(1);
+      }
     }
   }, [data]);
 
@@ -188,10 +234,10 @@ const SeekerTable = () => {
     filterTableDataHandler();
   };
 
-  const handleUserTypeChange=(type)=>{
-    setUserType(type)
-    searchHandler()
-  }
+  const handleUserTypeChange = (type) => {
+    setUserType(type);
+    searchHandler();
+  };
 
   return (
     <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
@@ -208,7 +254,9 @@ const SeekerTable = () => {
           <input
             type="text"
             value={searchText}
-            onChange={(e) => {setSearchText(e.target.value);setCurrentPage(1)}}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
             className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:!text-[0.8rem]"
             placeholder="Search by name or email or userId"
             onKeyDown={(e) => {
@@ -229,7 +277,9 @@ const SeekerTable = () => {
                   style={{
                     color: userType === type.label ? type.color : "white",
                   }}
-                  onClick={()=>{handleUserTypeChange(type.label)}}
+                  onClick={() => {
+                    handleUserTypeChange(type.label);
+                  }}
                   className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
                   {type.icon} {type.label}
@@ -254,7 +304,7 @@ const SeekerTable = () => {
           <Dropdown
             menu={{
               items,
-              className: "custom-dropdown-menu"
+              className: "custom-dropdown-menu",
             }}
             trigger={["click"]}
           >
@@ -319,7 +369,9 @@ const SeekerTable = () => {
 
       {/* Table Data */}
 
-      {filteredTableData.length === 0 && (
+     <article  className="h-[60vh] overflow-y-auto">
+        
+     {filteredTableData.length === 0 && (
         <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
           {!tableLoading ? (
             <>
@@ -339,14 +391,34 @@ const SeekerTable = () => {
         </div>
       )}
 
-      <article className="w-full flex justify-center items-center mt-3 ">
+
+     </article>
+
+      <article className="w-full flex justify-center items-center mt-3  relative">
         <CustomePagination
           key={"seeker-pagination"}
           totalData={totalData}
           currentPage={currentPage}
-          dataPerPage={10}
+          dataPerPage={tableLimit}
           onPageChange={(p) => handleCurrentPageChange(p)}
         />
+        <div className="absolute bottom-1 right-2">
+          <span className="me-2">Total Data : {totalData}</span>
+          <Dropdown
+            menu={{
+              items: LIMIT_ITEM,
+              className: "custom-dropdown-menu",
+            }}
+            trigger={["click"]}
+          >
+            <a
+              onClick={(e) => e.preventDefault()}
+              className="cursor-pointer text-[0.8rem]"
+            >
+              Limit {tableLimit}
+            </a>
+          </Dropdown>
+        </div>
       </article>
     </section>
   );
