@@ -369,7 +369,7 @@ const SeekerTable = () => {
 
       {/* Table Data */}
 
-     <article  className="h-[60vh] overflow-y-auto">
+     <article  className="h-[60vh] overflow-y-auto custom-scroll">
         
      {filteredTableData.length === 0 && (
         <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
@@ -394,28 +394,35 @@ const SeekerTable = () => {
 
      </article>
 
-      <article className="w-full flex justify-center items-center mt-3  relative">
-        <CustomePagination
-          key={"seeker-pagination"}
-          totalData={totalData}
-          currentPage={currentPage}
-          dataPerPage={tableLimit}
-          onPageChange={(p) => handleCurrentPageChange(p)}
-        />
-        <div className="absolute bottom-1 right-2">
-          <span className="me-2">Total Data : {totalData}</span>
+     <article className="w-full flex justify-between items-center mt-3 relative">
+        <div className="">
+          <span className="ml-9 text-[0.9rem] px-4 py-2 border border-white rounded-lg">Total Data : {totalData}</span>
+        </div>
+        <div className="flex flex-1 justify-center">
+          <CustomePagination
+            key={"seeker-pagination"}
+            totalData={totalData}
+            currentPage={currentPage}
+            dataPerPage={tableLimit}
+            onPageChange={(p) => handleCurrentPageChange(p)}
+          />
+        </div>
+        <div>
           <Dropdown
             menu={{
-              items: LIMIT_ITEM,
+              items:LIMIT_ITEM,
               className: "custom-dropdown-menu",
+              style: {
+                display: 'flex',
+              }
             }}
             trigger={["click"]}
           >
             <a
               onClick={(e) => e.preventDefault()}
-              className="cursor-pointer text-[0.8rem]"
+              className="cursor-pointer text-[0.9rem] mr-9 px-4 py-2 border border-white rounded-lg"
             >
-              Limit {tableLimit}
+              Limit | {tableLimit}
             </a>
           </Dropdown>
         </div>
