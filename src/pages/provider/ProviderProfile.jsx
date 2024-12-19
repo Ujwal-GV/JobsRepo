@@ -610,6 +610,7 @@ export default ProviderProfile;
                   {({ field }) => (
                     <InputBox
                       {...field}
+                      disable={true}
                       icon={<MdEmail />} // Icon for email
                       placeholder="Email"
                       customClass="mt-4"
