@@ -623,8 +623,13 @@ const JobApplicationProviderView = () => {
   };
 
   const submitJobApplication = async (jobData) => {
-    const response = await axiosInstance.post('/jobs/create', jobData);
-    return response.data;
+    try{
+      const response = await axiosInstance.post('/jobs/create', jobData);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   const mutation = useMutation({
@@ -634,7 +639,7 @@ const JobApplicationProviderView = () => {
       navigate('/provider', { replace: true });
     },
     onError: (error) => {
-      const { message } = error.response.data;
+      const message = error.response?.data?.message;      
       toast.error(message);
     },
   });

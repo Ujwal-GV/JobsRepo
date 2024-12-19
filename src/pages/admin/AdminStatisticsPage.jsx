@@ -49,11 +49,13 @@ export default function AdminStatisticsPage() {
         params: { days },
         });        
 
-        const activeData = res.data.map(day => ({
+        const { seekerData, providerData, freelancerData } = res.data;
+
+        const activeData = seekerData.map((day, index) => ({
             date: day.Date,
-            Users: day.counts.activeUsersCount,
-            Providers: day.counts.activeProviderCount,
-            Freelancers: day.counts.activeFreelancerCount,
+            Users: day.counts,
+            Providers: providerData[index]?.counts || 0,
+            Freelancers: freelancerData[index]?.counts || 0,
         }));
                 
         setActiveData(activeData);
@@ -90,10 +92,7 @@ export default function AdminStatisticsPage() {
             Freelancers: day.counts.registeredFreelancerCount,
             Posts: day.counts.registeredPostCount,
             Projects: day.counts.registeredProjectCount,
-        }));
-
-        console.log(registrationDays);
-        
+        }));        
         setRegistrationDays(registrationDays.reverse());
         return registrationDays;
     } catch (err) {
@@ -302,7 +301,7 @@ export default function AdminStatisticsPage() {
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-4">
           <button
-            className="py-2 px-4 bg-gray-700 bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
+            className="py-2 px-4 bg-gray-700 text-[0.8rem] bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
           >
             <a href="#registration-statistics">
               Registration Statistics
@@ -310,7 +309,7 @@ export default function AdminStatisticsPage() {
           </button>
 
           <button
-            className="py-2 px-4 bg-gray-700 bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
+            className="py-2 px-4 bg-gray-700 text-[0.8rem] bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
           >
             <a href="#total-user-statistics">
               Total Users Statistics
@@ -318,7 +317,7 @@ export default function AdminStatisticsPage() {
           </button>
 
           <button
-            className="py-2 px-4 bg-gray-700 bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
+            className="py-2 px-4 bg-gray-700 text-[0.8rem] bg-opacity-50 text-white rounded-lg shadow hover:bg-gray-500"
           >
             <a href="#total-data-statistics">
               Total Data Statistics
