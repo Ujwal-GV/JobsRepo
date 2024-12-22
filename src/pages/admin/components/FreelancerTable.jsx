@@ -521,57 +521,56 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="grid grid-cols-2 gap-[3px] justify-center items-center">
+        <div className="grid grid-cols-2 gap-[3px] justify-center items-center relative">
           {openConfirmModal ? (
-                      <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
-                        <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
-                        <div className="flex justify-end items-center gap-2">
-                          {block ? (
-                            <button
-                              className="flex justify-center items-center gap-1"
-                              disabled={unBlockMutate.isPending}
-                              onClick={() => {
-                                unBlockMutate.mutate();
-                              }}
-                            >
-                              {blockMutate.isPending ? (
-                                <LuLoader2 className="animate-spin-slow" />
-                              ) : (
-                                <></>
-                              )}
-                              UnBlock
-                            </button>
-                          ) : (
-                            <button
-                              className="flex justify-center items-center gap-1"
-                              disabled={blockMutate.isPending}
-                              onClick={() => {
-                                blockMutate.mutate();
-                              }}
-                            >
-                              {blockMutate.isPending ? (
-                                <LuLoader2 className="animate-spin-slow" />
-                              ) : (
-                                <></>
-                              )}
-                              Block
-                            </button>
-                          )}
-                          <button onClick={() => setConfirmModal(false)}>Cancel</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] bg-gray-900 border border-gray-700 rounded-lg p-2 z-10">
+                <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
+                <div className="flex justify-end items-center gap-2">
+                  {block ? (
+                    <button
+                      className="flex justify-center items-center gap-1"
+                      disabled={unBlockMutate.isPending}
+                      onClick={() => {
+                        unBlockMutate.mutate();
+                      }}
+                    >
+                      {blockMutate.isPending ? (
+                        <LuLoader2 className="animate-spin-slow" />
+                      ) : (
+                        <></>
+                      )}
+                      Unblock
+                    </button>
+                  ) : (
+                    <button
+                      className="flex justify-center items-center gap-1"
+                      disabled={blockMutate.isPending}
+                      onClick={() => {
+                        blockMutate.mutate();
+                      }}
+                    >
+                      {blockMutate.isPending ? (
+                        <LuLoader2 className="animate-spin-slow" />
+                      ) : (
+                        <></>
+                      )}
+                      Block
+                    </button>
+                  )}
+                  <button onClick={() => setConfirmModal(false)}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <></>
+            )}
           <button
             title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
-          >
+            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900">
             <FaEye /> Profile
           </button>
           {block ? (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-300 text-black bg-opacity-50"
               disabled={unBlockMutate.isPending}
               onClick={() => setConfirmModal(true)}
             >
@@ -585,7 +584,7 @@ const UserTableCard = ({ data = {} }) => {
             </button>
           ) : (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
               disabled={blockMutate.isPending}
               onClick={() => {
                 setConfirmModal(true);

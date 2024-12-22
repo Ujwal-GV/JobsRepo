@@ -6,6 +6,8 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
+  FaBan,
+  FaCheck,
   FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
@@ -514,9 +516,9 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="grid grid-cols-2 gap-[3px] justify-start items-center">
+        <div className="grid grid-cols-2 gap-[3px] justify-start items-center relative">
           {openConfirmModal ? (
-            <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] bg-gray-900 border border-gray-700 rounded-lg p-2 z-10">
               <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
               <div className="flex justify-end items-center gap-2">
                 {block ? (
@@ -532,7 +534,7 @@ const UserTableCard = ({ data = {} }) => {
                     ) : (
                       <></>
                     )}
-                    UnBlock
+                    Unblock
                   </button>
                 ) : (
                   <button
@@ -558,14 +560,15 @@ const UserTableCard = ({ data = {} }) => {
           )}
 
           <button
+            onClick={() =>{window.open(`/admin/user/${data?.user_id}`, '_blank')}}
             title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
+            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
           >
             <FaEye /> Profile
           </button>
           {block ? (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-300 text-black bg-opacity-50"
               disabled={unBlockMutate.isPending}
               onClick={() => setConfirmModal(true)}
             >
@@ -574,7 +577,7 @@ const UserTableCard = ({ data = {} }) => {
             </button>
           ) : (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
               disabled={blockMutate.isPending}
               onClick={() => {
                 setConfirmModal(true)
