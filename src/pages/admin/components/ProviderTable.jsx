@@ -6,6 +6,8 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
+  FaBan,
+  FaCheck,
   FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
@@ -511,16 +513,17 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="flex flex-wrap gap-[3px] justify-center items-center">
+        <div className="grid grid-cols-2 gap-[3px] justify-center items-center">
           <button
+            onClick={() =>{window.open(`/admin/provider/${data?.company_id}`, '_blank');}}
             title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
+            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
           >
             <FaEye /> Profile
           </button>
           {block ? (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-white text-black bg-opacity-50"
               disabled={unBlockMutate.isPending}
               onClick={() => unBlockMutate.mutate()}
             >
@@ -529,11 +532,11 @@ const UserTableCard = ({ data = {} }) => {
               ) : (
                 <></>
               )}
-              Unblock
+              <FaCheck className="text-[0.6rem]" /> Unblock
             </button>
           ) : (
             <button
-              className="flex justify-center items-center gap-1"
+              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
               disabled={blockMutate.isPending}
               onClick={() => {
                 blockMutate.mutate();
@@ -544,7 +547,7 @@ const UserTableCard = ({ data = {} }) => {
               ) : (
                 <></>
               )}
-              Block
+              <FaBan className="text-[0.6rem]" />  Block
             </button>
           )}
         </div>

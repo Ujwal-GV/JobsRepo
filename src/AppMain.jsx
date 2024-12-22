@@ -57,6 +57,8 @@ import AdminUserManagementPanel from './pages/admin/AdminUserManagement'
 import AdminUserControlPanel from './pages/admin/AdminUserControlPanel'
 import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
 import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
+import SeekerProfileAdmin from './pages/admin/components/SeekerProfileAdmin'
+import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
 
 const AppMain = () => {
 
@@ -127,7 +129,8 @@ const AppMain = () => {
               <Route path="/admin/user-control" element={ <AdminUserControlPanel /> } />
               <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
               <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
-
+              <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
+              <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />
           </Route>
 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>
