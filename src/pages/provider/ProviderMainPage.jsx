@@ -22,7 +22,7 @@ function ProviderMainPage() {
     if (profileData) {
       setCompanyId(profileData?.company_id);
     }
-  }, [profileData]);
+  }, [profileData, companyId]);
 
   const fetchJobs = async () => {
     if (!companyId) throw new Error("Company ID is not available");
@@ -55,9 +55,19 @@ function ProviderMainPage() {
       toast.success("Job post deleted successfully!");
       setDeletedJobs((prev) => ({ ...prev, [variables]: true }));
       queryClient.invalidateQueries(['jobs', companyId]);
+      // queryClient.setQueryData(['jobs', companyId], (oldData) => {
+      //   return {
+      //     ...oldData,
+      //     accountData: {
+      //       ...oldData.accountData,
+      //       Applications_info: oldData.accountData.Applications_info.filter((job) => job.job_id !== variables),
+      //     },
+      //   };
+      // });
     },
     onError: (error) => {
-      toast.error("Error deleting job post: " + error.message);
+      const message = error.response?.data?.message      
+      toast.error(message);
     },
   });
 
@@ -73,13 +83,13 @@ function ProviderMainPage() {
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
-      <div className="h-[400px] w-full bg-slate-50 relative py-10">
+      <div className="h-[250px] lg:h-[400px] md:h-[400px] w-full bg-slate-50 relative py-10">
         {/* Blue bubble */}
         <div className="orange-bubble absolute top-[100px] left-[100px]" />
         {/* <div className="w-[250px] mx-auto md:w-[300px] lg:w-[500px]">
           <SeachInput placeholder="Search posted job......" />
         </div> */}
-        <div className="mt-20 mx-auto w-fit font-outfit">
+        <div className="mt-10 lg:mt-20 md:mt-20 mx-auto w-fit font-outfit">
           <h1 className="text-center text-2xl md:text-5xl font-semibold">
             Welcome, Job Provider!
           </h1>
@@ -87,9 +97,10 @@ function ProviderMainPage() {
             Post a Job
           </h1>
         </div>
-        <div className="orangle-circle absolute right-5 md:right-16 lg:right-[200px] top-[200px]" />
-        <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[200px] shadow-sm" />
+        <div className="orangle-circle absolute right-5 md:right-16  lg:right-[200px] md:bottom-[100px] lg:bottom-[100px] bottom-[25px]" />
+          <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] top-[20px] lg:top-[50px] md:top-[50px] shadow-sm " />
       </div>
+
 
       {/* <JobSearchCard /> */}
 
@@ -155,13 +166,18 @@ function ProviderMainPage() {
 
                 <button
                   title="Delete"
-                  className="px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg bg-white text-black rounded-lg text-sm flex items-center border border-gray-500 hover:bg-gray-300 transition duration-200"
+                  className={`px-3 py-1 lg:px-3 lg:py-2 md:px-3 md:py-2 shadow-lg text-black rounded-lg text-sm ${mutation.isLoading && mutation.variables === job.job_id ? "bg-gray-300 cursor-not-allowed" : "hover:bg-gray-300"} flex items-center border border-gray-500 transition duration-200`}
                   onClick={() => handlePostDelete(job?.job_id)}
+                  disabled={mutation.isLoading || mutation.isPending && mutation.variables === job.job_id}
                 >
-                  {mutation && mutation.variables === job.job_id ? (
+                  {mutation.isLoading && mutation.variables === job.job_id ? (
                     <>
                       <LuLoader2 className="animate-spin-slow" />
                       Deleting
+                    </>
+                  ) : deletedJobs[job.job_id] ? (
+                    <>
+                      Deleted <FaCheckCircle className="mr-1 text-green-500" />
                     </>
                   ) : (
                     <>
@@ -169,11 +185,6 @@ function ProviderMainPage() {
                       Delete
                     </>
                   )}
-                  {
-                    deletedJobs[job.job_id] && (
-                      <FaCheckCircle className="text-black" />
-                    )
-                  }
                 </button>
               </div>
             </div>
