@@ -58,6 +58,7 @@ import AdminUserControlPanel from './pages/admin/AdminUserControlPanel'
 import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
 import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
 import VerificationPending from './pages/admin/components/VerificationPending'
+import ReportTablePage from './pages/admin/components/ReportTablePage'
 
 const AppMain = () => {
 
@@ -129,6 +130,7 @@ const AppMain = () => {
               <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
               <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
               <Route path="/admin/verification-pending" element={ <VerificationPending /> } />
+              <Route path="/admin/reports" element={ <ReportTablePage /> } />
 
 
 
