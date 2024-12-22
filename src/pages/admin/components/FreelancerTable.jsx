@@ -522,40 +522,6 @@ const UserTableCard = ({ data = {} }) => {
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
         <div className="grid grid-cols-2 gap-[3px] justify-center items-center">
-          <button
-            title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
-          >
-            <FaEye /> Profile
-          </button>
-          {block ? (
-            <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-white text-black bg-opacity-50"
-              disabled={unBlockMutate.isPending}
-              onClick={() => unBlockMutate.mutate()}
-            >
-              {unBlockMutate.isPending ? (
-                <LuLoader2 className="animate-spin-slow" />
-              ) : (
-                <></>
-              )}
-              <FaCheck className="text-[0.6rem]" /> Unblock
-            </button>
-          ) : (
-            <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
-              disabled={blockMutate.isPending}
-              onClick={() => {
-                blockMutate.mutate();
-              }}
-            >
-              {blockMutate.isPending ? (
-                <LuLoader2 className="animate-spin-slow" />
-              ) : (
-                <></>
-              )}
-              <FaBan className="text-[0.6rem]" /> Block
-        <div className="flex flex-wrap gap-[3px] justify-center items-center relative">
           {openConfirmModal ? (
                       <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
                         <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
@@ -609,7 +575,13 @@ const UserTableCard = ({ data = {} }) => {
               disabled={unBlockMutate.isPending}
               onClick={() => setConfirmModal(true)}
             >
-              Unblock
+              {unBlockMutate.isPending ? (
+                <LuLoader2 className="animate-spin-slow" />
+              ) : (
+                <></>
+              )}
+              <FaCheck className="text-[0.6rem]" /> Unblock
+
             </button>
           ) : (
             <button
@@ -619,7 +591,13 @@ const UserTableCard = ({ data = {} }) => {
                 setConfirmModal(true);
               }}
             >
-              Block
+              {blockMutate.isPending ? (
+                <LuLoader2 className="animate-spin-slow" />
+              ) : (
+                <></>
+              )}
+              <FaBan className="text-[0.6rem]" /> Block
+
             </button>
           )}
         </div>
