@@ -6,8 +6,6 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
-  FaBan,
-  FaCheck,
   FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
@@ -20,14 +18,8 @@ import {
 import { LuLoader2 } from "react-icons/lu";
 import toast from "react-hot-toast";
 
-const SeekerTable = () => {
+const VerificationPending = () => {
   const queryClient = useQueryClient();
-
-  const USER_TYPE = [
-    { label: "All", icon: <FaUsers />, color: "yellow" },
-    { label: "Blocked", icon: <FaUserSlash />, color: "red" },
-    { label: "Not Blocked", icon: <FaUserCheck />, color: "green" },
-  ];
 
   const LIMIT_ITEM = [
     {
@@ -78,28 +70,26 @@ const SeekerTable = () => {
   const [searchText, setSearchText] = useState("");
   const [sortValue, setSortValue] = useState("");
   const [sortType, setSortType] = useState("inc");
-  const [userType, setUserType] = useState("All");
   const [tableLimit, setTableLimit] = useState(10);
 
   const fetchData = async ({ queryKey }) => {
-    let queryParam = {
-      page: searchText === "" ? queryKey[1] : 1,
-      limit: tableLimit,
-      q: searchText,
+    let queryParam = { page: queryKey[1], limit: tableLimit, q: searchText };
+
+    queryParam = {
+      ...queryParam,
+      isVerified: "false",
     };
 
-    if (userType !== "All") {
-      queryParam = {
-        ...queryParam,
-        isBlocked: userType === "Blocked" ? true : false,
-      };
+    try {
+      const res = await axiosInstance.get("/admin/providers", {
+        params: queryParam,
+      });
+      return res.data;
+    } catch (error) {
+      console.error(error);
+
+      throw new Error(error);
     }
-
-    const res = await axiosInstance.get("/admin/seekers", {
-      params: queryParam,
-    });
-
-    return res.data;
   };
 
   const {
@@ -109,7 +99,7 @@ const SeekerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["seekers-data", currentPage, userType, tableLimit],
+    queryKey: ["providers-carification", currentPage, tableLimit],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -192,11 +182,11 @@ const SeekerTable = () => {
       if (sortValue === "name") {
         if (sortType === "inc") {
           filteredData = filteredData.sort((a, b) =>
-            a.name.localeCompare(b.name)
+            a.company_name.localeCompare(b.company_name)
           );
         } else if (sortType === "desc") {
           filteredData = filteredData.sort((a, b) =>
-            b.name.localeCompare(a.name)
+            b.company_name.localeCompare(a.company_name)
           );
         }
       } else if (sortValue === "email") {
@@ -241,13 +231,10 @@ const SeekerTable = () => {
     filterTableDataHandler();
   };
 
-  const handleUserTypeChange = (type) => {
-    setUserType(type);
-    searchHandler();
-  };
-
   return (
-    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
+    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-5 text-white">
+      <h1 className="text-center text-[2rem]">Verification pending</h1>
+
       {tableLoading && (
         <div className="absolute top-0 left-0 w-full h-full bg-slate-700 bg-opacity-75 flex justify-center items-center cursor-progress">
           <RiLoader3Fill className="animate-spin text-[1.5rem]" />
@@ -261,9 +248,7 @@ const SeekerTable = () => {
           <input
             type="text"
             value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
+            onChange={(e) => setSearchText(e.target.value)}
             className="bg-gray-900 bg-opacity-50 me-1 py-2 px-3 rounded-lg !border !border-black text-gray-400 placeholder:!text-[0.8rem]"
             placeholder="Search by name or email or userId"
             onKeyDown={(e) => {
@@ -275,55 +260,37 @@ const SeekerTable = () => {
           <button onClick={() => searchHandler()}>Search</button>
         </div>
 
-        <div className="flex justify-center items-center gap-2">
-          <div className="me-2 flex justify-center items-center gap-3">
-            {USER_TYPE.map((type, idx) => {
-              return (
-                <span
-                  key={idx}
-                  style={{
-                    color: userType === type.label ? type.color : "white",
-                  }}
-                  onClick={() => {
-                    handleUserTypeChange(type.label);
-                    queryClient.invalidateQueries("seekers-data");
-                  }}
-                  className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
-                >
-                  {type.icon} {type.label}
-                </span>
-              );
-            })}
-          </div>
+       <div className="flex justify-center items-center gap-1">
+       {sortValue !== "" ? (
+          <SortComponent
+            key={sortValue}
+            sortValue={sortValue}
+            sortTypeValue={sortType}
+            onSortTypeChange={(sortChangedValue) =>
+              setSortType(sortChangedValue)
+            }
+          />
+        ) : (
+          <></>
+        )}
 
-          {sortValue !== "" ? (
-            <SortComponent
-              key={sortValue}
-              sortValue={sortValue}
-              sortTypeValue={sortType}
-              onSortTypeChange={(sortChangedValue) =>
-                setSortType(sortChangedValue)
-              }
-            />
-          ) : (
-            <></>
-          )}
-
-          <Dropdown
-            menu={{
-              items,
-              className: "custom-dropdown-menu",
-            }}
-            trigger={["click"]}
+        <Dropdown
+          menu={{
+            items,
+            className: "custom-dropdown-menu",
+          }}
+          trigger={["click"]}
+        >
+          <a
+            onClick={(e) => e.preventDefault()}
+            className="cursor-pointer text-[0.8rem]"
           >
-            <a
-              onClick={(e) => e.preventDefault()}
-              className="cursor-pointer text-[0.8rem]"
-            >
-              Sort By
-            </a>
-          </Dropdown>
-        </div>
+            Sort By
+          </a>
+        </Dropdown>
+
+
+       </div>
       </article>
 
       {/* TAble */}
@@ -377,7 +344,7 @@ const SeekerTable = () => {
 
       {/* Table Data */}
 
-      <article className="h-[60vh] overflow-y-auto custom-scroll">
+      <article className="h-[70vh] overflow-y-auto custom-scroll">
         {filteredTableData.length === 0 && (
           <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
             {!tableLoading ? (
@@ -407,7 +374,7 @@ const SeekerTable = () => {
         </div>
         <div className="flex flex-1 justify-center">
           <CustomePagination
-            key={"seeker-pagination"}
+            key={"provider-pagination"}
             totalData={totalData}
             currentPage={currentPage}
             dataPerPage={tableLimit}
@@ -438,22 +405,20 @@ const SeekerTable = () => {
   );
 };
 
-export default SeekerTable;
+export default VerificationPending;
 
 const UserTableCard = ({ data = {} }) => {
-  const [block, setBloacked] = useState(false);
-
+    const [verified,setVerified] = useState(false);
   const [openConfirmModal, setConfirmModal] = useState(false);
 
   useEffect(() => {
-    setBloacked(data.isBlocked);
+    setVerified(data?.isVerified)
   }, [data]);
 
-  const blockMutation = async () => {
+  const verifyFunc = async () => {
     try {
-      const response = await axiosInstance.post("/admin/user/block", {
-        accountId: data?.user_id,
-        accountType: "user",
+      const response = await axiosInstance.post("/admin/provider/verify", {
+        accountId: data?.company_id,
       });
       return response.data;
     } catch (error) {
@@ -461,43 +426,21 @@ const UserTableCard = ({ data = {} }) => {
     }
   };
 
-  const unBlockMutation = async () => {
-    try {
-      const response = await axiosInstance.post("/admin/user/unblock", {
-        accountId: data?.user_id,
-        accountType: "user",
-      });
-      return response.data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  const blockMutate = useMutation({
-    mutationKey: "block",
-    mutationFn: blockMutation,
+  const verifyMutate = useMutation({
+    mutationKey: ["provider", "verify"],
+    mutationFn: verifyFunc,
     onError: (err) => {
       toast.error("Something Went Wrong");
     },
     onSuccess: (resData) => {
-      setBloacked(true);
-      toast.success("User Blocked Sucessfully");
+      setVerified(true)
+      toast.success("Account Verified Sucessfully");
       setConfirmModal(false);
     },
   });
 
-  const unBlockMutate = useMutation({
-    mutationKey: "unblock",
-    mutationFn: unBlockMutation,
-    onError: (err) => {
-      toast.error("Something Went Wrong");
-    },
-    onSuccess: (resData) => {
-      setBloacked(false);
-      toast.success("User UnBlocked Sucessfully");
-      setConfirmModal(false);
-    },
-  });
+ 
 
   if (Object.keys(data).length > 0) {
     return (
@@ -506,9 +449,11 @@ const UserTableCard = ({ data = {} }) => {
         key={data?._id}
       >
         <span className="overflow-hidden text-ellipsis p-1">
-          {data?.user_id}
+          {data?.company_id}
         </span>
-        <span className="overflow-hidden text-ellipsis p-1">{data?.name}</span>
+        <span className="overflow-hidden text-ellipsis p-1">
+          {data?.company_name}
+        </span>
         <span className="overflow-hidden text-ellipsis p-1">{data?.email}</span>
         <span className="overflow-hidden text-ellipsis p-1">
           {new Date(data?.createdAt).toLocaleString()}
@@ -516,77 +461,38 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="grid grid-cols-2 gap-[3px] justify-start items-center">
+        <div className="flex flex-wrap gap-[3px] justify-center items-center relative">
           {openConfirmModal ? (
             <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
-              <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
+              <p className="text-[0.9rem]">Are your sure want to make this account verified ?</p>
               <div className="flex justify-end items-center gap-2">
-                {block ? (
+                
                   <button
                     className="flex justify-center items-center gap-1"
-                    disabled={unBlockMutate.isPending}
+                    disabled={verifyMutate.isPending}
                     onClick={() => {
-                      unBlockMutate.mutate();
+                     verifyMutate.mutate()
                     }}
                   >
-                    {blockMutate.isPending ? (
+                    {verifyMutate.isPending ? (
                       <LuLoader2 className="animate-spin-slow" />
                     ) : (
                       <></>
                     )}
-                    UnBlock
+                    Verify
                   </button>
-                ) : (
-                  <button
-                    className="flex justify-center items-center gap-1"
-                    disabled={blockMutate.isPending}
-                    onClick={() => {
-                      blockMutate.mutate();
-                    }}
-                  >
-                    {blockMutate.isPending ? (
-                      <LuLoader2 className="animate-spin-slow" />
-                    ) : (
-                      <></>
-                    )}
-                    Block
-                  </button>
-                )}
-                <button onClick={()=>setConfirmModal(false)}>Cancel</button>
+                
+                <button onClick={() => setConfirmModal(false)}>Cancel</button>
               </div>
             </div>
           ) : (
             <></>
           )}
 
-          <button
-            onClick={() =>{window.open(`/admin/user/${data?.user_id}`, '_blank');}}
-            title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
-          >
-            <FaEye /> Profile
-          </button>
-          {block ? (
-            <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-white text-black bg-opacity-50"
-              disabled={unBlockMutate.isPending}
-              onClick={() => setConfirmModal(true)}
-            >
-              {unBlockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>} <FaCheck className="text-[0.6rem]" /> Unblock
-
-            </button>
-          ) : (
-            <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
-              disabled={blockMutate.isPending}
-              onClick={() => {
-                setConfirmModal(true)
-              }}
-            >
-             {blockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>} <FaBan className="text-[0.6rem]" /> Block
-
-            </button>
-          )}
+          
+          {
+           verified ? <span className="text-green-600">Verified</span> : <button onClick={()=>{setConfirmModal(true)}}>Confirm Verify</button>
+          }
         </div>
       </div>
     );

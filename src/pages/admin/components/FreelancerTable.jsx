@@ -447,6 +447,7 @@ export default FreelancerTable;
 
 const UserTableCard = ({ data = {} }) => {
   const [block, setBloacked] = useState(false);
+  const [openConfirmModal, setConfirmModal] = useState(false);
 
   useEffect(() => {
     setBloacked(data.isBlocked);
@@ -481,10 +482,12 @@ const UserTableCard = ({ data = {} }) => {
     mutationFn: blockMutation,
     onError: (err) => {
       toast.error("Something Went Wrong");
+    
     },
     onSuccess: (resData) => {
       setBloacked(true);
       toast.success("User Blocked Sucessfully");
+      setConfirmModal(false)
     },
   });
 
@@ -497,6 +500,7 @@ const UserTableCard = ({ data = {} }) => {
     onSuccess: (resData) => {
       setBloacked(false);
       toast.success("User UnBlocked Sucessfully");
+      setConfirmModal(false)
     },
   });
 
@@ -518,6 +522,47 @@ const UserTableCard = ({ data = {} }) => {
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
         <div className="grid grid-cols-2 gap-[3px] justify-center items-center">
+          {openConfirmModal ? (
+                      <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
+                        <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
+                        <div className="flex justify-end items-center gap-2">
+                          {block ? (
+                            <button
+                              className="flex justify-center items-center gap-1"
+                              disabled={unBlockMutate.isPending}
+                              onClick={() => {
+                                unBlockMutate.mutate();
+                              }}
+                            >
+                              {blockMutate.isPending ? (
+                                <LuLoader2 className="animate-spin-slow" />
+                              ) : (
+                                <></>
+                              )}
+                              UnBlock
+                            </button>
+                          ) : (
+                            <button
+                              className="flex justify-center items-center gap-1"
+                              disabled={blockMutate.isPending}
+                              onClick={() => {
+                                blockMutate.mutate();
+                              }}
+                            >
+                              {blockMutate.isPending ? (
+                                <LuLoader2 className="animate-spin-slow" />
+                              ) : (
+                                <></>
+                              )}
+                              Block
+                            </button>
+                          )}
+                          <button onClick={() => setConfirmModal(false)}>Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
           <button
             title="profile"
             className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
@@ -528,7 +573,7 @@ const UserTableCard = ({ data = {} }) => {
             <button
               className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-white text-black bg-opacity-50"
               disabled={unBlockMutate.isPending}
-              onClick={() => unBlockMutate.mutate()}
+              onClick={() => setConfirmModal(true)}
             >
               {unBlockMutate.isPending ? (
                 <LuLoader2 className="animate-spin-slow" />
@@ -536,13 +581,14 @@ const UserTableCard = ({ data = {} }) => {
                 <></>
               )}
               <FaCheck className="text-[0.6rem]" /> Unblock
+
             </button>
           ) : (
             <button
               className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
               disabled={blockMutate.isPending}
               onClick={() => {
-                blockMutate.mutate();
+                setConfirmModal(true);
               }}
             >
               {blockMutate.isPending ? (
@@ -551,6 +597,7 @@ const UserTableCard = ({ data = {} }) => {
                 <></>
               )}
               <FaBan className="text-[0.6rem]" /> Block
+
             </button>
           )}
         </div>
