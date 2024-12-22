@@ -534,7 +534,7 @@ const UserTableCard = ({ data = {} }) => {
                         unBlockMutate.mutate();
                       }}
                     >
-                      {blockMutate.isPending ? (
+                      {unBlockMutate.isPending ? (
                         <LuLoader2 className="animate-spin-slow" />
                       ) : (
                         <></>
@@ -564,6 +564,7 @@ const UserTableCard = ({ data = {} }) => {
               <></>
             )}
           <button
+            onClick={() =>{window.open(`/admin/freelancer/${data?.freelancer_id}`, '_blank')}}
             title="profile"
             className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900">
             <FaEye /> Profile
