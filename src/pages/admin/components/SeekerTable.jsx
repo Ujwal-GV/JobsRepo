@@ -6,8 +6,6 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
-  FaBan,
-  FaCheck,
   FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
@@ -501,8 +499,6 @@ const UserTableCard = ({ data = {} }) => {
 
   if (Object.keys(data).length > 0) {
 
-    console.log(data)
-
     return (
       <div
         className="w-full grid grid-cols-6 p-2 border-b border-b-gray-700 hover:bg-gray-800 hover:bg-opacity-50 text-[0.9rem]"
@@ -563,29 +559,28 @@ const UserTableCard = ({ data = {} }) => {
           )}
 
           <button
-            onClick={() =>{window.open(`/admin/user/${data?.user_id}`, '_blank');}}
             title="profile"
-            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
+            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
           >
             <FaEye /> Profile
           </button>
           {block ? (
             <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-white text-black bg-opacity-50"
+              className="flex justify-center items-center gap-1"
               disabled={unBlockMutate.isPending}
               onClick={() => setConfirmModal(true)}
             >
-              {unBlockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>} <FaCheck className="text-[0.6rem]" /> Unblock
+              Unblock
             </button>
           ) : (
             <button
-              className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900"
+              className="flex justify-center items-center gap-1"
               disabled={blockMutate.isPending}
               onClick={() => {
                 setConfirmModal(true)
               }}
             >
-             {blockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>} <FaBan className="text-[0.6rem]" /> Block
+              Block
             </button>
           )}
         </div>
