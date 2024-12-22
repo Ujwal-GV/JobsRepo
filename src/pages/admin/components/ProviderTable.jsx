@@ -283,7 +283,7 @@ const ProviderTable = () => {
                   }}
                   onClick={() => {
                     handleUserTypeChange(type.label);
-                    queryClient.invalidateQueries("providers-data")
+                    queryClient.invalidateQueries("providers-data");
                   }}
                   className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
@@ -439,6 +439,7 @@ export default ProviderTable;
 
 const UserTableCard = ({ data = {} }) => {
   const [block, setBloacked] = useState(false);
+  const [openConfirmModal, setConfirmModal] = useState(false);
 
   useEffect(() => {
     setBloacked(data.isBlocked);
@@ -469,7 +470,7 @@ const UserTableCard = ({ data = {} }) => {
   };
 
   const blockMutate = useMutation({
-    mutationKey: ["provider","block"],
+    mutationKey: ["provider", "block"],
     mutationFn: blockMutation,
     onError: (err) => {
       toast.error("Something Went Wrong");
@@ -477,11 +478,12 @@ const UserTableCard = ({ data = {} }) => {
     onSuccess: (resData) => {
       setBloacked(true);
       toast.success("User Blocked Sucessfully");
+      setConfirmModal(false)
     },
   });
 
   const unBlockMutate = useMutation({
-    mutationKey: ["provider","unblock"],
+    mutationKey: ["provider", "unblock"],
     mutationFn: unBlockMutation,
     onError: (err) => {
       toast.error("Something Went Wrong");
@@ -489,6 +491,7 @@ const UserTableCard = ({ data = {} }) => {
     onSuccess: (resData) => {
       setBloacked(false);
       toast.success("User UnBlocked Sucessfully");
+      setConfirmModal(false)
     },
   });
 
@@ -511,7 +514,49 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="flex flex-wrap gap-[3px] justify-center items-center">
+        <div className="flex flex-wrap gap-[3px] justify-center items-center relative">
+          {openConfirmModal ? (
+            <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
+              <p>Are your sure want to {block ? "Unblock" : "Block"} ?</p>
+              <div className="flex justify-end items-center gap-2">
+                {block ? (
+                  <button
+                    className="flex justify-center items-center gap-1"
+                    disabled={unBlockMutate.isPending}
+                    onClick={() => {
+                      unBlockMutate.mutate();
+                    }}
+                  >
+                    {blockMutate.isPending ? (
+                      <LuLoader2 className="animate-spin-slow" />
+                    ) : (
+                      <></>
+                    )}
+                    UnBlock
+                  </button>
+                ) : (
+                  <button
+                    className="flex justify-center items-center gap-1"
+                    disabled={blockMutate.isPending}
+                    onClick={() => {
+                      blockMutate.mutate();
+                    }}
+                  >
+                    {blockMutate.isPending ? (
+                      <LuLoader2 className="animate-spin-slow" />
+                    ) : (
+                      <></>
+                    )}
+                    Block
+                  </button>
+                )}
+                <button onClick={() => setConfirmModal(false)}>Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+
           <button
             title="profile"
             className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
@@ -522,13 +567,8 @@ const UserTableCard = ({ data = {} }) => {
             <button
               className="flex justify-center items-center gap-1"
               disabled={unBlockMutate.isPending}
-              onClick={() => unBlockMutate.mutate()}
+              onClick={() => setConfirmModal(true)}
             >
-              {unBlockMutate.isPending ? (
-                <LuLoader2 className="animate-spin-slow" />
-              ) : (
-                <></>
-              )}
               Unblock
             </button>
           ) : (
@@ -536,14 +576,9 @@ const UserTableCard = ({ data = {} }) => {
               className="flex justify-center items-center gap-1"
               disabled={blockMutate.isPending}
               onClick={() => {
-                blockMutate.mutate();
+                setConfirmModal(true);
               }}
             >
-              {blockMutate.isPending ? (
-                <LuLoader2 className="animate-spin-slow" />
-              ) : (
-                <></>
-              )}
               Block
             </button>
           )}
