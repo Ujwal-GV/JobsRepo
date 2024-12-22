@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import CustomePagination from "./CustomePagination";
 import { axiosInstance } from "../../../utils/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
+  FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
   FaSortDown,
@@ -14,8 +15,14 @@ import {
   FaUsers,
   FaUserSlash,
 } from "react-icons/fa";
+import { LuLoader2 } from "react-icons/lu";
+import toast from "react-hot-toast";
 
 const SeekerTable = () => {
+
+  const queryClient = useQueryClient();
+
+
   const USER_TYPE = [
     { label: "All", icon: <FaUsers />, color: "yellow" },
     { label: "Blocked", icon: <FaUserSlash />, color: "red" },
@@ -102,7 +109,7 @@ const SeekerTable = () => {
     data,
     refetch: searchHandler,
   } = useQuery({
-    queryKey: ["seekers-data", currentPage, userType,tableLimit],
+    queryKey: ["seekers-data", currentPage, userType, tableLimit],
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: Infinity,
@@ -279,6 +286,7 @@ const SeekerTable = () => {
                   }}
                   onClick={() => {
                     handleUserTypeChange(type.label);
+                    queryClient.invalidateQueries("seekers-data")
                   }}
                   className="flex justify-center items-center gap-[2px] text-[0.7rem] cursor-pointer"
                 >
@@ -369,34 +377,33 @@ const SeekerTable = () => {
 
       {/* Table Data */}
 
-     <article  className="h-[60vh] overflow-y-auto custom-scroll">
-        
-     {filteredTableData.length === 0 && (
-        <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
-          {!tableLoading ? (
-            <>
-              <TbMoodEmpty /> <span> No Data Found</span>
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
-      )}
+      <article className="h-[60vh] overflow-y-auto custom-scroll">
+        {filteredTableData.length === 0 && (
+          <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
+            {!tableLoading ? (
+              <>
+                <TbMoodEmpty /> <span> No Data Found</span>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
 
-      {filteredTableData.length > 0 && (
-        <div className="mt-2 w-full">
-          {filteredTableData.map((tData, idx) => {
-            return <UserTableCard key={idx} data={tData} />;
-          })}
-        </div>
-      )}
+        {filteredTableData.length > 0 && (
+          <div className="mt-2 w-full">
+            {filteredTableData.map((tData, idx) => {
+              return <UserTableCard key={idx} data={tData} />;
+            })}
+          </div>
+        )}
+      </article>
 
-
-     </article>
-
-     <article className="w-full flex justify-between items-center mt-3 relative">
+      <article className="w-full flex justify-between items-center mt-3 relative">
         <div className="">
-          <span className="ml-9 text-[0.9rem] px-4 py-2 border border-white rounded-lg">Total Data : {totalData}</span>
+          <span className="ml-9 text-[0.9rem] px-4 py-2 border border-white rounded-lg">
+            Total Data : {totalData}
+          </span>
         </div>
         <div className="flex flex-1 justify-center">
           <CustomePagination
@@ -410,11 +417,11 @@ const SeekerTable = () => {
         <div>
           <Dropdown
             menu={{
-              items:LIMIT_ITEM,
+              items: LIMIT_ITEM,
               className: "custom-dropdown-menu",
               style: {
-                display: 'flex',
-              }
+                display: "flex",
+              },
             }}
             trigger={["click"]}
           >
@@ -434,7 +441,65 @@ const SeekerTable = () => {
 export default SeekerTable;
 
 const UserTableCard = ({ data = {} }) => {
+  const [block, setBloacked] = useState(false);
+
+
+  useEffect(()=>{
+   setBloacked(data.isBlocked)
+  },[data])
+
+  const blockMutation = async () => {
+    try {
+      const response = await axiosInstance.post("/admin/user/block", {
+        accountId: data?.user_id,
+        accountType: "user",
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unBlockMutation = async () => {
+    try {
+      const response = await axiosInstance.post("/admin/user/unblock", {
+        accountId: data?.user_id,
+        accountType: "user",
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const blockMutate = useMutation({
+    mutationKey: "block",
+    mutationFn: blockMutation,
+    onError: (err) => {
+      toast.error("Something Went Wrong");
+    },
+    onSuccess: (resData) => {
+      setBloacked(true);
+      toast.success("User Blocked Sucessfully");
+    },
+  });
+
+  const unBlockMutate = useMutation({
+    mutationKey: "unblock",
+    mutationFn: unBlockMutation,
+    onError: (err) => {
+      toast.error("Something Went Wrong");
+    },
+    onSuccess: (resData) => {
+      setBloacked(false);
+      toast.success("User UnBlocked Sucessfully");
+    },
+  });
+
   if (Object.keys(data).length > 0) {
+
+    console.log(data)
+
     return (
       <div
         className="w-full grid grid-cols-6 p-2 border-b border-b-gray-700 hover:bg-gray-800 hover:bg-opacity-50 text-[0.9rem]"
@@ -451,11 +516,30 @@ const UserTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1">
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
-        <div className="flex flex-wrap gap-[3px] justify-center items-center">
-          <button>View Profile</button>
-          <button>View Profile</button>
-          <button>View Profile</button>
-          <button>View Profile</button>
+        <div className="flex flex-wrap gap-[3px] justify-start items-center">
+          <button
+            title="profile"
+            className="flex justify-center items-center gap-1 py-1 px-2 rounded-md bg-gray-900 bg-opacity-50"
+          >
+            <FaEye /> Profile
+          </button>
+          {block ? (
+            <button
+              className="flex justify-center items-center gap-1"
+              disabled={unBlockMutate.isPending}
+              onClick={()=>unBlockMutate.mutate()}
+            >
+              {unBlockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>} Unblock
+            </button>
+          ) : (
+            <button
+              className="flex justify-center items-center gap-1"
+              disabled={blockMutate.isPending}
+              onClick={()=>{blockMutate.mutate()}}
+            >
+             {blockMutate.isPending ? <LuLoader2 className="animate-spin-slow" /> : <></>}  Block
+            </button>
+          )}
         </div>
       </div>
     );
