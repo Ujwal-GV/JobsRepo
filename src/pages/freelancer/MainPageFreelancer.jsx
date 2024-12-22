@@ -94,7 +94,7 @@ function MainPageFreelancer() {
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
       <MainContext>
-        <div className="h-[400px] w-full bg-slate-50 relative py-10">
+      <div className="h-[250px] lg:h-[400px] md:h-[400px] w-full bg-slate-50 relative py-10">
           {/* blue bubble */}
           <div className="orange-bubble absolute top-[100px] left-[100px]" />
           {/* search input */}
@@ -102,7 +102,7 @@ function MainPageFreelancer() {
             <SeachInput placeholder="Search a job / project....." />
           </div> */}
           {/* prime header  */}
-          <div className="mt-10 mx-auto w-fit font-outfit">
+          <div className="mt-10 lg:mt-20 md:mt-20 mx-auto w-fit font-outfit">
             <h1 className="text-center text-2xl md:text-5xl font-semibold">
               Welcome, Freelancer!
             </h1>
@@ -110,9 +110,10 @@ function MainPageFreelancer() {
               Post Exciting Projects
             </h1>
           </div>
-          <div className="orangle-circle absolute right-5 md:right-16  lg:right-[200px]  top-[200px]" />
-          <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[200px] shadow-sm " />
+          <div className="orangle-circle absolute right-5 md:right-16  lg:right-[200px] md:top-[250px] lg:top-[250px] top-[25px]" />
+          <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[10px] lg:bottom-[300px] md:bottom-[300px] shadow-sm " />
         </div>
+
       </MainContext>
 
       <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
