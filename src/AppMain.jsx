@@ -59,6 +59,8 @@ import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
 import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
 import SeekerProfileAdmin from './pages/admin/components/SeekerProfileAdmin'
 import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
+import VerificationPending from './pages/admin/components/VerificationPending'
+import ReportTablePage from './pages/admin/components/ReportTablePage'
 
 const AppMain = () => {
 
@@ -130,7 +132,12 @@ const AppMain = () => {
               <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
               <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
               <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
-              <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />
+              <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />              <Route path="/admin/verification-pending" element={ <VerificationPending /> } />
+              <Route path="/admin/reports" element={ <ReportTablePage /> } />
+
+
+
+
           </Route>
 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>

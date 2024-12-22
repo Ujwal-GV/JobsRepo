@@ -15,6 +15,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { message, Steps } from "antd";
 import { CustomSkeleton } from "./CompanyAllPosts";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
+import ReportPost from "./ReportPost";
 
 const VerticalBar = () => {
   return <div className="w-0 h-5 border-r border-black"></div>;
@@ -26,6 +27,7 @@ const JobApplicatioWithSimilarApplication = () => {
   const [user_id, setUser_id] = useState(null);
   const [applicationStatus, setApplicationStatus] = useState([]);
   const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
+  const [openReportModal,setOpenReportModal] = useState(false);
 
   useEffect(() => {
     const isComplete =
@@ -39,7 +41,7 @@ const JobApplicatioWithSimilarApplication = () => {
       profileData?.education_details?.yearOfPassout &&
       profileData?.mobile;
 
-      setIsProfileIncomplete(!isComplete);
+    setIsProfileIncomplete(!isComplete);
     if (profileData && profileData !== null) {
       if (
         profileData?.application_applied_info?.jobs?.find(
@@ -58,10 +60,9 @@ const JobApplicatioWithSimilarApplication = () => {
 
   useEffect(() => {
     if (user_id != null) {
-
-      console.log(profileData)
-
-      if (profileData?.saved_info?.jobs?.find((id) => id === jobApplicationId)) {
+      if (
+        profileData?.saved_info?.jobs?.find((id) => id === jobApplicationId)
+      ) {
         setSaved(true);
       }
       if (
@@ -71,7 +72,6 @@ const JobApplicatioWithSimilarApplication = () => {
       ) {
         setApplied(true);
       }
-      
     }
   }, [user_id]);
 
@@ -226,11 +226,13 @@ const JobApplicatioWithSimilarApplication = () => {
         }
       }
     } else {
-      if(profileData?.user_id) {
-        message.warning("Kindly complete your profile to save or unsave this post.");
+      if (profileData?.user_id) {
+        message.warning(
+          "Kindly complete your profile to save or unsave this post."
+        );
         navigate("/user/profile");
       } else {
-        toast.error("Please log in to save this job.")
+        toast.error("Please log in to save this job.");
         navigate("/user/login");
       }
     }
@@ -244,8 +246,10 @@ const JobApplicatioWithSimilarApplication = () => {
         navigate("/user/login");
       }
     } else {
-      if(profileData?.user_id) {
-        message.warning("Kindly complete your profile in order to apply for this job.");
+      if (profileData?.user_id) {
+        message.warning(
+          "Kindly complete your profile in order to apply for this job."
+        );
         navigate("/user/profile");
       } else {
         toast.error("Please log in to apply for this job.");
@@ -253,6 +257,18 @@ const JobApplicatioWithSimilarApplication = () => {
       }
     }
   };
+
+
+  const handleReportModalClose =()=>{
+    setOpenReportModal(false);
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
+  }
+
+  const handleReportModalOpen =()=>{
+    setOpenReportModal(true);
+    document.getElementsByTagName("body")[0].style.overflow = "hidden";
+  }
+
 
   if (isLoading || isFetching) {
     return <Loading />;
@@ -283,11 +299,15 @@ const JobApplicatioWithSimilarApplication = () => {
     company_name,
     img,
     description: company_description,
+    company_id
   } = jobApplicationData?.company || {};
 
   if (jobApplicationData && isSuccess) {
     return (
       <MainContext>
+        {
+          openReportModal ? <ReportPost onClose={handleReportModalClose} key={"report"} postId={job_id} reportedBy={profileData?.user_id} reportedTo={company_id}/> :<></>
+        }
         <div className="w-full min-h-screen bg-gray-100 py-5 px-3 md:py-20 md:px-6 lg:px-10  !pb-2 ">
           <div className="bg-white p-1 flex justify-between md:gap-3 lg:gap-10 flex-col lg:flex-row">
             <div className="w-full  lg:w-[55%] job-apply-section">
@@ -512,11 +532,17 @@ const JobApplicatioWithSimilarApplication = () => {
                 <h1 className="text-xl md:text-2xl font-semibold mb-4">
                   About Company
                 </h1>
-                <div className="font-outfit text-sm md:text-[1rem]">
+                <div className="font-outfit text-sm md:text-[0.95rem]">
                   {company_description && (
                     <ReadMore content={company_description} maxLength={250} />
                   )}
                 </div>
+                <h6
+                  className="mt-6 text-[0.8rem] text-blue-600 font-semibold cursor-pointer"
+                  onClick={() => handleReportModalOpen()}
+                >
+                  Report this Post
+                </h6>
               </div>
             </div>
             <div className="w-full  lg:w-[45%] mt-5 md:mt-0 flex-1 flex flex-col gap-2  h-fit job-apply-suggestion-section bg-white rounded-lg p-2 md:p-5">
