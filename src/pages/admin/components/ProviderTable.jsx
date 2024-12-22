@@ -529,7 +529,7 @@ const UserTableCard = ({ data = {} }) => {
                       unBlockMutate.mutate();
                     }}
                   >
-                    {blockMutate.isPending ? (
+                    {unBlockMutate.isPending ? (
                       <LuLoader2 className="animate-spin-slow" />
                     ) : (
                       <></>

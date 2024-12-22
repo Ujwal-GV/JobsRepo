@@ -62,6 +62,7 @@ import SeekerProfileAdmin from './pages/admin/components/SeekerProfileAdmin'
 import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
 import VerificationPending from './pages/admin/components/VerificationPending'
 import ReportTablePage from './pages/admin/components/ReportTablePage'
+import FreelancerProfileAdmin from './pages/admin/components/FreelancerProfileAdmin'
 
 
 const AppMain = () => {
@@ -135,15 +136,9 @@ const AppMain = () => {
               <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
               <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
               <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />              
-              <Route path="/admin/verification-pending" element={ <VerificationPending /> } />
-
-              <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
-              <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />
+              <Route path="/admin/freelancer/:freelancer_id" element={ <FreelancerProfileAdmin /> } />              
               <Route path="/admin/verification-pending" element={ <VerificationPending /> } />
               <Route path="/admin/reports" element={ <ReportTablePage /> } />
-
-
-
 
           </Route>
 
