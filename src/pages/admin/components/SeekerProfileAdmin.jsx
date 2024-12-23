@@ -13,6 +13,7 @@ import { FaBan, FaCheck, FaSave, FaUserTie } from "react-icons/fa";
 export default function SeekerProfileAdmin() {
   const { user_id: userId } = useParams();
   const [reportedBy, setReportedBy] = useState("");
+  const [openConfirmModal, setConfirmModal] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -89,6 +90,7 @@ export default function SeekerProfileAdmin() {
     onSuccess: () => {
       setIsBlocked(true);
       message.success("User blocked");
+      setConfirmModal(false);
     },
   });
 
@@ -103,6 +105,7 @@ export default function SeekerProfileAdmin() {
     onSuccess: () => {
       setIsBlocked(false);
       message.success("User unblocked");
+      setConfirmModal(false);
     },
   });
 
@@ -127,7 +130,7 @@ export default function SeekerProfileAdmin() {
             <div className="grid grid-cols-2 gap-2">
 
               {/* Profile Image and Basic Info */}
-              <div className="flex flex-col items-center justify-center bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md">
+              <div className="flex flex-col items-center justify-center bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md relative">
                 <img
                   src={userData?.profile_details?.profileImg}
                   alt="Profile"
@@ -143,11 +146,12 @@ export default function SeekerProfileAdmin() {
                       <MdOutlinePersonOff className="text-xl text-red-500 relative" />
                     </span>}
                 </div>
+
                 {isBlocked ? (
                   <button
                     className="bg-gray-200 bg-opacity-50 w-[10rem] text-black py-2 px-4 rounded-lg shadow-sm center"
                     disabled={unBlockMutation.isLoading || unBlockMutation.isPending}
-                    onClick={() => unBlockMutation.mutate()}
+                    onClick={() => setConfirmModal(true)}
                   >
                     {unBlockMutation.isLoading || unBlockMutation.isPending ? (
                       <LuLoader2 className="animate-spin text-white" />
@@ -161,7 +165,7 @@ export default function SeekerProfileAdmin() {
                   <button
                     className="bg-gray-900 w-[10rem] text-white py-2 px-4 rounded-lg shadow-sm center"
                     disabled={blockMutation.isLoading || blockMutation.isPending}
-                    onClick={() => blockMutation.mutate()}
+                    onClick={() => setConfirmModal(true)}
                   >
                     {blockMutation.isLoading || blockMutation.isPending ? (
                       <LuLoader2 className="animate-spin text-white" />
@@ -171,6 +175,42 @@ export default function SeekerProfileAdmin() {
                         </span>                    
                       )}
                   </button>
+                )}
+
+                {openConfirmModal ? (
+                  <div className="absolute -bottom-[2.2rem] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[260px] bg-gray-900 border border-gray-700 rounded-lg p-2 z-10">
+                    <p className="m-2">Are your sure want to {isBlocked ? "Unblock" : "Block"} ?</p>
+                    <div className="flex justify-end">
+                      {isBlocked ? (
+                        <button
+                          className="text-white py-2 px-4 center"
+                          disabled={unBlockMutation.isLoading || unBlockMutation.isPending}
+                          onClick={() => unBlockMutation.mutate()}
+                        >
+                          {unBlockMutation.isLoading || unBlockMutation.isPending ? (
+                          <><LuLoader2 className="animate-spin text-white" /> Unblock</>                          
+                          ) : (
+                            "Unblock"
+                          )}
+                        </button>
+                      ) : (
+                      <button
+                        className="text-white py-2 px-4 center"
+                        disabled={blockMutation.isLoading || blockMutation.isPending}
+                        onClick={() => blockMutation.mutate()}
+                      >
+                        {blockMutation.isLoading || blockMutation.isPending ? (
+                          <><LuLoader2 className="animate-spin text-white" /> Block</>
+                        ) : (
+                            "Block"
+                          )}
+                      </button>
+                    )}
+                      <button onClick={()=>setConfirmModal(false)}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <></>
                 )}
                 <span className="text-xs mt-2"><span className="text-green-500">Last Active:</span> {new Date(userData?.lastActive).toLocaleString()}</span>
               </div>
@@ -190,10 +230,10 @@ export default function SeekerProfileAdmin() {
                 </div>
                 <hr className="my-3" />
                 <div className="h-40 overflow-y-auto custom-scroll">
-                  <p className="text-sm">Email: {userData?.email ? userData?.email : "Not mentioned"}</p>
-                  <p className="text-sm">Gender: {userData?.profile_details?.gender ? userData?.profile_details?.gender : "Not mentioned"}</p>
-                  <p className="text-sm">Mobile: {userData?.mobile ? userData?.mobile : "Not mentioned"}</p>
-                  <p className="text-sm text-justify">About: {userData?.profile_details?.summary ? userData?.profile_details?.summary : "Not mentioned"}</p>
+                  <p className="text-sm"><span className="text-teal-300">Email:</span> {userData?.email ? userData?.email : "Not mentioned"}</p>
+                  <p className="text-sm"><span className="text-teal-300">Gender:</span> {userData?.profile_details?.gender ? userData?.profile_details?.gender : "Not mentioned"}</p>
+                  <p className="text-sm"><span className="text-teal-300">Mobile:</span> {userData?.mobile ? userData?.mobile : "Not mentioned"}</p>
+                  <p className="text-sm text-justify"><span className="text-teal-300">About:</span> {userData?.profile_details?.summary ? userData?.profile_details?.summary : "Not mentioned"}</p>
                 </div>
               </div>
             </div>
@@ -320,7 +360,7 @@ export default function SeekerProfileAdmin() {
                   <span className="font-medium">Content:</span> {report.content}
                 </p>
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Created At:</span>{" "}
+                  <span className="font-medium">Reported On:</span>{" "}
                   {dayjs(report.createdAt).format("DD MMM YYYY, h:mm A")}
                 </p>
                 <div className="mt-2 flex gap-2">
