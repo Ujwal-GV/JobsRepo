@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { message } from "antd";
 import { IoHourglassOutline } from "react-icons/io5";
-import { MdOutlinePersonOff, MdVerifiedUser } from "react-icons/md";
+import { MdOutlinePersonOff, MdRefresh, MdVerifiedUser } from "react-icons/md";
 import { FaBan, FaCheck, FaUserFriends, FaUserTie } from "react-icons/fa";
 import { FaDiagramProject } from "react-icons/fa6";
 
@@ -34,6 +34,24 @@ export default function ProviderProfileAdmin() {
     cacheTime: 300000,
     staleTime: 300000,
     gcTime: 0,
+  });
+
+  const fetchProviderReports = async() => {
+    const res = await axiosInstance.get(`/reports/report-count/${companyId}`);    
+    return res.data;
+  };
+
+  const {
+    data: reportsData,
+    isLoading: reportsDataLoading,
+    isFetching: reportsDataFetching,
+    isError: reportsDataError,
+    refetch: refreshData,
+  } = useQuery({
+    queryKey: ['provider-reports-data'],
+    queryFn: fetchProviderReports,
+    staleTime: 300000,
+    cacheTime: 300000,
   });
 
   const [isBlocked, setIsBlocked] = useState(false);
@@ -74,7 +92,7 @@ export default function ProviderProfileAdmin() {
     },
     onSuccess: (resData) => {
       setIsBlocked(true);
-      message.success("User Blocked Sucessfully");
+      message.success("User Blocked");
     },
   });
 
@@ -86,16 +104,20 @@ export default function ProviderProfileAdmin() {
     },
     onSuccess: (resData) => {
       setIsBlocked(false);
-      message.success("User UnBlocked Sucessfully");
+      message.success("User Unblocked");
     },
   });
 
-  if (companyDataLoading) {
+  if (companyDataLoading || companyDataFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         <IoHourglassOutline className="animate-spin-slow text-[2rem] text-white" />
       </div>
     );
+  }
+
+  const handleRefresh = () => {
+    refreshData();
   }
 
   return (
@@ -254,11 +276,59 @@ export default function ProviderProfileAdmin() {
           </div>
         </div>
 
-        <div className="min-h-screen flex gap-2 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
-          <div className="flex items-center mx-auto">
-            Reports
+        {/* Reports Section */}
+        <div className="min-h-screen flex flex-col gap-4 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
+          <div className="flex justify-between">
+            <h2 className="text-lg font-semibold text-white uppercase">Reports</h2>
+            <button onClick={handleRefresh}><MdRefresh className="text-[2.2rem] text-white p-2 hover:bg-gray-500 hover:rounded-full" /></button>
           </div>
+          <hr />
+          
+          {reportsDataLoading || reportsDataFetching ? (
+            <div className="flex items-center justify-center text-white">
+              <IoHourglassOutline className="animate-spin-slow text-[2rem]" />
+            </div>
+          ) : reportsData?.length > 0 ? (
+            reportsData.map((report, index) => (
+              <div key={report._id} className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700">
+                <h3 className="text-md font-semibold text-white mb-1">
+                  Report ID: {report.report_id}
+                </h3>
+                <hr className="my-2" />
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Reported By:</span> {report.reportedBy}
+                </p>
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Content:</span> {report.content}
+                </p>
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Post ID:</span> {report.postId}
+                </p>
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Created At:</span>{" "}
+                  {dayjs(report.createdAt).format("DD MMM YYYY, h:mm A")}
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="bg-gray-600 hover:bg-gray-500 text-white text-xs px-4 py-2 rounded-lg"
+                    onClick={() => alert(`Reviewing report: ${report.report_id}`)}
+                  >
+                    Review
+                  </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-500 text-white text-xs px-4 py-2 rounded-lg"
+                    onClick={() => alert(`Deleting report: ${report.report_id}`)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No reports available.</p>
+          )}
         </div>
+
       </div>
     </div>
   );

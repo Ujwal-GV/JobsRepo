@@ -434,7 +434,14 @@ const AllPostedJobs = () => {
                               <p className="text-sm text-gray-600 mb-4">
                                 Please select a reason for reporting this user.
                               </p>
-                              {["Inappropriate behavior", "Spam or fraud", "Harassment", "Other"].map((reason) => (
+                              {[
+                                "Inappropriate behavior", 
+                                "Spam or fraud", 
+                                "Harassment",
+                                "Unprofessional Behavior",
+                                "Offensive Content",
+                                "Other"
+                              ].map((reason) => (
                                 <div className="mb-2" key={reason}>
                                   <label className="flex items-center space-x-2">
                                     <input

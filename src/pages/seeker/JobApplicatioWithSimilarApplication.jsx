@@ -28,6 +28,7 @@ const JobApplicatioWithSimilarApplication = () => {
   const [applicationStatus, setApplicationStatus] = useState([]);
   const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
   const [openReportModal,setOpenReportModal] = useState(false);
+  const [authToken, setAuthToken] = useState(false);
 
   useEffect(() => {
     const isComplete =
@@ -59,6 +60,11 @@ const JobApplicatioWithSimilarApplication = () => {
   }, [profileData]);
 
   useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if(authToken) {
+      setAuthToken(true);
+    }
+
     if (user_id != null) {
       if (
         profileData?.saved_info?.jobs?.find((id) => id === jobApplicationId)
@@ -73,7 +79,7 @@ const JobApplicatioWithSimilarApplication = () => {
         setApplied(true);
       }
     }
-  }, [user_id]);
+  }, [user_id, authToken]);
 
   const navigate = useNavigate();
 
@@ -537,12 +543,15 @@ const JobApplicatioWithSimilarApplication = () => {
                     <ReadMore content={company_description} maxLength={250} />
                   )}
                 </div>
-                <h6
+                {authToken ? 
+                  <h6
                   className="mt-6 text-[0.8rem] text-blue-600 font-semibold cursor-pointer"
                   onClick={() => handleReportModalOpen()}
                 >
                   Report this Post
-                </h6>
+                </h6> : 
+                <></>
+                }
               </div>
             </div>
             <div className="w-full  lg:w-[45%] mt-5 md:mt-0 flex-1 flex flex-col gap-2  h-fit job-apply-suggestion-section bg-white rounded-lg p-2 md:p-5">
