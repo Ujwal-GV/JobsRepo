@@ -6,6 +6,8 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Dropdown } from "antd";
 import {
+  FaBan,
+  FaEye,
   FaLongArrowAltDown,
   FaLongArrowAltUp,
   FaSortDown,
@@ -386,8 +388,32 @@ const ReportTableCard = ({ data = {} }) => {
         <span className="overflow-hidden text-ellipsis p-1 text-red-600">
           {report?.content}
         </span>
-        <span className="overflow-hidden text-ellipsis p-1">
-          <button>Profile</button>
+        <span className="overflow-hidden text-ellipsis p-1 grid grid-cols-2 gap-3">
+            <button 
+              onClick={() => {
+                const userRoute = report?.reportedTo.startsWith("USER")
+                  ? "/admin/user"
+                  : report?.reportedTo.startsWith("COMP")
+                  ? "/admin/provider"
+                  : report?.reportedTo.startsWith("FRE")
+                  ? "/admin/freelancer"
+                  : null;
+
+                if (userRoute) {
+                  window.open(`${userRoute}/${report?.reportedTo}`, '_blank');
+                } else {
+                  console.error("Invalid reportedTo format");
+                }
+              }}
+              className="flex center gap-3 py-1 px-3 rounded-md bg-gray-500">
+              <FaEye className="text-xs" />Profile
+            </button>
+
+            {/* <button 
+              onClick={() => alert("Block user")}
+              className="flex center gap-3 py-1 px-3 rounded-md bg-gray-500">
+              <FaBan className="text-xs text-white" />Block
+            </button> */}
         </span>  
       </div>
     );

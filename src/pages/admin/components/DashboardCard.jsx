@@ -1,7 +1,9 @@
 import { Progress } from "antd";
 import React from "react";
+import { IoHourglass, IoHourglassOutline } from "react-icons/io5";
+import { LuLoader2 } from "react-icons/lu";
 
-export default function DashboardCard({ title, count, icon ,percentage=60,color="#00a8e8" }) {
+export default function DashboardCard({ title, count, icon ,percentage=60,color="#00a8e8", isLoading }) {
   return (
     <div className="bg-gray-700 border h-[150px] border-gray-700 bg-opacity-50 min-h-[70px] shadow-lg text-white rounded-lg px-4 py-3 flex items-center justify-between gap-4 transition hover:scale-105 hover:cursor-pointer">
       {/* Progress Circle */}
@@ -14,7 +16,7 @@ export default function DashboardCard({ title, count, icon ,percentage=60,color=
           type="dashboard"
           className="custom-progress"
           format={() => (
-            <span className="text-gray-200">{formatCountToText(count)}</span>
+            <span className="text-gray-200 center">{isLoading ? <IoHourglass className="animate-spin-slow" /> : formatCountToText(count)}</span>
           )}
           strokeWidth={13}
         />
@@ -27,7 +29,10 @@ export default function DashboardCard({ title, count, icon ,percentage=60,color=
           {title}
         </h2>
         <p className="text-xl lg:text-xl md:text-xl font-light">
-          {formatCountToText(count)}
+          {isLoading ? 
+            <>{" "}</> :
+            formatCountToText(count)
+          }
         </p>
       </div>
     </div>

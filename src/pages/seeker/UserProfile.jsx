@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import MainContext from "../../components/MainContext";
 import ProfileAvatar from "../../components/ProfileAvatar";
 import InputBox from "../../components/InputBox";
-import { MdEmail, MdEdit, MdDelete, MdPerson } from "react-icons/md";
+import { MdEmail, MdEdit, MdDelete, MdPerson, MdVerifiedUser, MdCheck, MdCheckCircle } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import { FaArrowLeft } from "react-icons/fa6";
+import { FaArrowLeft, FaCheck } from "react-icons/fa6";
 import { skillsData } from "../../../assets/dummyDatas/Data";
 import {
   AutoComplete,
@@ -16,7 +16,7 @@ import {
 } from "antd";
 import "antd/dist/reset.css";
 import dayjs from "dayjs";
-import { FaPhoneAlt, FaSave } from "react-icons/fa";
+import { FaPhoneAlt, FaSave, FaUserCheck } from "react-icons/fa";
 import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
@@ -59,6 +59,8 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (profileData !== null) {
+      console.log("P", profileData);
+      
       setPersonalDetails((prev) => {
         return {
           fullName: profileData?.name || "",
@@ -517,17 +519,21 @@ const UserProfile = () => {
                   }}
                 />
 
-                <div className="absolute bottom-[101%] md:bottom-1 -right-1 md:right-1  flex flex-col items-center">
+                <div className="absolute top-[3rem] md:top-[5rem] lg:top-[5rem] right-1 md:right-2 lg:right-2  flex flex-col items-center">
                   {
                     profileFilledPercentage< 100 && <ProfileProgress profileFilledPercentage={parseFloat(profileFilledPercentage.toFixed(2))}/>
                   }
                   <span className="text-[0.6rem]">
                     {profileFilledPercentage < 100 && "Complete Profile" }
                   </span>
-                  {
-                    profileFilledPercentage === 100 && <span className="flex justify-center items-center gap-[2px] text-[1.2rem] text-green-600"><HiCheckBadge/></span>
-                  }
                 </div>
+
+                {
+                  profileFilledPercentage === 100 && 
+                  <span className="absolute right-2 top-[6rem] lg:right-2 md:right-2 lg:top-[8.2rem] md:top-[8.2rem] text-[1.2rem] text-green-600">
+                    <HiCheckBadge className="text-xl lg:text-3=2xl md:text-2xl" />
+                  </span>
+                }
 
                 <h1>
                   {" "}

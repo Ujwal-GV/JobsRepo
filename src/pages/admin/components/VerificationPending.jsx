@@ -491,7 +491,7 @@ const UserTableCard = ({ data = {} }) => {
 
           
           {
-           verified ? <span className="text-green-600">Verified</span> : <button onClick={()=>{setConfirmModal(true)}}>Confirm Verify</button>
+           verified ? <span className="text-green-600">Verified</span> : <button className="py-1 px-2 rounded-md bg-gray-500 bg-opacity-50" onClick={()=>{setConfirmModal(true)}}>Confirm Verify</button>
           }
         </div>
       </div>

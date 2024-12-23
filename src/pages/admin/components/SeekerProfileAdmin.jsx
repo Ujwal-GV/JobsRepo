@@ -7,11 +7,12 @@ import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { message } from "antd";
 import { IoHourglassOutline } from "react-icons/io5";
-import { MdBlock, MdOutlinePerson, MdOutlinePersonOff, MdVerified, MdVerifiedUser } from "react-icons/md";
+import { MdBlock, MdOutlinePerson, MdOutlinePersonOff, MdRefresh, MdVerified, MdVerifiedUser } from "react-icons/md";
 import { FaBan, FaCheck, FaSave, FaUserTie } from "react-icons/fa";
 
 export default function SeekerProfileAdmin() {
   const { user_id: userId } = useParams();
+  const [reportedBy, setReportedBy] = useState("");
 
   const fetchUser = async () => {
     try {
@@ -34,6 +35,42 @@ export default function SeekerProfileAdmin() {
     staleTime: 300000,
     gcTime: 0,
   });
+
+  const fetchSeekerReports = async () => {
+    try {
+      const responseData = await axiosInstance.get(`/reports/report-count/${userId}`);
+      
+      const reportedByIds = responseData.data.map((report) => report.reportedBy);
+  
+      const userNames = await Promise.all(
+        reportedByIds.map((id) => axiosInstance.get(`/provider/${id}`))
+      );
+  
+      const combinedReports = responseData.data.map((report, index) => ({
+        ...report,
+        reporterName: userNames[index]?.data?.accountData?.company_name || "Unknown User",
+      }));
+  
+      return combinedReports;
+    } catch (error) {
+      console.error("Error fetching seeker reports:", error);
+      throw error;
+    }
+  };
+  
+  const {
+    data: reportsData,
+    isLoading: reportsDataLoading,
+    isFetching: reportsDataFetching,
+    isError: reportsDataError,
+    refetch: refreshData,
+  } = useQuery({
+    queryKey: ["seeker-reports-data"],
+    queryFn: fetchSeekerReports,
+    staleTime: 300000,
+    cacheTime: 300000,
+  });
+  
 
   const [isBlocked, setIsBlocked] = useState(false);
 
@@ -77,6 +114,10 @@ export default function SeekerProfileAdmin() {
     );
   }
 
+  const handleRefresh = () => {
+    refreshData();
+  }
+
   return (
     <div className="min-h-screen bg-gray-800 text-white flex">
       <div className="grid grid-cols-2 gap-4 w-full">
@@ -102,7 +143,6 @@ export default function SeekerProfileAdmin() {
                       <MdOutlinePersonOff className="text-xl text-red-500 relative" />
                     </span>}
                 </div>
-                {/* <span className="text-xs mb-2">Last Active: {new Date(userData?.lastActive).toLocaleString()}</span> */}
                 {isBlocked ? (
                   <button
                     className="bg-gray-200 bg-opacity-50 w-[10rem] text-black py-2 px-4 rounded-lg shadow-sm center"
@@ -255,11 +295,55 @@ export default function SeekerProfileAdmin() {
           </div>
         </div>
 
-        <div className="min-h-screen flex gap-2 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
-          <div className="flex items-center mx-auto">
-            Reports
+       <div className="min-h-screen flex flex-col gap-4 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
+          <div className="flex justify-between">
+            <h2 className="text-lg font-semibold text-white uppercase">Reports</h2>
+            <button onClick={handleRefresh}><MdRefresh className="text-[2.2rem] text-white p-2 hover:bg-gray-500 hover:rounded-full" /></button>
           </div>
+          <hr />
+          
+          {reportsDataLoading || reportsDataFetching ? (
+            <div className="flex items-center justify-center text-white">
+              <IoHourglassOutline className="animate-spin-slow text-[2rem]" />
+            </div>
+          ) : reportsData?.length > 0 ? (
+            reportsData.map((report, index) => (
+              <div key={report._id} className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700">
+                <h3 className="text-md font-semibold text-white mb-1">
+                  Report ID: {report.report_id}
+                </h3>
+                <hr className="my-2" />
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Reported By:</span> {report.reporterName} - [{report.reportedBy}]
+                </p>
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Content:</span> {report.content}
+                </p>
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Created At:</span>{" "}
+                  {dayjs(report.createdAt).format("DD MMM YYYY, h:mm A")}
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="bg-gray-600 hover:bg-gray-500 text-white text-xs px-4 py-2 rounded-lg"
+                    onClick={() => alert(`Reviewing report: ${report.report_id}`)}
+                  >
+                    Review
+                  </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-500 text-white text-xs px-4 py-2 rounded-lg"
+                    onClick={() => alert(`Deleting report: ${report.report_id}`)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">No reports available.</p>
+          )}
         </div>
+
       </div>
     </div>
   );
