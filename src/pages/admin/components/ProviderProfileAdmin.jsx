@@ -13,6 +13,7 @@ import { FaDiagramProject } from "react-icons/fa6";
 
 export default function ProviderProfileAdmin() {
   const { company_id: companyId } = useParams();
+  const [openConfirmModal, setConfirmModal] = useState(false);
   
   const fetchUser = async () => {
     try {
@@ -93,6 +94,7 @@ export default function ProviderProfileAdmin() {
     onSuccess: (resData) => {
       setIsBlocked(true);
       message.success("User Blocked");
+      setConfirmModal(false);
     },
   });
 
@@ -105,6 +107,7 @@ export default function ProviderProfileAdmin() {
     onSuccess: (resData) => {
       setIsBlocked(false);
       message.success("User Unblocked");
+      setConfirmModal(false);
     },
   });
 
@@ -135,21 +138,22 @@ export default function ProviderProfileAdmin() {
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover"
                 />
-                <div className="text-lg items-center flex gap-2 my-2 font-semibold">
+                <div className="text-lg items-center flex gap-2 my-2 font-semibold relative">
                     <span>{companyData?.company_name}</span>
                     {companyData?.isVerified ? 
                     <span>
                         <MdVerifiedUser className="text-green-500" />
                     </span> :
                     <span className="flex items-center justify-center">
-                        <MdOutlinePersonOff className="text-xl text-red-500 relative" />
+                        <MdOutlinePersonOff className="text-xl text-red-500" />
                     </span>}
                 </div>
+
                 {isBlocked ? (
                   <button
                     className="bg-gray-200 bg-opacity-50 w-[10rem] text-black py-2 px-4 rounded-lg shadow-sm center"
                     disabled={unBlockMutate.isLoading || unBlockMutate.isPending}
-                    onClick={() => unBlockMutate.mutate()}
+                    onClick={() => setConfirmModal(true)}
                   >
                     {unBlockMutate.isLoading || unBlockMutate.isPending ? (
                       <LuLoader2 className="animate-spin text-white" />
@@ -163,18 +167,54 @@ export default function ProviderProfileAdmin() {
                   <button
                     className="bg-gray-900 w-[10rem] text-white py-2 px-4 rounded-lg shadow-sm center"
                     disabled={blockMutate.isLoading || blockMutate.isPending}
-                    onClick={() => blockMutate.mutate()}
+                    onClick={() => setConfirmModal(true)}
                   >
                     {blockMutate.isLoading || blockMutate.isPending ? (
                       <LuLoader2 className="animate-spin text-white" />
                     ) : (
                         <span className="flex items-center gap-2">
                             Block <FaCheck className=" text-white text-[0.7rem]" />
-                        </span>
-                    )}
+                        </span>                    
+                      )}
                   </button>
                 )}
-                <span className="text-xs mt-2"><span className="text-green-500">Last Active:</span> {new Date(companyData?.lastActive).toLocaleString()}</span>
+
+                {openConfirmModal ? (
+                  <div className="absolute top-[13.5rem] left-[8.5rem] w-[260px] bg-gray-900 border border-gray-700 rounded-lg p-2 z-10">
+                    <p className="m-2">Are your sure want to {isBlocked ? "Unblock" : "Block"} ?</p>
+                    <div className="flex justify-end">
+                      {isBlocked ? (
+                        <button
+                          className="text-white py-2 px-4 center"
+                          disabled={unBlockMutate.isLoading || unBlockMutate.isPending}
+                          onClick={() => unBlockMutate.mutate()}
+                        >
+                          {unBlockMutate.isLoading || unBlockMutate.isPending ? (
+                          <><LuLoader2 className="animate-spin text-white" /> Unblock</>                          
+                          ) : (
+                            "Unblock"
+                          )}
+                        </button>
+                      ) : (
+                      <button
+                        className="text-white py-2 px-4 center"
+                        disabled={blockMutate.isLoading || blockMutate.isPending}
+                        onClick={() => blockMutate.mutate()}
+                      >
+                        {blockMutate.isLoading || blockMutate.isPending ? (
+                          <><LuLoader2 className="animate-spin text-white" /> Block</>
+                        ) : (
+                            "Block"
+                          )}
+                      </button>
+                    )}
+                      <button onClick={()=>setConfirmModal(false)}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                <span className="text-xs my-2"><span className="text-green-500">Last Active:</span> {new Date(companyData?.lastActive).toLocaleString()}</span>
               </div>
 
               {/* Additional Profile Details */}
@@ -184,28 +224,28 @@ export default function ProviderProfileAdmin() {
                 </div>
                 <hr className="my-3" />
                 <div className="h-40 overflow-y-auto custom-scroll">
-                    <p className="text-sm">Email: {companyData?.email ? companyData?.email : "Not mentioned"}</p>
-                    
-                    <div className="flex">
-                        <p className="text-sm mr-2">Company Links:</p>
-                        {companyData?.company_links.length > 0 ? (
-                        companyData.company_links.map((link, index) => (
-                            <span key={link._id}>
-                            <a href={link?.url} className="text-sm mr-2">
-                                <span className="text-blue-400">{link.title}</span>
-                            </a>
-                            {index < companyData.company_links.length - 1 && " "}
-                            </span>
-                        ))
-                        ) : (
-                        <span className="text-sm">Not mentioned</span>
-                        )}
-                    </div>
+                  <p className="text-sm"><span className="text-teal-300">Email:</span> {companyData?.email ? companyData?.email : "Not mentioned"}</p>
+                  
+                  <div className="flex">
+                      <p className="text-sm mr-2"><span className="text-teal-300">Company Links:</span></p>
+                      {companyData?.company_links.length > 0 ? (
+                      companyData.company_links.map((link, index) => (
+                          <span key={link._id}>
+                          <a href={link?.url} className="text-sm mr-2">
+                              <span className="text-blue-400">{link.title}</span>
+                          </a>
+                          {index < companyData.company_links.length - 1 && " "}
+                          </span>
+                      ))
+                      ) : (
+                      <span className="text-sm">Not mentioned</span>
+                      )}
+                  </div>
 
-                    <p className="text-sm">Location: {companyData?.location ? companyData?.location : "Not mentioned"}</p>
-                    <p className="text-sm">Mobile: {companyData?.mobile ? companyData?.mobile : "Not mentioned"}</p>
-                    <p className="text-sm text-justify">About: {companyData?.description ? companyData?.description : "Not mentioned"}</p>
-                    </div>
+                  <p className="text-sm"><span className="text-teal-300">Location:</span> {companyData?.location ? companyData?.location : "Not mentioned"}</p>
+                  <p className="text-sm"><span className="text-teal-300">Mobile:</span> {companyData?.mobile ? companyData?.mobile : "Not mentioned"}</p>
+                  <p className="text-sm text-justify"><span className="text-teal-300">About:</span> {companyData?.description ? companyData?.description : "Not mentioned"}</p>
+                  </div>
               </div>
             </div>
 
@@ -305,7 +345,7 @@ export default function ProviderProfileAdmin() {
                   <span className="font-medium">Post ID:</span> {report.postId}
                 </p>
                 <p className="text-sm text-gray-300">
-                  <span className="font-medium">Created At:</span>{" "}
+                  <span className="font-medium">Reported On:</span>{" "}
                   {dayjs(report.createdAt).format("DD MMM YYYY, h:mm A")}
                 </p>
                 <div className="mt-2 flex gap-2">
