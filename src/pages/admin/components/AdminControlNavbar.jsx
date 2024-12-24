@@ -31,6 +31,13 @@ const AdminControlNavbar = () => {
   const authToken = localStorage.getItem("authToken");
 
   useEffect(() => {
+    if (!authToken) {
+      toast.error("Session expired. Please login again.");
+      navigate("/admin/login", { replace: true });
+    }
+  }, [authToken, navigate]);
+
+  useEffect(() => {
     const currentPath = location.pathname;
     const currentMenuItem = menuItems.find((item) => item.nav === currentPath);
     if (currentMenuItem) {

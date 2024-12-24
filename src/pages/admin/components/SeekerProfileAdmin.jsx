@@ -138,13 +138,13 @@ export default function SeekerProfileAdmin() {
                 />
                 <div className="text-lg items-center flex gap-2 my-2 font-semibold">
                   <span>{userData?.name}</span>
-                  {userData?.isVerified ? 
+                  {/* {userData?.isVerified ? 
                     <span>
                       <MdVerifiedUser className="text-green-500" />
                     </span> :
                     <span className="flex items-center justify-center">
                       <MdOutlinePersonOff className="text-xl text-red-500 relative" />
-                    </span>}
+                    </span>} */}
                 </div>
 
                 {isBlocked ? (
@@ -282,8 +282,10 @@ export default function SeekerProfileAdmin() {
                 {userData?.education_details ? (
                   <div className="text-sm bg-gray-800 p-3 rounded-lg">
                     <p>
-                      Institute: {userData.education_details.institute_name} -{" "}
-                      {userData.education_details.specification}
+                      Institute: {userData.education_details.institute_name}
+                      {userData.education_details.specification 
+                        ? ` - ${userData.education_details.specification}` 
+                        : ""}
                     </p>
                     <p>
                       Qualification:{" "}
@@ -310,7 +312,7 @@ export default function SeekerProfileAdmin() {
                       <div key={index} className="p-3 bg-gray-800 my-2 rounded-lg shadow-lg">
                         <p>
                           <span className="font-medium">Company Name:</span>{" "}
-                          {internship.company_name}
+                          {internship.company_name ? internship.company_name : "Not mentioned"}
                         </p>
                         <p>
                           <span className="font-medium">Duration:</span>{" "}
@@ -322,7 +324,7 @@ export default function SeekerProfileAdmin() {
                         </p>
                         <p>
                           <span className="font-medium">Project:</span>{" "}
-                          {internship.project}
+                          {internship.project ? internship.project : "Not mentioned"}
                         </p>                      
                       </div>
                     ))}
