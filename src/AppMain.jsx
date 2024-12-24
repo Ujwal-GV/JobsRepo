@@ -63,6 +63,9 @@ import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
 import VerificationPending from './pages/admin/components/VerificationPending'
 import ReportTablePage from './pages/admin/components/ReportTablePage'
 import FreelancerProfileAdmin from './pages/admin/components/FreelancerProfileAdmin'
+import AdminSignUp from './pages/admin/AdminSignUp'
+import AdminForgotPassword from './pages/admin/AdminForgotPassword'
+import AdminPasswordReset from './pages/admin/AdminPasswordReset'
 
 
 const AppMain = () => {
@@ -91,6 +94,10 @@ const AppMain = () => {
           <Route path = '/freelancer/reset-password/:token' element = { < FreelancerSetNewPassword /> } />
 
           <Route path = "/admin/login" element={<AdminLogin />} />
+          <Route path = "/admin/signup" element={<AdminSignUp />} />  
+
+          <Route path = "/admin/forgot-password" element={ <AdminForgotPassword/> } />
+          <Route path = "/admin/reset-password/:token" element={ <AdminPasswordReset/> } />        
 
           {/* <Route path = "/select-role" element= { <OptionPage />} /> */}
           <Route path="/" element={<MainWrapper/>}>
