@@ -59,7 +59,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (profileData !== null) {
-      console.log("P", profileData);
       
       setPersonalDetails((prev) => {
         return {

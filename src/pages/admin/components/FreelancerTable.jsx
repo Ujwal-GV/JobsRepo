@@ -478,7 +478,7 @@ const UserTableCard = ({ data = {} }) => {
   };
 
   const blockMutate = useMutation({
-    mutationKey: ["provider", "block"],
+    mutationKey: ["freelancer", "block"],
     mutationFn: blockMutation,
     onError: (err) => {
       toast.error("Something Went Wrong");
@@ -492,7 +492,7 @@ const UserTableCard = ({ data = {} }) => {
   });
 
   const unBlockMutate = useMutation({
-    mutationKey: ["provider", "unblock"],
+    mutationKey: ["freelancer", "unblock"],
     mutationFn: unBlockMutation,
     onError: (err) => {
       toast.error("Something Went Wrong");
