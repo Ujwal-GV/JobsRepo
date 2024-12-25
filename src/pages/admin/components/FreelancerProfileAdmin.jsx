@@ -12,263 +12,251 @@ import { FaBan, FaCheck, FaUserFriends, FaUserTie } from "react-icons/fa";
 import { FaDiagramProject } from "react-icons/fa6";
 
 export default function FreelancerProfileAdmin() {
-//   const { freelancer_id: freelancerId } = useParams();
-//   console.log(freelancerId);
+  const { freelancer_id: freelancerId } = useParams();
+  const [openConfirmModal, setConfirmModal] = useState(false);  
   
-  
-//   const fetchUser = async () => {
-//     try {
-//       const res = await axiosInstance.get(`/freelancer/all-post`, {
-//         params: {
-//             freelancer_id: freelancerId,
-//         }
-//       });
-//       console.log(res.data);
-      
-//       return res.data;
-//     } catch (err) {
-//       console.error(err);
-//       throw new Error("Failed to fetch user data");
-//     }
-//   };
+  const fetchUser = async () => {
+    try {
+      const res = await axiosInstance.get(`/freelancer/${freelancerId}`);      
+      return res.data.accountData;
+    } catch (err) {
+      console.error(err);
+      throw new Error("Failed to fetch user data");
+    }
+  };
 
-//   const {
-//     data: companyData,
-//     isFetching: companyDataFetching,
-//     isLoading: companyDataLoading,
-//   } = useQuery({
-//     queryKey: ["provider-data"],
-//     queryFn: fetchUser,
-//     cacheTime: 300000,
-//     staleTime: 300000,
-//     gcTime: 0,
-//   });
+  const {
+    data: freelancerData,
+    isFetching: freelancerDataFetching,
+    isLoading: freelancerDataLoading,
+  } = useQuery({
+    queryKey: ["freelancer-data"],
+    queryFn: fetchUser,
+    cacheTime: 300000,
+    staleTime: 300000,
+    gcTime: 0,
+  });  
 
-//   const [isBlocked, setIsBlocked] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
-//   useEffect(() => {
-//     setIsBlocked(companyData?.isBlocked);
-//   }, [companyData]);
+  useEffect(() => {
+    setIsBlocked(freelancerData?.isBlocked);
+  }, [freelancerData]);
 
-//   const blockMutation = async () => {
-//     try {
-//       const response = await axiosInstance.post("/admin/user/block", {
-//         accountId: companyData?.company_id,
-//         accountType: "provider",
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
+  const blockMutation = async () => {
+    try {
+      const response = await axiosInstance.post("/admin/user/block", {
+        accountId: freelancerData?.freelancer_id,
+        accountType: "freelancer",
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-//   const unBlockMutation = async () => {
-//     try {
-//       const response = await axiosInstance.post("/admin/user/unblock", {
-//         accountId: companyData?.company_id,
-//         accountType: "provider",
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
+  const unBlockMutation = async () => {
+    try {
+      const response = await axiosInstance.post("/admin/user/unblock", {
+        accountId: freelancerData?.freelancer_id,
+        accountType: "freelancer",
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-//   const blockMutate = useMutation({
-//     mutationKey: ["provider","block"],
-//     mutationFn: blockMutation,
-//     onError: (err) => {
-//       toast.error("Something Went Wrong");
-//     },
-//     onSuccess: (resData) => {
-//       setIsBlocked(true);
-//       message.success("User Blocked Sucessfully");
-//     },
-//   });
+  const blockMutate = useMutation({
+    mutationKey: ["freelancer","block"],
+    mutationFn: blockMutation,
+    onError: (err) => {
+      toast.error("Something Went Wrong");
+    },
+    onSuccess: (resData) => {
+      setIsBlocked(true);
+      message.success("User Blocked");
+      setConfirmModal(false);
+    },
+  });
 
-//   const unBlockMutate = useMutation({
-//     mutationKey: ["provider","unblock"],
-//     mutationFn: unBlockMutation,
-//     onError: (err) => {
-//       toast.error("Something Went Wrong");
-//     },
-//     onSuccess: (resData) => {
-//       setIsBlocked(false);
-//       message.success("User UnBlocked Sucessfully");
-//     },
-//   });
+  const unBlockMutate = useMutation({
+    mutationKey: ["freelancer","unblock"],
+    mutationFn: unBlockMutation,
+    onError: (err) => {
+      toast.error("Something Went Wrong");
+    },
+    onSuccess: (resData) => {
+      setIsBlocked(false);
+      message.success("User UnBlocked");
+      setConfirmModal(false);
+    },
+  });
 
-//   if (companyDataLoading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center text-white">
-//         <IoHourglassOutline className="animate-spin-slow text-[2rem] text-white" />
-//       </div>
-//     );
-//   }
+  if (freelancerDataLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        <IoHourglassOutline className="animate-spin-slow text-[2rem] text-white" />
+      </div>
+    );
+  }
 
-//   return (
-//     <div className="min-h-screen bg-gray-800 text-white flex">
-//       <div className="grid grid-cols-2 gap-4 w-full">
+  return (
+    <div className="min-h-screen bg-gray-800 text-white flex">
+      <div className="grid grid-cols-2 gap-4 w-full">
 
-//         <div className="min-h-screen flex flex-col w-full max-h-screen overflow-y-auto custom-scroll my-2 ml-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
-//           <div className="space-y-6">
-//             <div className="grid grid-cols-2 gap-2">
+        <div className="min-h-screen flex flex-col w-full max-h-screen overflow-y-auto custom-scroll my-2 ml-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-2">
 
-//               {/* Profile Image and Basic Info */}
-//               <div className="flex flex-col items-center justify-center bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md">
-//                 <img
-//                   src={companyData?.img?.url}
-//                   alt="Profile"
-//                   className="w-32 h-32 rounded-full object-cover"
-//                 />
-//                 <div className="text-lg items-center flex gap-2 my-2 font-semibold">
-//                     <span>{companyData?.company_name}</span>
-//                     {companyData?.isVerified ? 
-//                     <span>
-//                         <MdVerifiedUser className="text-green-500" />
-//                     </span> :
-//                     <span className="flex items-center justify-center">
-//                         <MdOutlinePersonOff className="text-xl text-red-500 relative" />
-//                     </span>}
-//                 </div>
-//                 {isBlocked ? (
-//                   <button
-//                     className="bg-gray-200 bg-opacity-50 w-[10rem] text-black py-2 px-4 rounded-lg shadow-sm center"
-//                     disabled={unBlockMutate.isLoading || unBlockMutate.isPending}
-//                     onClick={() => unBlockMutate.mutate()}
-//                   >
-//                     {unBlockMutate.isLoading || unBlockMutate.isPending ? (
-//                       <LuLoader2 className="animate-spin text-white" />
-//                     ) : (
-//                       <span className="flex items-center gap-2">
-//                         Unblock <FaBan className=" text-red-500 text-[0.8rem]" />
-//                       </span>
-//                     )}
-//                   </button>
-//                 ) : (
-//                   <button
-//                     className="bg-gray-900 w-[10rem] text-white py-2 px-4 rounded-lg shadow-sm center"
-//                     disabled={blockMutate.isLoading || blockMutate.isPending}
-//                     onClick={() => blockMutate.mutate()}
-//                   >
-//                     {blockMutate.isLoading || blockMutate.isPending ? (
-//                       <LuLoader2 className="animate-spin text-white" />
-//                     ) : (
-//                         <span className="flex items-center gap-2">
-//                             Block <FaCheck className=" text-white text-[0.7rem]" />
-//                         </span>
-//                     )}
-//                   </button>
-//                 )}
-//                 <span className="text-xs mt-2"><span className="text-green-500">Last Active:</span> {new Date(companyData?.lastActive).toLocaleString()}</span>
-//               </div>
+              {/* Profile Image and Basic Info */}
+              <div className="flex flex-col items-center justify-center bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md">
+                <img
+                  src={freelancerData?.img}
+                  alt="Profile"
+                  className="w-32 h-32 rounded-full object-cover"
+                />
+                <div className="text-lg items-center flex gap-2 my-2 font-semibold">
+                    <span>{freelancerData?.name}</span>
+                </div>
+                
+                {isBlocked ? (
+                    <button
+                    className="bg-gray-200 bg-opacity-50 w-[10rem] text-black py-2 px-4 rounded-lg shadow-sm center"
+                    disabled={unBlockMutate.isLoading || unBlockMutate.isPending}
+                    onClick={() => setConfirmModal(true)}
+                    >
+                    {unBlockMutate.isLoading || unBlockMutate.isPending ? (
+                        <LuLoader2 className="animate-spin text-white" />
+                    ) : (
+                        <span className="flex items-center gap-2">
+                        Unblock <FaBan className=" text-red-500 text-[0.8rem]" />
+                        </span>
+                    )}
+                    </button>
+                ) : (
+                    <button
+                    className="bg-gray-900 w-[10rem] text-white py-2 px-4 rounded-lg shadow-sm center"
+                    disabled={blockMutate.isLoading || blockMutate.isPending}
+                    onClick={() => setConfirmModal(true)}
+                    >
+                    {blockMutate.isLoading || blockMutate.isPending ? (
+                        <LuLoader2 className="animate-spin text-white" />
+                    ) : (
+                        <span className="flex items-center gap-2">
+                            Block <FaCheck className=" text-white text-[0.7rem]" />
+                        </span>                    
+                        )}
+                    </button>
+                )}
 
-//               {/* Additional Profile Details */}
-//               <div className="bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md h-90 overflow-y-auto custom-scroll">
-//                 <div className="flex flex-col lg:flex-col justify-between items-center">
-//                   <h3 className="text-xl font-semibold uppercase">Profile</h3>
-//                 </div>
-//                 <hr className="my-3" />
-//                 <div className="h-40 overflow-y-auto custom-scroll">
-//                     <p className="text-sm">Email: {companyData?.email ? companyData?.email : "Not mentioned"}</p>
-                    
-//                     <div className="flex">
-//                         <p className="text-sm mr-2">Company Links:</p>
-//                         {companyData?.company_links.length > 0 ? (
-//                         companyData.company_links.map((link, index) => (
-//                             <span key={link._id}>
-//                             <a href={link?.url} className="text-sm mr-2">
-//                                 <span className="text-blue-400">{link.title}</span>
-//                             </a>
-//                             {index < companyData.company_links.length - 1 && " "}
-//                             </span>
-//                         ))
-//                         ) : (
-//                         <span className="text-sm">Not mentioned</span>
-//                         )}
-//                     </div>
+                {openConfirmModal ? (
+                    <div className="absolute top-[13.5rem] left-[8.5rem] w-[260px] bg-gray-900 border border-gray-700 rounded-lg p-2 z-10">
+                    <p className="m-2">Are your sure want to {isBlocked ? "Unblock" : "Block"} ?</p>
+                    <div className="flex justify-end">
+                        {isBlocked ? (
+                        <button
+                            className="text-white py-2 px-4 center"
+                            disabled={unBlockMutate.isLoading || unBlockMutate.isPending}
+                            onClick={() => unBlockMutate.mutate()}
+                        >
+                            {unBlockMutate.isLoading || unBlockMutate.isPending ? (
+                            <><LuLoader2 className="animate-spin text-white" /> Unblock</>                          
+                            ) : (
+                            "Unblock"
+                            )}
+                        </button>
+                        ) : (
+                        <button
+                        className="text-white py-2 px-4 center"
+                        disabled={blockMutate.isLoading || blockMutate.isPending}
+                        onClick={() => blockMutate.mutate()}
+                        >
+                        {blockMutate.isLoading || blockMutate.isPending ? (
+                            <><LuLoader2 className="animate-spin text-white" /> Block</>
+                        ) : (
+                            "Block"
+                            )}
+                        </button>
+                    )}
+                        <button onClick={()=>setConfirmModal(false)}>Cancel</button>
+                    </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
 
-//                     <p className="text-sm">Location: {companyData?.location ? companyData?.location : "Not mentioned"}</p>
-//                     <p className="text-sm">Mobile: {companyData?.mobile ? companyData?.mobile : "Not mentioned"}</p>
-//                     <p className="text-sm text-justify">About: {companyData?.description ? companyData?.description : "Not mentioned"}</p>
-//                     </div>
-//               </div>
-//             </div>
+                <span className="text-xs mt-2"><span className="text-green-500">Last Active:</span> {new Date(freelancerData?.lastActive).toLocaleString()}</span>
+              </div>
 
-//             {/* Jobs Count and Followers count */}
-//             <div className="grid grid-cols-2 gap-2 rounded-xl">
-//               <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
-//                 <span className="flex gap-3 text-sm items-center">Jobs Posted<FaUserTie /></span>
-//                 <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
-//                   {companyData?.job_details?.jobs?.length}
-//                 </span>
-//               </div>
-//               <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
-//                 <span className="flex gap-3 text-sm items-center">Projects Posted<FaDiagramProject /></span>
-//                 <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
-//                   {companyData?.project_details?.projects?.length}
-//                 </span>
-//               </div>
-//               <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
-//               <span className="flex gap-3 text-sm items-center">Followers<FaUserFriends /></span>
-//               <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
-//                   {companyData?.followers.length}
-//                 </span>
-//               </div>
-//             </div>
+              {/* Additional Profile Details */}
+              <div className="bg-gray-900 bg-opacity-40 p-5 mt-1 rounded-xl shadow-md h-90 overflow-y-auto custom-scroll">
+                <div className="flex flex-col lg:flex-col justify-between items-center">
+                  <h3 className="text-xl font-semibold uppercase">Profile</h3>
+                </div>
+                <hr className="my-3" />
+                <div className="h-40 overflow-y-auto custom-scroll">
+                    <p className="text-sm"><span className="text-teal-300">ID:</span> {freelancerData?.freelancer_id}</p>
+                    <p className="text-sm"><span className="text-teal-300">Email:</span> {freelancerData?.email ? freelancerData?.email : "Not mentioned"}</p>
+                    <p className="text-sm"><span className="text-teal-300">Mobile:</span> {freelancerData?.mobile ? freelancerData?.mobile : "Not mentioned"}</p>
+                    <span className="flex justify-between items-center bg-gray-900 bg-opacity-50 mt-5 p-2 rounded-lg">
+                        <span className="flex gap-3 text-sm items-center">Projects Posted<FaUserTie /></span>
+                        <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
+                        {freelancerData?.project_details?.projects?.length}
+                        </span>
+                    </span>
+                </div>
+              </div>
+            </div>
 
-//             {/* Jobs Section */}
-//             <div className="overflow-y-auto custom-scroll bg-gray-900 bg-opacity-40 p-5 mt-4 rounded-xl shadow-md">
-//             <h1 className="text-lg font-semibold uppercase">Jobs Posted</h1>
-//             <hr className="my-3" />
-//             <div className="overflow-y-auto max-h-[395px] custom-scroll">
-//                 {companyData?.Applications_info.length > 0 ? (
-//                     companyData.Applications_info.map((job, index) => (
-//                     <div
-//                         key={index}
-//                         className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 mb-4"
-//                         >
-//                         <h3 className="text-xl font-semibold text-white">{job?.title}</h3>
-//                         <p
-//                             dangerouslySetInnerHTML={{ __html: job?.description }}
-//                             className="text-sm text-gray-300 mt-2"
-//                         />
-//                         <div className="flex justify-between mt-4 text-white text-sm">
-//                             <div>
-//                             <p>Vacancy: {job?.vacancy}</p>
-//                             <p>
-//                                 Experience: {job?.experience?.min} - {job?.experience?.max} years
-//                             </p>
-//                             <p>Location: {job?.location.join(", ")}</p>
-//                             <p>Type: {job?.type}</p>
-//                             <p>Applicants Count: {job?.applied_ids.length}</p>
-//                             </div>
-//                         </div>
-//                         <div className="mt-1 text-gray-300 text-sm">
-//                             <p className="font-medium">Skills Required:</p>
-//                             <ul className="list-disc ml-5">
-//                             {job?.must_skills?.map((skill, idx) => (
-//                                 <li key={idx}>{skill}</li>
-//                             ))}
-//                             </ul>
-//                         </div>
-//                         </div>
-//                     ))
-//                     ) : (
-//                     <p className="text-xs text-gray-400">No jobs available</p>
-//                     )}
-//                 </div>
-//             </div>
-//           </div>
-//         </div>
+            {/* Jobs Section */}
+            <div className="overflow-y-auto custom-scroll bg-gray-900 bg-opacity-40 p-5 mt-4 rounded-xl shadow-md">
+            <h1 className="text-lg font-semibold uppercase">Projects Posted</h1>
+            <hr className="my-3" />
+            <div className="overflow-y-auto max-h-[395px] custom-scroll">
+                {freelancerData?.projects_info.length > 0 ? (
+                    freelancerData.projects_info.map((project, index) => (
+                    <div
+                        key={index}
+                        className="bg-gray-800 p-4 rounded-lg shadow-md hover:bg-gray-700 mb-4"
+                        >
+                        <h3 className="text-xl font-semibold text-white">{project?.name}</h3>
+                        <p
+                            dangerouslySetInnerHTML={{ __html: project?.description }}
+                            className="text-sm text-gray-300 mt-2"
+                        />
+                        <div className="flex justify-between mt-4 text-white text-sm">
+                            <div>
+                            <p>Cost: {project?.cost?.amount}</p>
+                            <p>Due Time: {new Date(project?.dueTime).toLocaleDateString()}</p>
+                            <p>Applicants Count: {project?.applied_ids.length}</p>
+                            </div>
+                        </div>
+                        <div className="mt-1 text-gray-300 text-sm">
+                            <p className="font-medium">Skills Required:</p>
+                            <ul className="list-disc ml-5">
+                            {project?.skills?.map((skill, idx) => (
+                                <li key={idx}>{skill}</li>
+                            ))}
+                            </ul>
+                        </div>
+                        </div>
+                    ))
+                    ) : (
+                    <p className="text-xs text-gray-400">No projects available</p>
+                    )}
+                </div>
+            </div>
+          </div>
+        </div>
 
-//         <div className="min-h-screen flex gap-2 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
-//           <div className="flex items-center mx-auto">
-//             Reports
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
+        <div className="min-h-screen flex gap-2 w-full my-2 mr-2 max-w-4xl p-4 bg-gray-500 bg-opacity-20 rounded-lg">
+          <div className="flex items-center mx-auto">
+            Reports
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 <div className="text-white">Hi</div>
 }
