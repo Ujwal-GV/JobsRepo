@@ -60,3 +60,10 @@ export const mobileValidation = Yup.object().shape({
     .matches(/^\d{10}$/, "Mobile must be a 10-digit number")
     .required("Mobile number is required"),
 });
+
+export const documentValidationSchema = Yup.object().shape({
+  documentType: Yup.string()
+  .required("Document type is required")
+  .notOneOf(["", "Select Document"], "Please select a valid document type"),
+  documentFile: Yup.mixed().required("File is required"),
+});

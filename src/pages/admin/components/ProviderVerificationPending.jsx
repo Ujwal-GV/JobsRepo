@@ -18,7 +18,7 @@ import {
 import { LuLoader2 } from "react-icons/lu";
 import toast from "react-hot-toast";
 
-const VerificationPending = () => {
+const ProviderVerificationPending = () => {
   const queryClient = useQueryClient();
 
   const LIMIT_ITEM = [
@@ -232,9 +232,7 @@ const VerificationPending = () => {
   };
 
   return (
-    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-5 text-white">
-      <h1 className="text-center text-[2rem]">Verification pending</h1>
-
+    <section className="w-full border-[0.05rem] border-gray-700 rounded-sm relative py-3">
       {tableLoading && (
         <div className="absolute top-0 left-0 w-full h-full bg-slate-700 bg-opacity-75 flex justify-center items-center cursor-progress">
           <RiLoader3Fill className="animate-spin text-[1.5rem]" />
@@ -344,7 +342,7 @@ const VerificationPending = () => {
 
       {/* Table Data */}
 
-      <article className="h-[70vh] overflow-y-auto custom-scroll">
+      <article className="h-[60vh] overflow-y-auto custom-scroll">
         {filteredTableData.length === 0 && (
           <div className="w-full flex justify-center items-center h-[200px] text-gray-400">
             {!tableLoading ? (
@@ -405,10 +403,11 @@ const VerificationPending = () => {
   );
 };
 
-export default VerificationPending;
+export default ProviderVerificationPending;
 
 const UserTableCard = ({ data = {} }) => {
-    const [verified,setVerified] = useState(false);
+  const queryClient = useQueryClient();
+  const [verified,setVerified] = useState(false);
   const [openConfirmModal, setConfirmModal] = useState(false);
 
   useEffect(() => {
@@ -437,6 +436,7 @@ const UserTableCard = ({ data = {} }) => {
       setVerified(true)
       toast.success("Account Verified Sucessfully");
       setConfirmModal(false);
+      queryClient.invalidateQueries(['providers-carification',  'provider-data', 'dashboard-action-data']);
     },
   });
 
@@ -462,7 +462,7 @@ const UserTableCard = ({ data = {} }) => {
           {data?.isVerified ? "Verified" : "Not Verified"}
         </span>
         <div className="flex flex-wrap gap-[3px] justify-center items-center relative">
-          {openConfirmModal ? (
+        {openConfirmModal ? (
             <div className=" absolute  w-[250px] bg-gray-900 border border-gray-700 rounded-lg top-full z-10 p-2">
               <p className="text-[0.9rem]">Are your sure want to make this account verified ?</p>
               <div className="flex justify-end items-center gap-2">
@@ -491,7 +491,40 @@ const UserTableCard = ({ data = {} }) => {
 
           
           {
-           verified ? <span className="text-green-600">Verified</span> : <button className="py-1 px-2 rounded-md bg-gray-500 bg-opacity-50" onClick={()=>{setConfirmModal(true)}}>Confirm Verify</button>
+           verified ? 
+            <span className="text-green-600">
+              Verified
+            </span> : 
+            <span className="flex flex-col lg:flex-row md:flex-row gap-2 items-center">
+              <button
+                className={`py-1 px-2 rounded-md bg-gray-500 bg-opacity-50 ${
+                  !data?.verifyDocuments?.url || data?.verifyDocuments?.url === ''
+                    ? 'cursor-not-allowed opacity-50'
+                    : ''
+                } text-[0.8rem]`}
+                onClick={() => {
+                  if (data?.verifyDocuments?.url && data?.verifyDocuments?.url !== '') {
+                    setConfirmModal(true);
+                  }
+                }}
+                disabled={!data?.verifyDocuments?.url || data?.verifyDocuments?.url === ''}
+              >                 Confirm Verify
+              </button>
+              <button>
+                {data?.verifyDocuments?.url ? (
+                  <a
+                    href={data?.verifyDocuments?.url}
+                    className="py-1 px-2 rounded-md bg-gray-500 bg-opacity-50 text-[0.8rem]"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Document
+                  </a>
+                ) : (
+                  <span className="text-red-500 text-[0.6rem]">Document Not Available</span>
+                )}
+              </button>
+            </span>
           }
         </div>
       </div>

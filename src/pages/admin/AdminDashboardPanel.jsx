@@ -37,17 +37,25 @@ export default function AdminDashboardPanel() {
   });
 
   const handleVerificationData = async () => {
-    const [reportsResponse, verificationResponse] = await Promise.all([
+    const [reportsResponse, providerVerificationResponse, freelancerVerificationResponse] = await Promise.all([
       axiosInstance.get("/reports"),
       axiosInstance.get("/admin/providers", {
         params: {
           isVerified: "false"
         },
       }),
+      axiosInstance.get("/admin/freelancers", {
+        params: {
+          isVerified: "false"
+        },
+      }),
     ]);
+    
+    const totalProviderRequests = providerVerificationResponse.data.totalUsers || 0;
+  const totalFreelancerRequests = freelancerVerificationResponse.data.totalUsers || 0;
 
     return [
-      { title: 'Verification Requests', count: verificationResponse.data.totalUsers, description: ' profiles pending verification', action: () => window.open('/admin/verification-pending') },
+      { title: 'Verification Requests', count: `${totalProviderRequests} Providers, ${totalFreelancerRequests} Freelancers`, description: ' profiles pending verification', action: () => window.open('/admin/verification-pending') },
       { title: 'User Reports', count: reportsResponse.data.totalData, description: ' user reports', action: () => window.open('/admin/reports') },
       { title: 'Account Deletion Requests', count: 3, description: ' profiles deletion pending', action: () => alert('Deletion still pending') },
       { title: 'Some Other Requests', count: 419, description: ' other action pending', action: () => alert('Other action still pending') },
