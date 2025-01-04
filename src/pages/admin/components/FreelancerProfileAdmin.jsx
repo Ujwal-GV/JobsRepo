@@ -6,7 +6,7 @@ import { LuLoader2 } from "react-icons/lu";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { message } from "antd";
-import { IoHourglassOutline } from "react-icons/io5";
+import { IoDocument, IoHourglassOutline } from "react-icons/io5";
 import { MdOutlinePersonOff, MdVerifiedUser } from "react-icons/md";
 import { FaBan, FaCheck, FaUserFriends, FaUserTie } from "react-icons/fa";
 import { FaDiagramProject } from "react-icons/fa6";
@@ -116,9 +116,16 @@ export default function FreelancerProfileAdmin() {
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover"
                 />
-                <div className="text-lg items-center flex gap-2 my-2 font-semibold">
-                    <span>{freelancerData?.name}</span>
-                </div>
+                <div className="text-lg items-center flex gap-2 my-2 font-semibold relative">
+                  <span>{freelancerData?.name}</span>
+                  {freelancerData?.isVerified ? 
+                  <span>
+                      <MdVerifiedUser className="text-green-500" />
+                  </span> :
+                  <span className="flex items-center justify-center">
+                      <MdOutlinePersonOff className="text-xl text-red-500" />
+                  </span>}
+              </div>
                 
                 {isBlocked ? (
                     <button
@@ -199,15 +206,59 @@ export default function FreelancerProfileAdmin() {
                     <p className="text-sm"><span className="text-teal-300">ID:</span> {freelancerData?.freelancer_id}</p>
                     <p className="text-sm"><span className="text-teal-300">Email:</span> {freelancerData?.email ? freelancerData?.email : "Not mentioned"}</p>
                     <p className="text-sm"><span className="text-teal-300">Mobile:</span> {freelancerData?.mobile ? freelancerData?.mobile : "Not mentioned"}</p>
-                    <span className="flex justify-between items-center bg-gray-900 bg-opacity-50 mt-5 p-2 rounded-lg">
-                        <span className="flex gap-3 text-sm items-center">Projects Posted<FaUserTie /></span>
-                        <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
-                        {freelancerData?.project_details?.projects?.length}
-                        </span>
+
+                    {/* <span className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
+                      <span className="flex gap-3 text-sm items-center">Document<IoDocument /></span>
+                      <span className="flex gap-3 text-sm items-center">
+                        {
+                          freelancerData?.verifyDocuments?.url === undefined ? 
+                          <>
+                            <span className="text-red-500 text-[0.6rem]">Document Not Available</span>                          </> :
+                          <>
+                            <a
+                              href={freelancerData?.verifyDocuments?.url}
+                              className="bg-gray-100 text-gray-900 py-1 px-2 rounded-full text-xs shadow-sm hover:bg-gray-400 hover:text-white"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View Document
+                            </a>
+                          </>
+                        }
+                      </span>
+                    </span> */}
+
+                    <span className="flex justify-between items-center bg-gray-900 bg-opacity-50 mt-2 p-2 rounded-lg">
+                      <span className="flex gap-3 text-sm items-center">Projects Posted<FaUserTie /></span>
+                      <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
+                      {freelancerData?.project_details?.projects?.length}
+                      </span>
                     </span>
                 </div>
               </div>
             </div>
+
+            <span className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
+              <span className="flex gap-3 text-sm items-center">Document<IoDocument /></span>
+              <span className="flex gap-3 text-sm items-center">
+                {
+                  freelancerData?.verifyDocuments?.url === undefined ? 
+                  <>
+                    <span className="text-red-500 text-[0.6rem]">Document Not Available</span>                          </> :
+                  <span className="flex gap-2 items-center">
+                    <span className="font-bold">{freelancerData?.verifyDocuments?.docType}</span>
+                    <a
+                      href={freelancerData?.verifyDocuments?.url}
+                      className="bg-gray-100 text-gray-900 py-1 px-2 rounded-full text-xs shadow-sm hover:bg-gray-400 hover:text-white"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View Document
+                    </a>
+                  </span>
+                }
+              </span>
+            </span>
 
             {/* Jobs Section */}
             <div className="overflow-y-auto custom-scroll bg-gray-900 bg-opacity-40 p-5 mt-4 rounded-xl shadow-md">

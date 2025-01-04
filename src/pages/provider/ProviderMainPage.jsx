@@ -9,7 +9,7 @@ import { FaEye } from "react-icons/fa6";
 import { IoTrash } from "react-icons/io5";
 import toast from "react-hot-toast";
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import { LuLoader2 } from "react-icons/lu";
+import { LuAlertOctagon, LuLoader2 } from "react-icons/lu";
 
 function ProviderMainPage() {
   const { profileData } = useContext(AuthContext);
@@ -17,10 +17,16 @@ function ProviderMainPage() {
   const navigate = useNavigate();
   const [deletedJobs, setDeletedJobs] = useState({});
   const queryClient = useQueryClient();
+  const [openAlertModal, setOpenAlertModal] =  useState(false);
 
   useEffect(() => {
     if (profileData) {
       setCompanyId(profileData?.company_id);
+    }
+    if (profileData?.isVerified === false) {
+      setOpenAlertModal(true);
+    } else {
+      setOpenAlertModal(false);
     }
   }, [profileData, companyId]);
 
@@ -83,6 +89,42 @@ function ProviderMainPage() {
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
+      {
+        openAlertModal && (
+          <div 
+            className="absolute inset-0 -top-[35rem] bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setOpenAlertModal(false)}
+          >
+            <div 
+              className="bg-white lg:text-md md:text-md mx-4 p-4 rounded-lg shadow-lg max-w-sm w-[80%]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg center flex gap-2 items-center font-semibold text-gray-800 mb-4">
+                Alert 
+                <LuAlertOctagon className="text-red-500" />
+              </h3>
+              <hr className='w-[90%] mx-auto mb-2' />
+              <p className="text-sm text-gray-600 mb-4">
+                Please upload the necessary documents to complete the verification of your profile.</p>
+              <hr className='w-[90%] mx-auto mb-2' />
+              <div className="flex gap-3 items-center justify-center">
+                <button 
+                  className="bg-black text-white px-2 py-1 rounded-lg hover:bg-gray-700 text-sm"
+                  onClick={() => navigate("/provider/profile")}
+                >
+                  Profile
+                </button>
+                <button 
+                  className="bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 text-sm"
+                  onClick={() => setOpenAlertModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
       <div className="h-[250px] lg:h-[400px] md:h-[400px] w-full bg-slate-50 relative py-10">
         {/* Blue bubble */}
         <div className="orange-bubble absolute top-[100px] left-[100px]" />

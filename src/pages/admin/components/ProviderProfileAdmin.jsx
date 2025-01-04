@@ -6,7 +6,7 @@ import { LuLoader2 } from "react-icons/lu";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { message } from "antd";
-import { IoHourglassOutline } from "react-icons/io5";
+import { IoDocument, IoHourglassOutline } from "react-icons/io5";
 import { MdOutlinePersonOff, MdRefresh, MdVerifiedUser } from "react-icons/md";
 import { FaBan, FaCheck, FaUserFriends, FaUserTie } from "react-icons/fa";
 import { FaDiagramProject } from "react-icons/fa6";
@@ -257,18 +257,32 @@ export default function ProviderProfileAdmin() {
                   {companyData?.job_details?.jobs?.length}
                 </span>
               </div>
+
               <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
                 <span className="flex gap-3 text-sm items-center">Projects Posted<FaDiagramProject /></span>
                 <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
                   {companyData?.project_details?.projects?.length}
                 </span>
               </div>
+
               <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
-              <span className="flex gap-3 text-sm items-center">Followers<FaUserFriends /></span>
-              <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
+                <span className="flex gap-3 text-sm items-center">Followers<FaUserFriends /></span>
+                <span className="p-1 center rounded-full shadow-lg h-7 w-7 bg-gray-200 text-black">
                   {companyData?.followers.length}
                 </span>
               </div>
+
+              <div className="flex justify-between items-center bg-gray-900 bg-opacity-50  p-3 rounded-lg">
+                <span className="flex gap-3 text-sm items-center">Document<IoDocument /></span>
+                  <a
+                    href={companyData?.verifyDocuments?.url}
+                    className="bg-gray-100 text-gray-900 py-1 px-2 rounded-full text-xs shadow-sm hover:bg-gray-400 hover:text-white"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Document
+                  </a>
+                </div>
             </div>
 
             {/* Jobs Section */}

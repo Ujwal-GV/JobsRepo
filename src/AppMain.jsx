@@ -60,12 +60,12 @@ import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
 
 import SeekerProfileAdmin from './pages/admin/components/SeekerProfileAdmin'
 import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
-import VerificationPending from './pages/admin/components/VerificationPending'
 import ReportTablePage from './pages/admin/components/ReportTablePage'
 import FreelancerProfileAdmin from './pages/admin/components/FreelancerProfileAdmin'
 import AdminSignUp from './pages/admin/AdminSignUp'
 import AdminForgotPassword from './pages/admin/AdminForgotPassword'
 import AdminPasswordReset from './pages/admin/AdminPasswordReset'
+import AdminUserVerification from './pages/admin/AdminUserVerification'
 
 
 const AppMain = () => {
@@ -144,7 +144,7 @@ const AppMain = () => {
               <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
               <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />              
               <Route path="/admin/freelancer/:freelancer_id" element={ <FreelancerProfileAdmin /> } />              
-              <Route path="/admin/verification-pending" element={ <VerificationPending /> } />
+              <Route path="/admin/verification-pending" element={ <AdminUserVerification /> } />
               <Route path="/admin/reports" element={ <ReportTablePage /> } />
 
           </Route>
