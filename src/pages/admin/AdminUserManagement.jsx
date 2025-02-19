@@ -34,8 +34,8 @@ export default function AdminUserManagementPanel() {
   return (
     <>
       {/* Search Bar */}
-      <div className="p-4 bg-gray-200 rounded-lg shadow-lg my-5 mx-4 flex items-center gap-4">
-        <FaSearch className="text-gray-500" />
+      <div className="p-4 bg-gray-800 bg-opacity-50 text-white rounded-lg shadow-lg my-5 mx-4 flex items-center gap-4">
+        <FaSearch className="text-gray-200" />
         <input
           type="text"
           placeholder="Search by name, email, or role..."
@@ -85,10 +85,9 @@ export default function AdminUserManagementPanel() {
         </div> */}
 
       {/* User Actions and Statistics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
-        <section className="bg-gray-200 rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
-          <h2 className="text-2xl mt-2 font-semibold text-center mb-4">User Actions</h2>
-          <hr className="border-white mb-4 w-[90%] mx-auto" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 ">
+        <section className="bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
+          <h2 className="text-2xl mt-2 font-semibold text-center mb-4 text-white">User Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {userActionsData.map((item, index) => (
               <DashboardActionCards
@@ -101,9 +100,8 @@ export default function AdminUserManagementPanel() {
           </div>
         </section>
 
-        <section className="bg-gray-200 rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
-          <h2 className="text-2xl mt-2 font-semibold text-center mb-4">User Statistics</h2>
-          <hr className="border-white mb-4 w-[90%] mx-auto" />
+        <section className="bg-gray-800 bg-opacity-50 rounded-lg shadow-lg p-2 lg:p-4 md:p-4">
+          <h2 className="text-2xl mt-2 font-semibold text-center mb-4 text-white">User Statistics</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <DashboardCard title="Active Users" icon={<FaUser />} count={10250} />
             <DashboardCard title="Blocked Users" icon={<FaLock />} count={320} />

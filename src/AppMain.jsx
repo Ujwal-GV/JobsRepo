@@ -56,6 +56,17 @@ import AdminLogin from './pages/admin/AdminLogin'
 import AdminUserManagementPanel from './pages/admin/AdminUserManagement'
 import AdminUserControlPanel from './pages/admin/AdminUserControlPanel'
 import AdminSettingsPanel from './pages/admin/AdminSettingsPanel'
+import AdminStatisticsPage from './pages/admin/AdminStatisticsPage'
+
+import SeekerProfileAdmin from './pages/admin/components/SeekerProfileAdmin'
+import ProviderProfileAdmin from './pages/admin/components/ProviderProfileAdmin'
+import ReportTablePage from './pages/admin/components/ReportTablePage'
+import FreelancerProfileAdmin from './pages/admin/components/FreelancerProfileAdmin'
+import AdminSignUp from './pages/admin/AdminSignUp'
+import AdminForgotPassword from './pages/admin/AdminForgotPassword'
+import AdminPasswordReset from './pages/admin/AdminPasswordReset'
+import AdminUserVerification from './pages/admin/AdminUserVerification'
+
 
 const AppMain = () => {
 
@@ -83,6 +94,10 @@ const AppMain = () => {
           <Route path = '/freelancer/reset-password/:token' element = { < FreelancerSetNewPassword /> } />
 
           <Route path = "/admin/login" element={<AdminLogin />} />
+          <Route path = "/admin/signup" element={<AdminSignUp />} />  
+
+          <Route path = "/admin/forgot-password" element={ <AdminForgotPassword/> } />
+          <Route path = "/admin/reset-password/:token" element={ <AdminPasswordReset/> } />        
 
           {/* <Route path = "/select-role" element= { <OptionPage />} /> */}
           <Route path="/" element={<MainWrapper/>}>
@@ -125,6 +140,13 @@ const AppMain = () => {
               <Route path="/admin/user-management" element={ <AdminUserManagementPanel /> } />
               <Route path="/admin/user-control" element={ <AdminUserControlPanel /> } />
               <Route path="/admin/settings" element={ <AdminSettingsPanel /> } />
+              <Route path="/admin/statistics" element={ <AdminStatisticsPage /> } />
+              <Route path="/admin/user/:user_id" element={ <SeekerProfileAdmin /> } />
+              <Route path="/admin/provider/:company_id" element={ <ProviderProfileAdmin /> } />              
+              <Route path="/admin/freelancer/:freelancer_id" element={ <FreelancerProfileAdmin /> } />              
+              <Route path="/admin/verification-pending" element={ <AdminUserVerification /> } />
+              <Route path="/admin/reports" element={ <ReportTablePage /> } />
+
           </Route>
 
           <Route path='*' element={<SomethingWentWrong title='Page Not Found' subTitle='Unable to Find Page'/>}/>

@@ -531,10 +531,10 @@ export const companyData = [
   ];
 
   export const dashboardData = [
-    { title: 'Job Seekers', icon: FaUser, count: 602580870 },
-    { title: 'Job Providers', icon: FaBuildingUser, count: 56000 },
-    { title: 'Freelancers', icon: FaToolbox, count: 3420 },
-    { title: 'Reports', icon: CiWarning, count: 20 },
+    { title: 'Job Seekers', icon: FaUser, count: 602580870 ,percentage:80},
+    { title: 'Job Providers', icon: FaBuildingUser, count: 56000 ,percentage:60},
+    { title: 'Freelancers', icon: FaToolbox, count: 3420,percentage:40 },
+    { title: 'Reports', icon: CiWarning, count: 20 ,percentage:30},
   ];
 
   export const actionsData = [

@@ -10,7 +10,7 @@ const AdminWrapper = () => {
   }, [location]);
 
   return (
-    <div className="flex min-h-screen bg-white relative max-w-[1800px] mx-auto">
+    <div className="flex min-h-screen bg-gray-900 relative max-w-[1800px] mx-auto">
       <div className="w-[2rem] lg:w-[1rem] md:w-[1rem] ">
         <AdminControlNavbar />
       </div>

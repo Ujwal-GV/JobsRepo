@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import SeekerTable from "./components/SeekerTable";
-import ProviderTable from "./components/ProviderTable";
-import FreelancerTable from "./components/FreelancerTable";
+import ProviderVerificationPending from "./components/ProviderVerificationPending";
+import FreelancerVerificationPending from "./components/FreelancerVerificationPending";
 
-const AdminUserControlPanel = () => {
+const AdminUserVerification = () => {
 
-  const tablesTypes = ["Seekers","Providers","Freelancers"]
+  const tablesTypes = ["Providers","Freelancers"]
 
-  const [activeTable, setActiveTable] = useState("Seekers");
+  const [activeTable, setActiveTable] = useState("Providers");
 
   const handleActiveTableChange = (table) => {
     setActiveTable(table);
@@ -16,7 +15,7 @@ const AdminUserControlPanel = () => {
   return (
     <>
       <article className="w-full p-4">
-        <h1 className="text-[2.2rem] text-center text-white">Users List</h1>
+        <h1 className="text-[2.2rem] text-center text-white">Pending Verifications</h1>
         <div className="w-full flex justify-center items-center gap-3">
           
           {
@@ -33,17 +32,13 @@ const AdminUserControlPanel = () => {
       </article>
 
       <section className="w-full p-4 bg-gray-800 bg-opacity-50 text-gray-200">
-       
+
        {
-         activeTable === "Seekers" ?  <SeekerTable/> : null
+         activeTable === "Providers" ?  <ProviderVerificationPending/> : null
        }
 
        {
-         activeTable === "Providers" ?  <ProviderTable/> : null
-       }
-
-       {
-         activeTable === "Freelancers" ?  <FreelancerTable/> : null
+         activeTable === "Freelancers" ?  <FreelancerVerificationPending/> : null
        }
         
       </section>
@@ -51,4 +46,4 @@ const AdminUserControlPanel = () => {
   );
 };
 
-export default AdminUserControlPanel;
+export default AdminUserVerification;

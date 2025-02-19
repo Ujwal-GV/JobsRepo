@@ -12,7 +12,7 @@ import { IoIosMale, IoIosFemale, IoMdTransgender } from "react-icons/io";
 import { TbMoodEmptyFilled } from "react-icons/tb";
 import { Field, Form, Formik } from "formik";
 import { BiSolidUser ,BiGroup, BiSolidBadgeCheck, BiKey } from "react-icons/bi";
-import { Input } from "antd";
+import { Button, Input, Select, Upload } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import CustomBreadCrumbs from "../../components/CustomBreadCrumbs";
@@ -25,8 +25,9 @@ import toast from "react-hot-toast";
 import { useGetProviderProfileData } from "../provider/queries/ProviderProfileQuery";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance, getError } from '../../utils/axiosInstance';
-import { mobileValidation, urlValidationSchema } from "../../formikYup/ValidationSchema";
+import { mobileValidation, urlValidationSchema, documentValidationSchema } from "../../formikYup/ValidationSchema";
 import SomethingWentWrong from "../../components/SomethingWentWrong";
+import { IoCloudUploadOutline } from "react-icons/io5";
 
 
 const { TextArea } = Input;
@@ -36,6 +37,7 @@ const ProviderProfile = () => {
   const [personalDetailsModelOpen, setpersonalDetailsModelOpen] = useState(false);
   const [summaryModelOpen, setSummaryModelOpen] = useState(false);
   const [companyLinkModel, setCompanyLinkModel] = useState(false);
+  const [documentUploadModalOpen, setDocumentUploadModalOpen] = useState(false);
 
   const { profileData, setProfileData } = useContext(AuthContext);
 
@@ -59,6 +61,10 @@ const ProviderProfile = () => {
         links[idx] = { title: link.title, url: link.url };
       });
       setCompanyLinksList(links);
+      setDocumentDetails({
+        docType: profileData?.verifyDocuments?.docType,
+        url: profileData?.verifyDocuments?.url,
+      });
     }
   }, [profileData]);
 
@@ -73,6 +79,7 @@ const ProviderProfile = () => {
   const [companySummary, setCompanySummary] = useState("");
   const [companyLinksList, setCompanyLinksList] = useState({});
   const [compayLinks, setCompanyLinks] = useState({});
+  const [documentDetails, setDocumentDetails] = useState({});
 
   const handlePersonalDetails = (newDetails) => {
     providerProfilePersonalDetailsUpdateMutation.mutate(newDetails);
@@ -123,7 +130,7 @@ const ProviderProfile = () => {
         };
       });
       setProfileData(val);
-      queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
+      queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -148,7 +155,7 @@ const ProviderProfile = () => {
     onSuccess:(val,variables)=>{
        toast.success("Profile Photo Updated Sucessfully");
        setProfileData(val);
-       queryClient.invalidateQueries({ queryKey: ["provider_profile"] });
+       queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
       //  console.log(val , variables)
        setProviderProfileImg(variables);
     },
@@ -161,6 +168,44 @@ const ProviderProfile = () => {
         toast.error("Something Went Wrong")
       }
     }
+  });
+
+  const uploadDocument = async (documentData) => {
+    const formData = new FormData();
+    formData.append("docType", documentData.docType);
+    formData.append("doc", documentData.file);
+    formData.append("userType", profileData?.auth_details?.role);
+    formData.append("userId", profileData?.company_id);
+  
+    try {
+      const res = await axiosInstance.post("/uploader/verify/doc", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      throw error;
+    }
+  };
+
+  const documentUploadMutation = useMutation({
+    mutationKey: ["provider_document_upload"],
+    mutationFn: uploadDocument,
+    onSuccess: (val) => {
+      toast.success("Document Uploaded Successfully");
+      setDocumentUploadModalOpen(false);
+    queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
+  },
+    onError: (error) => {
+      const { message } = getError(error);
+      if (message) {
+        toast.error(message);
+      } else {
+        toast.error("Something Went Wrong");
+      }
+    },
   });
 
   const companyLinksUpdate = async (val) => {
@@ -177,7 +222,7 @@ const ProviderProfile = () => {
       setCompanyLinkModel(false);
       freeBody();
       setProfileData(val);
-      queryClient.invalidateQueries({ queryKey: ['provider_profile'] });
+      queryClient.invalidateQueries({ queryKey: ['provider-profile'] });
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -199,7 +244,7 @@ const ProviderProfile = () => {
       delete updatedLinks[index];
       setCompanyLinksList(updatedLinks);
       companyLinksMutation.mutate(updatedLinks);
-      queryClient.invalidateQueries({ queryKey: ['provider_profile'] });
+      queryClient.invalidateQueries({ queryKey: ['provider-profile'] });
     }
   };
 
@@ -218,7 +263,7 @@ const ProviderProfile = () => {
       freeBody();
       setCompanySummary(variables);
       setProfileData(val);
-      queryClient.invalidateQueries[{ queryKey: 'provider_profile' }];
+      queryClient.invalidateQueries[{ queryKey: 'provider-profile' }];
     },
     onError: (error) => {
       const { message } = getError(error);
@@ -243,7 +288,7 @@ const ProviderProfile = () => {
     return (
       <MainContext>
         <div className="w-full h-screen bg-slate-50 ">
-          <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit ">
+          <div className="w-full h-screen overflow-y-auto relative overflow-x-hidden mx-auto  mt-2 md:max-w-[80%] lg:max-w-[70%] bg-slate-100 pb-5 px-2 md:px-0 font-outfit custom-scroll">
             {/* BreadCrumbs */}
   
             <div className="w-full flex center py-3 sticky pt-2   bg-slate-100">
@@ -281,25 +326,25 @@ const ProviderProfile = () => {
                     freezeBody();
                   }}
                 />
-                <h1 className="flex justify-start text-3xl font-bold items-center gap-1">
+                <h1 className="flex justify-start text-2xl lg:text-3xl md:text-3xl font-bold items-center gap-1">
                   <BiSolidBadgeCheck className="text-orange-600" />
                   {personalDetails.companyName || "Company Name"}
                 </h1>
                 <hr className="m-2" />
-                <h1 className="flex justify-start items-center gap-1">
+                <h1 className="flex justify-start items-center text-sm lg:text-md gap-1">
                   <BiKey className="text-orange-600" />
                   {personalDetails.company_id || "Company ID"}
                 </h1>
-                <h1 className="flex justify-start items-center gap-1">
+                <h1 className="flex justify-start items-center text-sm lg:text-md gap-1">
                   <MdEmail className="text-orange-600" />
                   {personalDetails.email || "Email"}
                 </h1>
-                <h1 className="flex justify-start items-center gap-1">
+                <h1 className="flex justify-start items-center text-sm lg:text-md gap-1">
                   {" "}
                   <FaPhoneAlt className="text-orange-600" />{" "}
                   {personalDetails.mobile || "Mobile"}
                 </h1>
-                <h1 className="flex justify-start items-center gap-1">
+                <h1 className="flex justify-start items-center text-sm lg:text-md gap-1">
                   {" "}
                   <FaLocationArrow className="text-orange-600" />{" "}
                   {personalDetails.location || "Location"}
@@ -330,6 +375,26 @@ const ProviderProfile = () => {
   
             <div className="w-full  h-80 max-w-[90%] md:w-full mx-auto mt-4 flex flex-col lg:flex-row gap-2">
             <div className="part-1 flex-1">
+                <CompanyInputWrapper>
+                  <CompanyInfoField
+                    title="Document Submission"
+                    icon={documentDetails?.docType === undefined || null || "" ? "Add" : ""}
+                    editOnClick={() => {
+                      setDocumentUploadModalOpen(true);
+                      freezeBody();
+                    }}
+                  >
+                    <DocumentField
+                      documentDetails={documentDetails}
+                      onAddDocument={() => {
+                        setDocumentUploadModalOpen(true);
+                        freezeBody();
+                      }}
+                      hasDocuments={!!documentDetails?.url}
+                    />
+                  </CompanyInfoField>
+                </CompanyInputWrapper>
+
                 {/* Company Links Section */}
                 <CompanyInputWrapper>
                   <CompanyInfoField
@@ -458,6 +523,21 @@ const ProviderProfile = () => {
                 />
               </AnimateEnterExit>
             )}
+
+            {documentUploadModalOpen && (
+              <AnimateEnterExit transition={{ duration: 0.2 }} position="!fixed">
+                <CompanyDocumentModal
+                  open={documentUploadModalOpen}
+                  onClose={() => {
+                    setDocumentUploadModalOpen(false);
+                  }}
+                  value={{}}
+                  addDocuments={(data) => {
+                    documentUploadMutation.mutate(data);
+                  }}
+                />
+              </AnimateEnterExit>
+            )}
         </AnimatePresence>
       </MainContext>
     );
@@ -562,6 +642,37 @@ export default ProviderProfile;
       </div>
     );
   };
+
+  const DocumentField = ({
+    documentDetails,
+    onAddDocument = () => {},
+    hasDocuments,
+  }) => {
+    return (
+      <div className="w-full h-fit flex justify-between lg:items-center gap-3 bg-white rounded-lg lg:p-2 p-1 relative">
+        {hasDocuments ? (
+          <>
+            <span className="justify-start text-xs">Document Uploaded</span>
+            <div className="flex flex-col lg:flex-row lg:gap-4 gap-2 items-center">
+              <span className="font-black">{documentDetails?.docType}</span>
+                <a
+                  href={documentDetails?.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-orange-600 px-1 py-1 text-xs lg:px-2 lg:py-1 text-white hover:bg-orange-700 lg:text-sm rounded-full"
+                >
+                  View Document
+                </a>
+            </div>
+          </>
+        ) : (
+            <div className="w-full gap-1 center flex">
+              <TbMoodEmptyFilled /> Upload document for profile verification
+            </div>
+        )}
+      </div>
+    );
+  };
   
   //Model Forms for all
   const ProfilePersonalDetailsModal = ({
@@ -610,6 +721,7 @@ export default ProviderProfile;
                   {({ field }) => (
                     <InputBox
                       {...field}
+                      disable={true}
                       icon={<MdEmail />} // Icon for email
                       placeholder="Email"
                       customClass="mt-4"
@@ -869,6 +981,213 @@ export default ProviderProfile;
       </div>
     );
   };
+
+  const ConfirmationModal = ({ open, onConfirm, onCancel, message }) => {
+    return (
+        open && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+              <div className="bg-white p-6 rounded-lg shadow-lg mx-2">
+                <h2 className="text-md font-semibold mb-4">Confirm Action</h2>
+                <p className="mb-4 text-xs lg:text-sm md:text-sm">{message}</p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={onConfirm}
+                    className="btn-orange px-3 border py-1 border-transparent text-xs lg:text-sm md:text-sm"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={onCancel}
+                    className="btn-orange-outline px-3 py-1 text-xs lg:text-sm md:text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+        )
+    );
+  };
+
+  const CompanyDocumentModal = ({
+    open,
+    onClose = () => {},
+    value = {},
+    addDocuments = () => {},
+  }) => {
+    const [data, setData] = useState(value);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [tempValues, setTempValues] = useState(null);
+  
+    useEffect(() => {
+      setData(value);
+    }, [value]);
+  
+    const handleSubmit = (values) => {      
+      if (values.documentType === "") {
+        toast.error("Please select a valid document type");
+        return;
+      }
+      setTempValues(values);
+      setIsConfirmModalOpen(true);
+    };
+  
+    const handleConfirm = () => {
+      const documentData = {
+        docType: tempValues.documentType,
+        file: tempValues.documentFile,
+      };
+      addDocuments(documentData);
+      setIsConfirmModalOpen(false);
+      onClose();
+    };
+  
+    const handleCancel = () => {
+      setIsConfirmModalOpen(false);
+    };
+  
+    return (
+      <div
+        className={
+          "absolute top-0 left-0 w-full flex center h-full bg-slate-50 md:bg-slate-100 profile-modal p-4 md:p-10 " +
+          (open ? "profile-modal-show " : " ")
+        }
+      >
+        <div className="border relative w-[90%] lg:w-[50%] p-5 md:p-8 bg-gray-100 border-white rounded-lg">
+          <FaArrowLeft
+            className="absolute text-white w-5 h-5 p-1 top-5 left-4 md: p-1 md:top-8 md:left-5 cursor-pointer bg-gray-600 rounded-full"
+            onClick={() => {
+              onClose();
+            }}
+          />
+  
+          <h1 className="mb-5 mx-4 ml-5">Upload Document</h1>
+  
+          <Formik
+            initialValues={{ documentType: "Select Document", documentFile: "" }}
+            enableReinitialize={true}
+            validationSchema={documentValidationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ values, setFieldValue, errors, touched, resetForm }) => (
+              <Form>
+                {/* Document Type */}
+                <Field name="documentType">
+                  {({ field }) => (
+                    <div className="mb-4">
+                      <label className="block text-gray-700 ml-1 mb-2">Document Type</label>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onChange={(value) => setFieldValue("documentType", value)}
+                        className="w-full custom-dropdown-arrow"
+                        placeholder="Select document type"
+                        options={[
+                          { value: "GST INVOICE", label: "GST INVOICE" },
+                          { value: "PAN", label: "PAN" },
+                          { value: "OTHER", label: "OTHER" },
+                        ]}
+                      />
+                      {errors.documentType && touched.documentType && (
+                        <div className="text-red-500 font-outfit text-sm mt-1">
+                          {errors.documentType}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Field>
+  
+                {/* File Upload */}
+                {/* <Field name="documentFile">
+                  {({ field }) => (
+                    <div className="mb-4">
+                      <label className="block text-gray-700 ml-1 mb-2">Upload File</label>
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          setFieldValue("documentFile", e.target.files[0])
+                        }
+                        className="w-full"
+                      />
+                      {errors.documentFile && touched.documentFile && (
+                        <div className="text-red-500 font-outfit text-sm mt-1">
+                          {errors.documentFile}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Field> */}
+
+              <Field name="documentFile">
+                {({ field }) => (
+                  <div className="mb-4">
+                    <label className="block text-gray-700 ml-1 mb-2">Upload File</label>
+                    <div
+                      className={`relative w-full border rounded-md p-1 bg-white flex justify-between items-center cursor-pointer ${
+                        errors.documentFile && touched.documentFile ? "border-red-500" : "border-gray-300"
+                      }`}
+                      onClick={() => document.getElementById("file-input").click()}
+                    >
+                      <span className="text-gray-700 text-sm ml-2">
+                        {field.value?.name || "Select a file"}
+                      </span>
+                      <button
+                        type="button"
+                        className="bg-gray-200 px-2 py-1 rounded-md hover:bg-gray-300 text-sm"
+                      >
+                        Browse
+                      </button>
+                    </div>
+                    <input
+                      id="file-input"
+                      type="file"
+                      onChange={(e) => setFieldValue("documentFile", e.target.files[0])}
+                      className="hidden"
+                    />
+                    {errors.documentFile && touched.documentFile && (
+                      <div className="text-red-500 font-outfit text-sm mt-1">
+                        {errors.documentFile}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Field>
+  
+                {/* Action Buttons */}
+                <div className="w-full mt-4 flex justify-end gap-3">
+                  <button
+                    type="submit"
+                    className="btn-orange px-3 border py-1 border-transparent tracking-widest"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-orange-outline px-3 py-1"
+                    onClick={() => {
+                      resetForm({ values: value });
+                      onClose();
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+  
+        {/* Confirmation Modal */}
+        <ConfirmationModal
+          open={isConfirmModalOpen}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          message="Are you sure you want to upload this document? This action cannot be undone."
+        />
+      </div>
+    );
+  };
+  
   
   export const AnimateEnterExit = ({
     children,

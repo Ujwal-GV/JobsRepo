@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { axiosInstance, getError } from "../../utils/axiosInstance";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import { IoTrash } from "react-icons/io5";
-import { LuLoader2 } from "react-icons/lu";
+import { LuAlertOctagon, LuLoader2 } from "react-icons/lu";
 import dayjs from "dayjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -22,6 +22,7 @@ function MainPageFreelancer() {
   const navigate = useNavigate();
   const [deletedprojects, setDeletedProjects] = useState({});
   const queryClient = useQueryClient();
+  const [openAlertModal, setOpenAlertModal] =  useState(false);
 
   const handlePostClick = () => {
     navigate("/freelancer/post-project");
@@ -63,6 +64,11 @@ function MainPageFreelancer() {
     if (profileData) {      
       setFreelancerId(profileData?.freelancer_id);
     }
+    if (profileData?.isVerified === false) {
+      setOpenAlertModal(true);
+    } else {
+      setOpenAlertModal(false);
+    }
   }, [profileData]);
 
   const fetchProjects = async () => {
@@ -93,8 +99,44 @@ function MainPageFreelancer() {
 
   return (
     <div className="w-full min-h-screen relative max-w-[1800px] bg-white mx-auto">
+    {
+      openAlertModal && (
+        <div 
+          className="absolute inset-0 -top-[35rem] bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setOpenAlertModal(false)}
+        >
+          <div 
+            className="bg-white lg:text-md md:text-md mx-4 p-4 rounded-lg shadow-lg max-w-sm w-[80%]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg center flex gap-2 items-center font-semibold text-gray-800 mb-4">
+              Alert 
+              <LuAlertOctagon className="text-red-500" />
+            </h3>
+            <hr className='w-[90%] mx-auto mb-2' />
+            <p className="text-sm text-gray-600 mb-4">
+              Please upload the necessary documents to complete the verification of your profile.</p>
+            <hr className='w-[90%] mx-auto mb-2' />
+            <div className="flex gap-3 items-center justify-center">
+              <button 
+                className="bg-black text-white px-2 py-1 rounded-lg hover:bg-gray-700 text-sm"
+                onClick={() => navigate("/freelancer/profile")}
+              >
+                Profile
+              </button>
+              <button 
+                className="bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 text-sm"
+                onClick={() => setOpenAlertModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
       <MainContext>
-        <div className="h-[400px] w-full bg-slate-50 relative py-10">
+      <div className="h-[250px] lg:h-[400px] md:h-[400px] w-full bg-slate-50 relative py-10">
           {/* blue bubble */}
           <div className="orange-bubble absolute top-[100px] left-[100px]" />
           {/* search input */}
@@ -102,7 +144,7 @@ function MainPageFreelancer() {
             <SeachInput placeholder="Search a job / project....." />
           </div> */}
           {/* prime header  */}
-          <div className="mt-10 mx-auto w-fit font-outfit">
+          <div className="mt-10 lg:mt-20 md:mt-20 mx-auto w-fit font-outfit">
             <h1 className="text-center text-2xl md:text-5xl font-semibold">
               Welcome, Freelancer!
             </h1>
@@ -110,9 +152,10 @@ function MainPageFreelancer() {
               Post Exciting Projects
             </h1>
           </div>
-          <div className="orangle-circle absolute right-5 md:right-16  lg:right-[200px]  top-[200px]" />
-          <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[200px] shadow-sm " />
+          <div className="orangle-circle absolute right-5 md:right-16  lg:right-[200px] md:top-[250px] lg:top-[250px] top-[25px]" />
+          <div className="blue-circle absolute left-5 md:left-16 lg:left-[200px] bottom-[10px] lg:bottom-[300px] md:bottom-[300px] shadow-sm " />
         </div>
+
       </MainContext>
 
       <div className="my-5 p-4 bg-gray-100 mx-auto w-full rounded-lg lg:w-2/3">
